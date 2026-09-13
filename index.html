@@ -9,10 +9,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
 
-<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-database-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-storage-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
 
 <style>
 :root,
@@ -127,38 +126,8 @@ textarea,input,select{font-family:inherit;}
 }
 @keyframes splashFadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
 
-#app-root{opacity:0;pointer-events:none;transition:opacity .5s ease;}
-#app-root.visible{opacity:1;pointer-events:auto;}
-
-/* ---------- بوابة تسجيل الدخول بحساب جوجل ---------- */
-#auth-gate-screen{
-  position:fixed;inset:0;z-index:500;display:none;
-  align-items:center;justify-content:center;padding:20px;
-  background:
-    radial-gradient(ellipse 700px 500px at 18% -8%, rgba(164,147,255,0.10), transparent 55%),
-    radial-gradient(ellipse 600px 500px at 100% 15%, rgba(240,176,108,0.08), transparent 50%),
-    linear-gradient(180deg,var(--bg-1),var(--bg-2));
-}
-.auth-gate-card{
-  width:100%;max-width:360px;background:var(--surface);border:1px solid var(--border);
-  border-radius:20px;padding:34px 26px;box-shadow:var(--shadow-deep);text-align:center;
-}
-.auth-gate-glyph{
-  font-weight:700;font-size:26px;margin-bottom:8px;
-  background:linear-gradient(135deg,var(--glow),var(--violet));
-  -webkit-background-clip:text;background-clip:text;color:transparent;
-}
-.auth-gate-sub{font-size:13px;color:var(--ink-muted);margin-bottom:26px;line-height:1.7;}
-.btn-google{
-  width:100%;display:flex;align-items:center;justify-content:center;gap:10px;
-  background:#fff;color:#3c3c3c;border:none;border-radius:12px;padding:13px;
-  font-weight:700;font-size:14px;cursor:pointer;transition:filter .15s ease,transform .1s ease;
-}
-.btn-google i{color:#EA4335;font-size:16px;}
-.btn-google:active{transform:scale(0.98);}
-.btn-google:disabled{opacity:.6;cursor:default;}
-.auth-gate-error{color:var(--danger);font-size:12.5px;margin-top:14px;min-height:16px;}
-.auth-gate-note{font-size:11px;color:var(--ink-muted);margin-top:18px;line-height:1.7;}
+#app-root{opacity:0;transition:opacity .5s ease;}
+#app-root.visible{opacity:1;}
 
 /* ---------- topbar ---------- */
 #topbar{
@@ -661,23 +630,6 @@ textarea,input,select{font-family:inherit;}
   <div class="splash-tag">تحدَّ أصدقاءك في لعبة تخمين الصور 🎮</div>
 </div>
 
-<!-- بوابة تسجيل الدخول (مطلوبة قبل اللعب) -->
-<div id="auth-gate-screen">
-  <div class="auth-gate-card">
-    <div class="auth-gate-glyph serif">خمّن الشخصية</div>
-    <div class="auth-gate-sub">سجّل الدخول بحساب جوجل للمتابعة، حتى يتم حفظ معلوماتك وتقدّمك في اللعبة.</div>
-    <button class="btn-google" id="google-signin-btn" onclick="signInWithGoogle()">
-      <i class="fa-brands fa-google"></i> تسجيل الدخول بواسطة جوجل
-    </button>
-    <div class="btn-google" id="auth-gate-loading" style="display:none;cursor:default;">
-      <i class="fas fa-spinner fa-spin"></i> جاري التحقق من تسجيل الدخول...
-    </div>
-    <div class="auth-gate-error" id="auth-gate-error"></div>
-    <div class="auth-gate-note">لن نطّلع على كلمة مرور حسابك في جوجل، ولا نحصل عليها؛ يتم فقط مشاركة اسمك وبريدك الإلكتروني وصورتك الشخصية معنا.</div>
-    <pre id="auth-debug-log" style="display:none;text-align:left;direction:ltr;background:#000;color:#7CFC7C;font-size:10px;line-height:1.6;padding:10px;border-radius:8px;margin-top:16px;max-height:180px;overflow:auto;white-space:pre-wrap;"></pre>
-  </div>
-</div>
-
 <div id="app-root">
 
 <div class="toast-wrap" id="toast-wrap"></div>
@@ -829,13 +781,6 @@ textarea,input,select{font-family:inherit;}
         <span class="id-badge">iD <span id="my-id-value">--</span></span>
         <button class="icon-btn" onclick="copyMyId()" title="نسخ الأيدي"><i class="fas fa-copy"></i></button>
       </div>
-      <div style="display:flex;align-items:center;justify-content:center;gap:6px;font-size:11.5px;color:var(--ink-muted);margin-top:10px;">
-        <i class="fa-brands fa-google" style="color:var(--glow);"></i>
-        <span id="my-google-email">--</span>
-      </div>
-      <button class="btn btn-secondary" style="width:100%;margin-top:14px;" onclick="signOutUser()">
-        <i class="fas fa-right-from-bracket"></i> تسجيل الخروج
-      </button>
 
       <div class="section-title"><i class="fas fa-user-clock"></i> طلبات الصداقة الواردة</div>
       <div id="friend-requests-list"><div class="empty-note">لا توجد طلبات حالياً</div></div>
@@ -987,146 +932,13 @@ const firebaseConfig = {
 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 const storage = firebase.storage();
-const auth = firebase.auth();
-const googleProvider = new firebase.auth.GoogleAuthProvider();
 
-// ---------- سجل تشخيص مرئي (يظهر مباشرة في الصفحة، مفيد لمعرفة سبب أي مشكلة دون أدوات المطوّر) ----------
-function debugLog(msg){
-  try{
-    const el = document.getElementById('auth-debug-log');
-    if (!el) return;
-    el.style.display = 'block';
-    const t = new Date().toLocaleTimeString('en-GB');
-    el.textContent += '['+t+'] ' + msg + '\n';
-    el.scrollTop = el.scrollHeight;
-  }catch(e){}
-  console.log('[DEBUG]', msg);
+// ---------- هوية الجهاز (بدون تسجيل، تلقائية) ----------
+let currentUserId = localStorage.getItem('user_id');
+if (!currentUserId) {
+  currentUserId = 'user_' + Math.random().toString(36).substr(2, 9);
+  localStorage.setItem('user_id', currentUserId);
 }
-window.addEventListener('error', function(e){
-  debugLog('JS ERROR: ' + (e.message||'') + ' @ ' + (e.filename||'') + ':' + (e.lineno||''));
-});
-window.addEventListener('unhandledrejection', function(e){
-  debugLog('UNHANDLED PROMISE REJECTION: ' + (e.reason && (e.reason.code||e.reason.message||e.reason)));
-});
-debugLog('بدء الصفحة — hostname: ' + location.hostname);
-debugLog('authDomain المستخدم: ' + firebaseConfig.authDomain);
-
-// ---------- تسجيل الدخول الإلزامي بحساب جوجل (لحفظ معلومات المستخدم) ----------
-function showAuthGate(msg){
-  document.getElementById('auth-gate-screen').style.display = 'flex';
-  document.getElementById('auth-gate-error').textContent = msg || '';
-}
-function setAuthGateLoading(isLoading){
-  const btn = document.getElementById('google-signin-btn');
-  const loadingEl = document.getElementById('auth-gate-loading');
-  if (btn) btn.style.display = isLoading ? 'none' : 'flex';
-  if (loadingEl) loadingEl.style.display = isLoading ? 'flex' : 'none';
-}
-
-/* نستخدم إعادة التوجيه (redirect) بدل النافذة المنبثقة (popup)، لأن كثيراً من متصفحات
-   الجوال (خصوصاً غير كروم) لا تدعم النوافذ المنبثقة بشكل صحيح، فتفتح تبويباً كاملاً
-   ثم تفشل بخطأ "تم إغلاق نافذة تسجيل الدخول قبل إكمالها". إعادة التوجيه تعمل بثبات
-   في كل المتصفحات: تنقلك لصفحة جوجل لاختيار الحساب، ثم تعيدك للعبة تلقائياً. */
-async function signInWithGoogle(){
-  debugLog('تم الضغط على زر تسجيل الدخول');
-  try{ sessionStorage.setItem('gauth_redirect_pending', '1'); }catch(e){}
-  setAuthGateLoading(true);
-  showAuthGate('');
-  try{
-    debugLog('استدعاء signInWithRedirect...');
-    await auth.signInWithRedirect(googleProvider);
-    debugLog('تم استدعاء signInWithRedirect دون خطأ (يفترض الانتقال الآن)');
-  }catch(e){
-    try{ sessionStorage.removeItem('gauth_redirect_pending'); }catch(er){}
-    setAuthGateLoading(false);
-    debugLog('خطأ عند بدء تسجيل الدخول: ' + (e && e.code) + ' - ' + (e && e.message));
-    showAuthGate(describeAuthError(e));
-  }
-}
-function describeAuthError(err){
-  const code = err && err.code;
-  if (code === 'auth/unauthorized-domain') return 'هذا الموقع (' + location.hostname + ') غير مُضاف إلى قائمة النطاقات المسموحة في Firebase. أضِفه من: Authentication ← Settings ← Authorized domains.';
-  if (code === 'auth/operation-not-allowed') return 'تسجيل الدخول بجوجل غير مُفعّل في مشروع Firebase. فعّله من: Authentication ← Sign-in method ← Google.';
-  if (code === 'auth/invalid-api-key' || code === 'auth/api-key-not-valid') return 'إعدادات Firebase (firebaseConfig) غير صحيحة داخل ملف اللعبة.';
-  if (code === 'auth/network-request-failed') return 'تعذّر الاتصال بالإنترنت، تحقق من الشبكة وحاول مرة أخرى.';
-  if (code === 'auth/account-exists-with-different-credential') return 'هذا البريد الإلكتروني مستخدم مسبقاً بطريقة دخول مختلفة.';
-  return 'تعذّر تسجيل الدخول' + (code ? (' (' + code + ')') : '') + '، حاول مرة أخرى.';
-}
-function signOutUser(){
-  auth.signOut().then(()=>location.reload());
-}
-
-// إن كانت هناك عملية إعادة توجيه سابقة لم تكتمل بعد إعادة تحميل الصفحة، أظهر شاشة الانتظار فوراً
-try{
-  if (sessionStorage.getItem('gauth_redirect_pending') === '1'){
-    setAuthGateLoading(true);
-    debugLog('تم رصد عملية دخول معلّقة من قبل (sessionStorage) بعد إعادة تحميل الصفحة');
-  }
-}catch(e){}
-
-// بعد العودة من صفحة جوجل، تحقّق من نتيجة تسجيل الدخول واعرض أي خطأ بوضوح
-debugLog('استدعاء getRedirectResult...');
-auth.getRedirectResult().then(function(result){
-  try{ sessionStorage.removeItem('gauth_redirect_pending'); }catch(e){}
-  setAuthGateLoading(false);
-  if (result && result.user){
-    debugLog('نجح getRedirectResult ✓ — المستخدم: ' + result.user.email + ' (uid: ' + result.user.uid + ')');
-  } else {
-    debugLog('انتهى getRedirectResult بدون مستخدم (result فارغ) — لا توجد عملية دخول معلّقة');
-  }
-}).catch(function(err){
-  try{ sessionStorage.removeItem('gauth_redirect_pending'); }catch(e){}
-  setAuthGateLoading(false);
-  debugLog('فشل getRedirectResult ✗ — ' + (err && err.code) + ' - ' + (err && err.message));
-  showAuthGate(describeAuthError(err));
-});
-
-/* بعد نجاح تسجيل الدخول، يتم "حقن" وتشغيل بقية كود اللعبة (المخزّن أدناه
-   داخل وسم <script type="text/plain">) حتى لا يعمل أي جزء من اللعبة
-   قبل التحقق من هوية المستخدم عبر جوجل. */
-let appBooted = false;
-function bootApp(user){
-  if (appBooted) return;
-  appBooted = true;
-  debugLog('bootApp: بدء تشغيل اللعبة للمستخدم ' + user.email);
-  window.__googleProfile = {
-    uid: user.uid,
-    name: user.displayName || '',
-    email: user.email || '',
-    avatarUrl: user.photoURL || ''
-  };
-  const src = document.getElementById('app-source').textContent;
-  const s = document.createElement('script');
-  s.textContent = src;
-  document.body.appendChild(s);
-  debugLog('bootApp: تم حقن كود اللعبة (' + src.length + ' حرف)');
-}
-
-auth.onAuthStateChanged(function(user){
-  debugLog('onAuthStateChanged: ' + (user ? ('مسجّل دخول — ' + user.email) : 'غير مسجّل دخول (null)'));
-  if (user){
-    document.getElementById('auth-gate-screen').style.display = 'none';
-    document.getElementById('app-root').classList.add('visible');
-    bootApp(user);
-  } else {
-    document.getElementById('app-root').classList.remove('visible');
-    showAuthGate();
-  }
-});
-
-// ---------- شاشة الافتتاح ----------
-window.addEventListener('DOMContentLoaded', () => {
-  setTimeout(() => {
-    document.getElementById('splash-screen').classList.add('hide');
-    // ظهور اللعبة أو بوابة تسجيل الدخول يتم التحكم به حسب حالة الدخول بجوجل أعلاه
-  }, 2200);
-});
-</script>
-
-<script type="text/plain" id="app-source">
-// ---------- هوية المستخدم (مأخوذة من حساب جوجل بعد تسجيل الدخول) ----------
-const __gp = window.__googleProfile || {};
-let currentUserId = __gp.uid;
 
 // ---------- الحضور اللحظي (لعرض عدد المتصلين الآن في لوحة التحكم) ----------
 try{
@@ -1215,6 +1027,13 @@ document.addEventListener('click', (e)=>{
 });
 
 // ---------- شاشة الافتتاح ----------
+window.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    document.getElementById('splash-screen').classList.add('hide');
+    document.getElementById('app-root').classList.add('visible');
+  }, 2200);
+});
+
 function toggleTheme() {
   const body = document.body;
   const isDark = body.getAttribute('data-theme') === 'dark';
@@ -1456,22 +1275,7 @@ let myProfile = { name: '', avatarUrl: null };
 (function ensureMyProfile(){
   db.ref('users/'+currentUserId).once('value').then(snap=>{
     if (!snap.exists()){
-      db.ref('users/'+currentUserId).set({
-        name: __gp.name || ('مستخدم '+myPublicId),
-        avatarUrl: __gp.avatarUrl || null,
-        email: __gp.email || null,
-        googleLinked: true,
-        publicId: myPublicId,
-        createdAt: Date.now(),
-        lastLoginAt: Date.now()
-      });
-    } else {
-      // تحديث البريد وتاريخ آخر دخول عند كل تسجيل دخول، دون المساس بالاسم/الصورة التي اختارها المستخدم داخل اللعبة
-      db.ref('users/'+currentUserId).update({
-        email: __gp.email || (snap.val() && snap.val().email) || null,
-        googleLinked: true,
-        lastLoginAt: Date.now()
-      });
+      db.ref('users/'+currentUserId).set({ name: 'مستخدم '+myPublicId, avatarUrl: null, publicId: myPublicId, createdAt: Date.now() });
     }
   });
   db.ref('publicIdIndex/'+myPublicId).once('value').then(snap=>{
@@ -1512,7 +1316,6 @@ function loadUserProfile(uid){
 function refreshMyProfileUI(){
   document.getElementById('my-id-value').textContent = myPublicId;
   document.getElementById('my-name-input').value = myProfile.name || '';
-  document.getElementById('my-google-email').textContent = (myProfile.email || __gp.email || '');
   const img = document.getElementById('my-avatar-img');
   const ph = document.getElementById('my-avatar-placeholder');
   if (myProfile.avatarUrl){ img.src = myProfile.avatarUrl; img.style.display='block'; ph.style.display='none'; }

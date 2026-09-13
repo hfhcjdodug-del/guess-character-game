@@ -737,11 +737,14 @@ textarea,input,select{font-family:inherit;}
       </div>
     </div>
     <button class="icon-btn" id="theme-toggle" onclick="toggleTheme()" title="الوضع الليلي/النهاري"><i class="fas fa-moon"></i></button>
-    <button class="icon-btn" id="blocked-list-btn" onclick="openMyProfileAndScroll('blocked-section')" title="المحظورون">
+    <button class="icon-btn" id="blocked-list-btn" onclick="openBlockedOverlay()" title="المحظورون">
       <i class="fas fa-user-slash"></i>
       <span class="badge-dot" id="blocked-count-badge" style="display:none;">0</span>
     </button>
-    <button class="icon-btn" id="friend-requests-btn" onclick="openMyProfileAndScroll('friend-requests-section')" title="طلبات الصداقة">
+    <button class="icon-btn" id="friends-btn" onclick="openFriendsOverlay()" title="الأصدقاء">
+      <i class="fas fa-users"></i>
+    </button>
+    <button class="icon-btn" id="friend-requests-btn" onclick="openFriendRequestsOverlay()" title="طلبات الصداقة">
       <i class="fas fa-user-clock"></i>
       <span class="badge-dot" id="friend-requests-badge" style="display:none;">0</span>
     </button>
@@ -864,14 +867,44 @@ textarea,input,select{font-family:inherit;}
         <span class="id-badge">iD <span id="my-id-value">--</span></span>
         <button class="icon-btn" onclick="copyMyId()" title="نسخ الأيدي"><i class="fas fa-copy"></i></button>
       </div>
+    </div>
+  </div>
+</div>
 
-      <div class="section-title" id="friend-requests-section"><i class="fas fa-user-clock"></i> طلبات الصداقة الواردة</div>
+<!-- Modal: طلبات الصداقة الواردة فقط -->
+<div class="overlay" id="friend-requests-overlay">
+  <div class="sheet" style="max-width:480px;">
+    <div class="sheet-head">
+      <h3><i class="fas fa-user-clock" style="color:var(--glow);"></i> طلبات الصداقة</h3>
+      <button class="icon-btn" onclick="closeFriendRequestsOverlay()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="sheet-body">
       <div id="friend-requests-list"><div class="empty-note">لا توجد طلبات حالياً</div></div>
+    </div>
+  </div>
+</div>
 
-      <div class="section-title" id="friends-section"><i class="fas fa-users"></i> الأصدقاء</div>
+<!-- Modal: الأصدقاء فقط -->
+<div class="overlay" id="friends-overlay">
+  <div class="sheet" style="max-width:480px;">
+    <div class="sheet-head">
+      <h3><i class="fas fa-users" style="color:var(--glow);"></i> الأصدقاء</h3>
+      <button class="icon-btn" onclick="closeFriendsOverlay()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="sheet-body">
       <div id="friends-list"><div class="empty-note">لا يوجد أصدقاء بعد</div></div>
+    </div>
+  </div>
+</div>
 
-      <div class="section-title" id="blocked-section"><i class="fas fa-user-slash"></i> المحظورون</div>
+<!-- Modal: المحظورون فقط -->
+<div class="overlay" id="blocked-overlay">
+  <div class="sheet" style="max-width:480px;">
+    <div class="sheet-head">
+      <h3><i class="fas fa-user-slash" style="color:var(--glow);"></i> المحظورون</h3>
+      <button class="icon-btn" onclick="closeBlockedOverlay()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="sheet-body">
       <div id="blocked-list"><div class="empty-note">لا يوجد محظورون</div></div>
     </div>
   </div>
@@ -1454,21 +1487,30 @@ function refreshMyProfileUI(){
   if (myProfile.avatarUrl){ img.src = myProfile.avatarUrl; img.style.display='block'; ph.style.display='none'; }
   else { img.style.display='none'; ph.style.display='block'; }
 }
-function openMyProfile(focusSection){
+function openMyProfile(){
   refreshMyProfileUI();
   document.getElementById('my-profile-overlay').classList.add('show');
-  const sectionId = focusSection === 'friends' ? 'friends-section' : focusSection;
-  if (sectionId){
-    setTimeout(()=>{
-      document.getElementById(sectionId)?.scrollIntoView({behavior:'smooth', block:'start'});
-    }, 250);
-  }
-}
-function openMyProfileAndScroll(sectionId){
-  openMyProfile(sectionId);
 }
 function closeMyProfile(){
   document.getElementById('my-profile-overlay').classList.remove('show');
+}
+function openFriendRequestsOverlay(){
+  document.getElementById('friend-requests-overlay').classList.add('show');
+}
+function closeFriendRequestsOverlay(){
+  document.getElementById('friend-requests-overlay').classList.remove('show');
+}
+function openFriendsOverlay(){
+  document.getElementById('friends-overlay').classList.add('show');
+}
+function closeFriendsOverlay(){
+  document.getElementById('friends-overlay').classList.remove('show');
+}
+function openBlockedOverlay(){
+  document.getElementById('blocked-overlay').classList.add('show');
+}
+function closeBlockedOverlay(){
+  document.getElementById('blocked-overlay').classList.remove('show');
 }
 async function saveMyName(){
   const name = document.getElementById('my-name-input').value.trim();
@@ -1669,10 +1711,10 @@ function renderFriendsList(){
     const u = usersCache[fid] || {};
     return `
       <div class="user-row">
-        <div class="u-avatar" style="cursor:pointer;" onclick="closeMyProfile();openViewUser('${fid}')">${u.avatarUrl ? `<img src="${u.avatarUrl}">` : '<i class="fas fa-user" style="color:var(--ink-muted);"></i>'}</div>
-        <div class="u-info" style="cursor:pointer;" onclick="closeMyProfile();openViewUser('${fid}')"><div class="u-name">${escapeHtml(u.name||'مستخدم')}</div><div class="u-id">iD ${getPublicId(fid)}</div></div>
+        <div class="u-avatar" style="cursor:pointer;" onclick="closeFriendsOverlay();openViewUser('${fid}')">${u.avatarUrl ? `<img src="${u.avatarUrl}">` : '<i class="fas fa-user" style="color:var(--ink-muted);"></i>'}</div>
+        <div class="u-info" style="cursor:pointer;" onclick="closeFriendsOverlay();openViewUser('${fid}')"><div class="u-name">${escapeHtml(u.name||'مستخدم')}</div><div class="u-id">iD ${getPublicId(fid)}</div></div>
         <div class="u-actions">
-          <button class="btn btn-glow" onclick="closeMyProfile();sendGameInviteAndOpen('${fid}')" title="تحدّي"><i class="fas fa-gamepad"></i></button>
+          <button class="btn btn-glow" onclick="closeFriendsOverlay();sendGameInviteAndOpen('${fid}')" title="تحدّي"><i class="fas fa-gamepad"></i></button>
           <button class="btn btn-secondary" onclick="blockUser('${fid}')" title="حظر"><i class="fas fa-user-slash"></i></button>
           <button class="btn btn-danger" onclick="removeFriend('${fid}')" title="حذف من الأصدقاء"><i class="fas fa-user-xmark"></i></button>
         </div>

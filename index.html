@@ -786,6 +786,7 @@ textarea,input,select{font-family:inherit;}
 </div>
 
 <!-- Modal: الملف الشخصي لصاحب المنصة -->
+<audio id="owner-profile-audio" loop style="display:none;"></audio>
 <div class="overlay" id="owner-profile-overlay">
   <div class="sheet" style="max-width:480px;">
     <div class="sheet-head">
@@ -1251,7 +1252,7 @@ let ownerMedia = {};
 
 db.ref('settings/ownerProfile').on('value', snap=>{
   const v = snap.val() || {};
-  ownerProfile = { name:v.name||'مالك المنصة', bio:v.bio||'', contact:v.contact||'', verified:!!v.verified, vip:!!v.vip, frame:v.frame||'none', avatarVideo:v.avatarVideo||'' };
+  ownerProfile = { name:v.name||'مالك المنصة', bio:v.bio||'', contact:v.contact||'', verified:!!v.verified, vip:!!v.vip, frame:v.frame||'none', avatarVideo:v.avatarVideo||'', songUrl:v.songUrl||'' };
   updateOwnerProfileHeader();
 });
 db.ref('settings/ownerProfile/titles').on('value', snap=>{
@@ -1330,9 +1331,18 @@ function openOwnerProfile(){
   document.getElementById('profile-follow-btn').classList.toggle('following', isFollowing);
   renderContactSection();
   document.getElementById('owner-profile-overlay').classList.add('show');
+  const audio = document.getElementById('owner-profile-audio');
+  if (ownerProfile.songUrl){
+    if (audio.src !== ownerProfile.songUrl) audio.src = ownerProfile.songUrl;
+    audio.currentTime = 0;
+    audio.play().catch(()=>{});
+  }
 }
 function closeOwnerProfile(){
   document.getElementById('owner-profile-overlay').classList.remove('show');
+  const audio = document.getElementById('owner-profile-audio');
+  audio.pause();
+  audio.currentTime = 0;
 }
 
 // ---------- طلب التواصل مع المالك (يظهر بعد المتابعة) ----------

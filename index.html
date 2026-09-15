@@ -216,6 +216,19 @@ textarea,input,select{font-family:inherit;}
   border:2px solid var(--bg-1);
 }
 
+/* ---------- الدردشة الصوتية أثناء المباراة ---------- */
+.voice-bar{display:flex;gap:10px;margin:14px 0 6px;}
+.voice-btn{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:8px;
+  background:var(--surface-2);border:1px solid var(--border);color:var(--ink-soft);
+  border-radius:12px;padding:11px;font-size:12.5px;font-weight:700;cursor:pointer;
+  transition:background .15s ease,color .15s ease,border-color .15s ease,transform .1s ease;
+}
+.voice-btn:active{transform:scale(0.97);}
+.voice-btn.active{background:var(--glow);color:#0c0c14;border-color:var(--glow);}
+.voice-btn:disabled{opacity:.5;cursor:default;}
+.voice-status{font-size:11.5px;color:var(--ink-muted);text-align:center;margin-bottom:12px;min-height:14px;}
+
 /* ---------- منتقي لون الواجهة الشخصي ---------- */
 .color-picker-wrap{position:relative;}
 .color-picker-pop{
@@ -965,6 +978,13 @@ textarea,input,select{font-family:inherit;}
             <img class="vs-img" id="opponent-visible-img" src="">
           </div>
         </div>
+
+        <div class="voice-bar">
+          <button class="voice-btn" id="voice-mic-btn" onclick="toggleMic()"><i class="fas fa-microphone-slash"></i> المايك مغلق</button>
+          <button class="voice-btn active" id="voice-speaker-btn" onclick="toggleSpeaker()"><i class="fas fa-volume-high"></i> السماعة مفتوحة</button>
+        </div>
+        <div class="voice-status" id="voice-status-label"></div>
+        <audio id="remote-voice-audio" autoplay style="display:none;"></audio>
 
         <div class="guess-box">
           <button class="btn btn-glow" style="width:100%;" id="reveal-request-btn" onclick="requestMutualReveal()">
@@ -2022,6 +2042,7 @@ db.ref('activeGameFor/'+currentUserId).on('value', snap=>{
   const gid = snap.val();
   if (gid === currentGameId) return;
   if (currentGameId){ db.ref('games/'+currentGameId).off(); db.ref('games/'+currentGameId+'/chat').off(); }
+  teardownVoiceChat();
   currentGameId = gid;
   if (gid){
     db.ref('games/'+gid).on('value', s=>{ currentGame = s.val(); renderGameMatchUI(); });
@@ -2071,6 +2092,7 @@ function renderGameMatchUI(){
   const opImg = gameImagesCache[opponentImageId];
   document.getElementById('opponent-visible-img').src = opImg ? opImg.url : '';
   renderRevealState(myImageId, opponentImageId);
+  if (voiceGameId !== currentGameId) setupVoiceChat(currentGameId, myRole);
 }
 
 /* ---------- إظهار الشخصية للخصم (بموافقة الطرفين) ---------- */
@@ -2140,6 +2162,148 @@ async function declareGameResult(result){
     await db.ref('games/'+currentGameId).update({ status:'finished', winner: result==='win' ? currentUserId : null });
   }catch(e){ showToast('تعذّرت العملية','error'); }
 }
+/* =========================================================
+   الدردشة الصوتية بين اللاعبَين أثناء المباراة (WebRTC)
+   ========================================================= */
+const VOICE_ICE_SERVERS = [
+  { urls: 'stun:stun.l.google.com:19302' },
+  { urls: 'stun:stun1.l.google.com:19302' }
+];
+let voicePC = null;
+let voiceLocalStream = null;
+let voiceLocalTrack = null;
+let voiceGameId = null;
+let micOn = false;
+let speakerOn = true;
+
+function updateVoiceUI(statusText){
+  const micBtn = document.getElementById('voice-mic-btn');
+  const speakerBtn = document.getElementById('voice-speaker-btn');
+  const statusEl = document.getElementById('voice-status-label');
+  if (!micBtn || !speakerBtn) return;
+  micBtn.classList.toggle('active', micOn);
+  micBtn.innerHTML = micOn ? '<i class="fas fa-microphone"></i> المايك مفتوح' : '<i class="fas fa-microphone-slash"></i> المايك مغلق';
+  speakerBtn.classList.toggle('active', speakerOn);
+  speakerBtn.innerHTML = speakerOn ? '<i class="fas fa-volume-high"></i> السماعة مفتوحة' : '<i class="fas fa-volume-xmark"></i> السماعة مغلقة';
+  if (statusEl && statusText !== undefined) statusEl.textContent = statusText;
+}
+
+async function setupVoiceChat(gid, role){
+  voiceGameId = gid;
+  updateVoiceUI('جاري تجهيز الدردشة الصوتية...');
+  let stream;
+  try{
+    stream = await navigator.mediaDevices.getUserMedia({ audio:true });
+  }catch(e){
+    updateVoiceUI('تعذّر الوصول للمايك (تحقق من إذن المايك)');
+    const micBtn = document.getElementById('voice-mic-btn');
+    if (micBtn) micBtn.disabled = true;
+    return;
+  }
+  if (voiceGameId !== gid){ stream.getTracks().forEach(t=>t.stop()); return; } // تغيّرت المباراة أثناء الانتظار
+
+  voiceLocalStream = stream;
+  voiceLocalTrack = stream.getAudioTracks()[0];
+  voiceLocalTrack.enabled = false; // المايك مغلق افتراضياً حتى يفتحه اللاعب بنفسه
+  micOn = false;
+
+  const pc = new RTCPeerConnection({ iceServers: VOICE_ICE_SERVERS });
+  voicePC = pc;
+  pc.addTrack(voiceLocalTrack, stream);
+
+  const remoteAudio = document.getElementById('remote-voice-audio');
+  pc.ontrack = (ev)=>{
+    remoteAudio.srcObject = ev.streams[0];
+    remoteAudio.muted = !speakerOn;
+    remoteAudio.play().catch(()=>{});
+  };
+
+  const myKey = role;
+  const otherKey = role === 'player1' ? 'player2' : 'player1';
+
+  pc.onicecandidate = (ev)=>{
+    if (ev.candidate){
+      db.ref('games/'+gid+'/voice/candidates/'+myKey).push(ev.candidate.toJSON());
+    }
+  };
+  pc.onconnectionstatechange = ()=>{
+    if (voicePC !== pc) return;
+    if (pc.connectionState === 'connected') updateVoiceUI('متصل صوتياً بخصمك 🎧');
+    else if (pc.connectionState === 'connecting') updateVoiceUI('جاري الاتصال...');
+    else if (['disconnected','failed','closed'].includes(pc.connectionState)) updateVoiceUI('انقطع الاتصال الصوتي');
+  };
+
+  db.ref('games/'+gid+'/voice/candidates/'+otherKey).on('child_added', s=>{
+    const cand = s.val();
+    if (voicePC === pc && cand){
+      pc.addIceCandidate(new RTCIceCandidate(cand)).catch(()=>{});
+    }
+  });
+
+  if (role === 'player1'){
+    db.ref('games/'+gid+'/voice/answer').on('value', async s=>{
+      const ans = s.val();
+      if (voicePC === pc && ans && !pc.currentRemoteDescription){
+        try{ await pc.setRemoteDescription(new RTCSessionDescription(ans)); }catch(e){}
+      }
+    });
+    try{
+      const offer = await pc.createOffer();
+      if (voicePC !== pc) return;
+      await pc.setLocalDescription(offer);
+      await db.ref('games/'+gid+'/voice/offer').set({ sdp: offer.sdp, type: offer.type });
+      updateVoiceUI('بانتظار انضمام خصمك للمكالمة...');
+    }catch(e){ updateVoiceUI('تعذّر بدء الاتصال الصوتي'); }
+  } else {
+    db.ref('games/'+gid+'/voice/offer').on('value', async s=>{
+      const off = s.val();
+      if (voicePC === pc && off && !pc.currentRemoteDescription){
+        try{
+          await pc.setRemoteDescription(new RTCSessionDescription(off));
+          const answer = await pc.createAnswer();
+          if (voicePC !== pc) return;
+          await pc.setLocalDescription(answer);
+          await db.ref('games/'+gid+'/voice/answer').set({ sdp: answer.sdp, type: answer.type });
+        }catch(e){}
+      }
+    });
+    updateVoiceUI('جاري الاتصال...');
+  }
+}
+
+function teardownVoiceChat(){
+  if (voiceGameId){
+    db.ref('games/'+voiceGameId+'/voice/offer').off();
+    db.ref('games/'+voiceGameId+'/voice/answer').off();
+    db.ref('games/'+voiceGameId+'/voice/candidates/player1').off();
+    db.ref('games/'+voiceGameId+'/voice/candidates/player2').off();
+  }
+  if (voicePC){ try{ voicePC.close(); }catch(e){} voicePC = null; }
+  if (voiceLocalStream){ voiceLocalStream.getTracks().forEach(t=>t.stop()); voiceLocalStream = null; }
+  voiceLocalTrack = null;
+  voiceGameId = null;
+  micOn = false;
+  speakerOn = true;
+  const remoteAudio = document.getElementById('remote-voice-audio');
+  if (remoteAudio) remoteAudio.srcObject = null;
+  const micBtn = document.getElementById('voice-mic-btn');
+  if (micBtn) micBtn.disabled = false;
+  updateVoiceUI('');
+}
+
+function toggleMic(){
+  if (!voiceLocalTrack){ showToast('الدردشة الصوتية غير جاهزة بعد', 'error'); return; }
+  micOn = !micOn;
+  voiceLocalTrack.enabled = micOn;
+  updateVoiceUI();
+}
+function toggleSpeaker(){
+  speakerOn = !speakerOn;
+  const remoteAudio = document.getElementById('remote-voice-audio');
+  if (remoteAudio) remoteAudio.muted = !speakerOn;
+  updateVoiceUI();
+}
+
 async function leaveGame(){
   if (!currentGameId){ closeGameOverlay(); return; }
   const gid = currentGameId;
@@ -2151,6 +2315,7 @@ async function leaveGame(){
       if (opponent) await db.ref('activeGameFor/'+opponent).remove();
       await db.ref('games/'+gid).update({ status:'finished', winner:null });
     }
+    await db.ref('games/'+gid+'/voice').remove();
   }catch(e){}
 }
 function renderGameChat(msgs){

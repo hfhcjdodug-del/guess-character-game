@@ -220,7 +220,7 @@ textarea,input,select{font-family:inherit;}
 .reveal-row{display:flex;align-items:center;gap:10px;}
 .reveal-btn-small{flex:1;padding:11px 14px;font-size:12.5px;}
 .voice-circle-btn{
-  width:42px;height:42px;border-radius:50%;flex-shrink:0;
+  width:42px;height:42px;border-radius:50%;flex-shrink:0;position:relative;
   background:var(--surface-2);border:1px solid var(--border);color:var(--ink-soft);
   display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;
   transition:background .15s ease,color .15s ease,border-color .15s ease,transform .1s ease;
@@ -228,6 +228,16 @@ textarea,input,select{font-family:inherit;}
 .voice-circle-btn:active{transform:scale(0.92);}
 .voice-circle-btn.active{background:var(--glow);color:#0c0c14;border-color:var(--glow);}
 .voice-circle-btn:disabled{opacity:.5;cursor:default;}
+.voice-circle-btn.speaking::before,
+.voice-circle-btn.speaking::after{
+  content:'';position:absolute;inset:0;border-radius:50%;
+  border:2px solid var(--glow);animation:voiceSpeakWave 1.2s ease-out infinite;pointer-events:none;
+}
+.voice-circle-btn.speaking::after{ animation-delay:.5s; }
+@keyframes voiceSpeakWave{
+  0%{ transform:scale(1); opacity:.8; }
+  100%{ transform:scale(1.9); opacity:0; }
+}
 .voice-status{font-size:11.5px;color:var(--ink-muted);text-align:center;margin:8px 0 4px;min-height:14px;}
 
 /* ---------- منتقي لون الواجهة الشخصي ---------- */
@@ -302,6 +312,14 @@ textarea,input,select{font-family:inherit;}
 .home-tile-play i{color:var(--glow);}
 .home-tile-search{border-color:var(--violet);}
 .home-tile-search i{color:var(--violet);}
+.home-tile-random{
+  grid-column:1/-1;flex-direction:row;padding:16px 20px;gap:12px;
+  border-color:var(--glow);
+}
+.home-tile-random i{font-size:22px;color:var(--glow);}
+.home-tile-random span{font-size:13.5px;}
+.home-tile-random.waiting{border-color:var(--danger);background:rgba(239,83,80,0.08);}
+.home-tile-random.waiting i{color:var(--danger);}
 
 .category-chip{
   flex-shrink:0;border:1px solid var(--border);background:var(--surface);
@@ -796,6 +814,10 @@ textarea,input,select{font-family:inherit;}
   <button class="home-tile home-tile-search" onclick="focusHomeSearch()">
     <i class="fas fa-magnifying-glass"></i>
     <span>بحث عن صديق</span>
+  </button>
+  <button class="home-tile home-tile-random" id="random-match-btn" onclick="toggleRandomMatch()">
+    <i class="fas fa-shuffle"></i>
+    <span>لعب عشوائي</span>
   </button>
 </div>
 
@@ -1950,6 +1972,101 @@ async function acceptGameInvite(inviteId, fromUid){
   }catch(e){ showToast('تعذّر بدء المنافسة','error'); }
 }
 
+/* =========================================================
+   اللعب العشوائي (مطابقة فورية مع أي شخص آخر يضغط الزر)
+   ========================================================= */
+const RANDOM_MATCH_TIMEOUT_MS = 120000; // دقيقتان
+let randomMatchWaiting = false;
+let randomMatchCountdownInterval = null;
+
+async function toggleRandomMatch(){
+  if (randomMatchWaiting){ cancelRandomMatch(false); return; }
+  const ids = Object.keys(gameImagesCache);
+  if (ids.length < 2){ showToast('يحتاج الأدمن لإضافة صورتين على الأقل في لوحة التحكم أولاً','error'); return; }
+  if (currentGameId){ showToast('أنت بالفعل داخل منافسة حالياً','error'); return; }
+  try{
+    const result = await db.ref('matchmaking/waitingPlayer').transaction(current=>{
+      if (!current || (Date.now() - current.ts > RANDOM_MATCH_TIMEOUT_MS)){
+        return { uid: currentUserId, ts: Date.now() };
+      }
+      if (current.uid === currentUserId) return; // أنا بالفعل بانتظار (لا تغيير)
+      return; // شخص آخر ينتظر بالفعل -> نطابقه بالأسفل
+    });
+    const val = result.snapshot.val();
+    if (result.committed && val && val.uid === currentUserId){
+      startRandomMatchWaitingUI();
+    } else if (val && val.uid && val.uid !== currentUserId){
+      await createRandomMatchWith(val.uid);
+    } else {
+      showToast('حاول الضغط مرة أخرى','error');
+    }
+  }catch(e){ showToast('تعذّر بدء اللعب العشوائي','error'); }
+}
+
+async function createRandomMatchWith(opponentUid){
+  try{
+    await db.ref('matchmaking/waitingPlayer').transaction(current=> (current && current.uid===opponentUid) ? null : current);
+    const gid = db.ref('games').push().key;
+    const img1 = pickRandomImageId();
+    const img2 = pickRandomImageId(img1);
+    await db.ref('games/'+gid).set({ player1: opponentUid, player2: currentUserId, player1Image: img1, player2Image: img2, status:'active', createdAt: Date.now() });
+    await db.ref('activeGameFor/'+opponentUid).set(gid);
+    await db.ref('activeGameFor/'+currentUserId).set(gid);
+    showToast('تم إيجاد خصم عشوائي! 🎉','success');
+  }catch(e){ showToast('تعذّر إنشاء المنافسة العشوائية','error'); }
+}
+
+function startRandomMatchWaitingUI(){
+  randomMatchWaiting = true;
+  db.ref('matchmaking/waitingPlayer').onDisconnect().remove();
+  let secondsLeft = RANDOM_MATCH_TIMEOUT_MS / 1000;
+  updateRandomMatchBtnUI(secondsLeft);
+  randomMatchCountdownInterval = setInterval(()=>{
+    secondsLeft--;
+    if (secondsLeft <= 0){
+      clearInterval(randomMatchCountdownInterval);
+      randomMatchCountdownInterval = null;
+      cancelRandomMatch(true);
+      return;
+    }
+    updateRandomMatchBtnUI(secondsLeft);
+  }, 1000);
+}
+
+function updateRandomMatchBtnUI(secondsLeft){
+  const btn = document.getElementById('random-match-btn');
+  if (!btn) return;
+  btn.classList.add('waiting');
+  const m = Math.floor(secondsLeft/60);
+  const s = String(secondsLeft%60).padStart(2,'0');
+  btn.querySelector('span').textContent = `بانتظار خصم... ${m}:${s} (اضغط للإلغاء)`;
+  btn.querySelector('i').className = 'fas fa-xmark';
+}
+
+function resetRandomMatchBtnUI(){
+  const btn = document.getElementById('random-match-btn');
+  if (!btn) return;
+  btn.classList.remove('waiting');
+  btn.querySelector('span').textContent = 'لعب عشوائي';
+  btn.querySelector('i').className = 'fas fa-shuffle';
+}
+
+// تُستدعى محلياً فقط (بدون لمس القاعدة) عند بدء مباراة فعلاً أثناء الانتظار
+function stopRandomMatchWaitingLocalOnly(){
+  if (randomMatchCountdownInterval){ clearInterval(randomMatchCountdownInterval); randomMatchCountdownInterval = null; }
+  randomMatchWaiting = false;
+  try{ db.ref('matchmaking/waitingPlayer').onDisconnect().cancel(); }catch(e){}
+  resetRandomMatchBtnUI();
+}
+
+async function cancelRandomMatch(timedOut){
+  stopRandomMatchWaitingLocalOnly();
+  try{
+    await db.ref('matchmaking/waitingPlayer').transaction(current=> (current && current.uid===currentUserId) ? null : current);
+  }catch(e){}
+  if (timedOut) showToast('لم يتم إيجاد خصم خلال دقيقتين، اضغط الزر لإعادة المحاولة','error');
+}
+
 // ---------- بطاقة التحدي الجميلة (تُستخدم لرابط الدعوة ولدعوات الأصدقاء) ----------
 let challengeQueue = [];
 let challengeShowing = false;
@@ -2044,6 +2161,7 @@ db.ref('activeGameFor/'+currentUserId).on('value', snap=>{
   if (gid === currentGameId) return;
   if (currentGameId){ db.ref('games/'+currentGameId).off(); db.ref('games/'+currentGameId+'/chat').off(); }
   teardownVoiceChat();
+  if (gid && randomMatchWaiting) stopRandomMatchWaitingLocalOnly();
   currentGameId = gid;
   if (gid){
     db.ref('games/'+gid).on('value', s=>{ currentGame = s.val(); renderGameMatchUI(); });
@@ -2219,6 +2337,7 @@ async function setupVoiceChat(gid, role){
     remoteAudio.srcObject = ev.streams[0];
     remoteAudio.muted = !speakerOn;
     remoteAudio.play().catch(()=>{});
+    setupRemoteAudioAnalyser(ev.streams[0]);
   };
 
   const myKey = role;
@@ -2231,7 +2350,7 @@ async function setupVoiceChat(gid, role){
   };
   pc.onconnectionstatechange = ()=>{
     if (voicePC !== pc) return;
-    if (pc.connectionState === 'connected') updateVoiceUI('متصل صوتياً بخصمك 🎧');
+    if (pc.connectionState === 'connected') updateVoiceUI('');
     else if (pc.connectionState === 'connecting') updateVoiceUI('جاري الاتصال...');
     else if (['disconnected','failed','closed'].includes(pc.connectionState)) updateVoiceUI('انقطع الاتصال الصوتي');
   };
@@ -2287,11 +2406,50 @@ function teardownVoiceChat(){
   voiceGameId = null;
   micOn = false;
   speakerOn = true;
+  teardownRemoteAudioAnalyser();
   const remoteAudio = document.getElementById('remote-voice-audio');
   if (remoteAudio) remoteAudio.srcObject = null;
   const micBtn = document.getElementById('voice-mic-btn');
   if (micBtn) micBtn.disabled = false;
   updateVoiceUI('');
+}
+
+// ---------- كشف التحدّث للطرف الآخر (لإظهار موجات حول زر السماعة) ----------
+let voiceAudioCtx = null;
+let voiceAnalyser = null;
+let voiceSpeakingRAF = null;
+function setupRemoteAudioAnalyser(stream){
+  teardownRemoteAudioAnalyser();
+  try{
+    voiceAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const source = voiceAudioCtx.createMediaStreamSource(stream);
+    voiceAnalyser = voiceAudioCtx.createAnalyser();
+    voiceAnalyser.fftSize = 512;
+    source.connect(voiceAnalyser);
+    const data = new Uint8Array(voiceAnalyser.frequencyBinCount);
+    const speakerBtn = document.getElementById('voice-speaker-btn');
+    let speakingNow = false;
+    const loop = ()=>{
+      if (!voiceAnalyser) return;
+      voiceAnalyser.getByteFrequencyData(data);
+      let sum = 0;
+      for (let i=0;i<data.length;i++) sum += data[i];
+      const shouldSpeak = (sum/data.length) > 12;
+      if (shouldSpeak !== speakingNow){
+        speakingNow = shouldSpeak;
+        if (speakerBtn) speakerBtn.classList.toggle('speaking', speakingNow);
+      }
+      voiceSpeakingRAF = requestAnimationFrame(loop);
+    };
+    loop();
+  }catch(e){}
+}
+function teardownRemoteAudioAnalyser(){
+  if (voiceSpeakingRAF){ cancelAnimationFrame(voiceSpeakingRAF); voiceSpeakingRAF = null; }
+  if (voiceAudioCtx){ try{ voiceAudioCtx.close(); }catch(e){} voiceAudioCtx = null; }
+  voiceAnalyser = null;
+  const speakerBtn = document.getElementById('voice-speaker-btn');
+  if (speakerBtn) speakerBtn.classList.remove('speaking');
 }
 
 function toggleMic(){

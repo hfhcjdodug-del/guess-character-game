@@ -217,17 +217,18 @@ textarea,input,select{font-family:inherit;}
 }
 
 /* ---------- الدردشة الصوتية أثناء المباراة ---------- */
-.voice-bar{display:flex;gap:10px;margin:14px 0 6px;}
-.voice-btn{
-  flex:1;display:flex;align-items:center;justify-content:center;gap:8px;
+.reveal-row{display:flex;align-items:center;gap:10px;}
+.reveal-btn-small{flex:1;padding:11px 14px;font-size:12.5px;}
+.voice-circle-btn{
+  width:42px;height:42px;border-radius:50%;flex-shrink:0;
   background:var(--surface-2);border:1px solid var(--border);color:var(--ink-soft);
-  border-radius:12px;padding:11px;font-size:12.5px;font-weight:700;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;
   transition:background .15s ease,color .15s ease,border-color .15s ease,transform .1s ease;
 }
-.voice-btn:active{transform:scale(0.97);}
-.voice-btn.active{background:var(--glow);color:#0c0c14;border-color:var(--glow);}
-.voice-btn:disabled{opacity:.5;cursor:default;}
-.voice-status{font-size:11.5px;color:var(--ink-muted);text-align:center;margin-bottom:12px;min-height:14px;}
+.voice-circle-btn:active{transform:scale(0.92);}
+.voice-circle-btn.active{background:var(--glow);color:#0c0c14;border-color:var(--glow);}
+.voice-circle-btn:disabled{opacity:.5;cursor:default;}
+.voice-status{font-size:11.5px;color:var(--ink-muted);text-align:center;margin:8px 0 4px;min-height:14px;}
 
 /* ---------- منتقي لون الواجهة الشخصي ---------- */
 .color-picker-wrap{position:relative;}
@@ -969,27 +970,27 @@ textarea,input,select{font-family:inherit;}
       <div id="game-match" style="display:none;">
         <div class="vs-row">
           <div class="vs-card">
-            <div class="vs-label">صورتك (سرّية عنك، اسأل خصمك ليساعدك)</div>
+            <div class="vs-label">الشخصية التي في يدي</div>
             <div class="vs-secret"><i class="fas fa-question"></i></div>
           </div>
           <div class="vs-divider">VS</div>
           <div class="vs-card">
-            <div class="vs-label">الصورة التي يجب أن تساعد خصمك على تخمينها</div>
+            <div class="vs-label">الشخصية التي في يد خصمك</div>
             <img class="vs-img" id="opponent-visible-img" src="">
           </div>
         </div>
 
-        <div class="voice-bar">
-          <button class="voice-btn" id="voice-mic-btn" onclick="toggleMic()"><i class="fas fa-microphone-slash"></i> المايك مغلق</button>
-          <button class="voice-btn active" id="voice-speaker-btn" onclick="toggleSpeaker()"><i class="fas fa-volume-high"></i> السماعة مفتوحة</button>
-        </div>
-        <div class="voice-status" id="voice-status-label"></div>
         <audio id="remote-voice-audio" autoplay style="display:none;"></audio>
 
         <div class="guess-box">
-          <button class="btn btn-glow" style="width:100%;" id="reveal-request-btn" onclick="requestMutualReveal()">
-            <i class="fas fa-eye"></i> إظهار الشخصية للخصم
-          </button>
+          <div class="reveal-row">
+            <button class="btn btn-glow reveal-btn-small" id="reveal-request-btn" onclick="requestMutualReveal()">
+              <i class="fas fa-eye"></i> طلب رؤية الشخصيات
+            </button>
+            <button class="voice-circle-btn" id="voice-mic-btn" onclick="toggleMic()" title="المايك"><i class="fas fa-microphone-slash"></i></button>
+            <button class="voice-circle-btn active" id="voice-speaker-btn" onclick="toggleSpeaker()" title="السماعة"><i class="fas fa-volume-high"></i></button>
+          </div>
+          <div class="voice-status" id="voice-status-label"></div>
 
           <div id="reveal-request-box" style="display:none;"></div>
 
@@ -2182,9 +2183,11 @@ function updateVoiceUI(statusText){
   const statusEl = document.getElementById('voice-status-label');
   if (!micBtn || !speakerBtn) return;
   micBtn.classList.toggle('active', micOn);
-  micBtn.innerHTML = micOn ? '<i class="fas fa-microphone"></i> المايك مفتوح' : '<i class="fas fa-microphone-slash"></i> المايك مغلق';
+  micBtn.innerHTML = micOn ? '<i class="fas fa-microphone"></i>' : '<i class="fas fa-microphone-slash"></i>';
+  micBtn.title = micOn ? 'المايك مفتوح' : 'المايك مغلق';
   speakerBtn.classList.toggle('active', speakerOn);
-  speakerBtn.innerHTML = speakerOn ? '<i class="fas fa-volume-high"></i> السماعة مفتوحة' : '<i class="fas fa-volume-xmark"></i> السماعة مغلقة';
+  speakerBtn.innerHTML = speakerOn ? '<i class="fas fa-volume-high"></i>' : '<i class="fas fa-volume-xmark"></i>';
+  speakerBtn.title = speakerOn ? 'السماعة مفتوحة' : 'السماعة مغلقة';
   if (statusEl && statusText !== undefined) statusEl.textContent = statusText;
 }
 

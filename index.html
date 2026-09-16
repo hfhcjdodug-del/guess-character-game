@@ -26,10 +26,10 @@
   --ink:#efe9de;
   --ink-soft:#c9c2d6;
   --ink-muted:#8d8299;
-  --glow:#7bd9a5;
-  --glow-2:#4fae80;
-  --violet:#8fe3c0;
-  --violet-dim:#4a9070;
+  --glow:#6ab7f0;
+  --glow-2:#4a95d6;
+  --violet:#7dd3fc;
+  --violet-dim:#4a90b8;
   --danger:#e2657a;
   --shadow-deep:0 20px 60px rgba(0,0,0,0.55);
 }
@@ -43,10 +43,10 @@
   --ink:#2a2118;
   --ink-soft:#4c4033;
   --ink-muted:#8a7c66;
-  --glow:#2e9c6b;
-  --glow-2:#237a54;
-  --violet:#4a9070;
-  --violet-dim:#8fe3c0;
+  --glow:#2f7fb8;
+  --glow-2:#256394;
+  --violet:#4a90b8;
+  --violet-dim:#7dd3fc;
   --danger:#c14a5d;
   --shadow-deep:0 16px 40px rgba(90,70,40,0.14);
 }
@@ -240,30 +240,89 @@ textarea,input,select{font-family:inherit;}
 }
 .voice-status{font-size:11.5px;color:var(--ink-muted);text-align:center;margin:8px 0 4px;min-height:14px;}
 
-/* ---------- منتقي لون الواجهة الشخصي ---------- */
-.color-picker-wrap{position:relative;}
-.color-picker-pop{
-  position:absolute;top:calc(100% + 10px);left:0;z-index:120;
-  background:var(--surface);border:1px solid var(--border);border-radius:16px;
-  padding:14px;box-shadow:var(--shadow-deep);width:212px;
-  opacity:0;visibility:hidden;transform:translateY(-6px);
-  transition:opacity .18s ease,transform .18s ease,visibility .18s ease;
+/* ---------- صف الوصول السريع داخل نافذة الأصدقاء ---------- */
+.friends-hub-row{display:flex;gap:10px;}
+.friends-hub-btn{
+  flex:1;position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;
+  background:var(--surface-2);border:1px solid var(--border);border-radius:14px;
+  padding:12px 6px;cursor:pointer;color:var(--ink-soft);font-family:inherit;
+  transition:transform .12s ease,border-color .15s ease;
 }
-.color-picker-pop.show{opacity:1;visibility:visible;transform:translateY(0);}
-.cp-title{font-size:12px;color:var(--ink-muted);margin-bottom:12px;font-weight:700;text-align:center;}
-.cp-swatches{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+.friends-hub-btn:active{transform:scale(0.95);}
+.friends-hub-btn i{font-size:18px;color:var(--glow);}
+.friends-hub-btn span{font-size:11.5px;font-weight:700;}
+
+/* ---------- الشريط السفلي ---------- */
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;z-index:150;
+  display:flex;background:var(--surface);border-top:1px solid var(--border);
+  padding:8px 10px calc(8px + env(safe-area-inset-bottom));
+  box-shadow:0 -8px 30px rgba(0,0,0,0.25);
+}
+.bn-btn{
+  flex:1;position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;
+  background:none;border:none;color:var(--ink-muted);font-family:inherit;cursor:pointer;
+  padding:6px 4px;border-radius:12px;transition:color .15s ease,background .15s ease;
+}
+.bn-btn i{font-size:19px;}
+.bn-btn span{font-size:11px;font-weight:700;}
+.bn-btn.active{color:var(--glow);background:var(--surface-2);}
+.bn-btn .badge-dot{top:0;left:calc(50% + 8px);}
+
+/* ---------- نافذة الإعدادات ---------- */
+.settings-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 4px;border-bottom:1px solid var(--border);}
+.settings-row:last-of-type{border-bottom:none;}
+.settings-row-label{display:flex;align-items:center;gap:10px;font-size:13.5px;font-weight:700;}
+.settings-row-label i{color:var(--glow);width:18px;text-align:center;}
+.settings-toggle-btn{
+  width:38px;height:38px;border-radius:50%;background:var(--surface-2);border:1px solid var(--border);
+  color:var(--ink-soft);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;
+  transition:background .15s ease,color .15s ease,border-color .15s ease;
+}
+.settings-toggle-btn.active{background:var(--glow);color:#0c0c14;border-color:var(--glow);}
+#settings-music-volume{width:130px;accent-color:var(--glow);}
+
+/* ---------- منتقي لون الواجهة الشخصي ---------- */
+.color-picker-wrap{position:relative;display:inline-block;}
+#color-picker-pop{
+  position:absolute;bottom:calc(100% + 10px);right:0;
+  background:var(--surface);border:1px solid var(--border);border-radius:16px;
+  padding:12px;box-shadow:var(--shadow-deep);display:flex;gap:10px;flex-wrap:wrap;width:190px;
+  opacity:0;visibility:hidden;transform:scale(0.9);transform-origin:bottom right;
+  transition:opacity .18s ease,transform .18s ease,visibility .18s ease;z-index:50;
+}
+#color-picker-pop.show{opacity:1;visibility:visible;transform:scale(1);}
 .cp-swatch{
-  width:34px;height:34px;border-radius:50%;border:2px solid var(--border);cursor:pointer;
-  background:var(--sw);transition:transform .12s ease,border-color .12s ease;position:relative;flex-shrink:0;
+  width:32px;height:32px;border-radius:50%;cursor:pointer;border:2px solid transparent;
+  display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;
+  transition:transform .12s ease,border-color .15s ease;
 }
 .cp-swatch:active{transform:scale(0.88);}
 .cp-swatch.active{border-color:var(--ink);}
-.cp-swatch.active::after{
-  content:'\f00c';font-family:'Font Awesome 6 Free';font-weight:900;font-size:11px;
-  color:#fff;position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  text-shadow:0 1px 3px rgba(0,0,0,.5);
-}
+.cp-swatch i{display:none;}
+.cp-swatch.active i{display:block;}
 
+/* ---------- إشعار دعوة التحدي (بطاقة صغيرة تنزلق من اليمين) ---------- */
+.challenge-toast{
+  position:fixed;top:calc(14px + env(safe-area-inset-top));right:14px;z-index:700;
+  max-width:280px;background:var(--surface);border:1px solid var(--border);border-radius:16px;
+  padding:12px;box-shadow:var(--shadow-deep);display:flex;align-items:center;gap:10px;
+  transform:translateX(130%);opacity:0;
+  transition:transform .45s cubic-bezier(.2,.8,.2,1),opacity .3s ease;
+}
+.challenge-toast.show{transform:translateX(0);opacity:1;}
+.challenge-toast-avatar{width:44px;height:44px;border-radius:50%;overflow:hidden;flex-shrink:0;background:var(--surface-2);display:flex;align-items:center;justify-content:center;}
+.challenge-toast-avatar img{width:100%;height:100%;object-fit:cover;}
+.challenge-toast-body{flex:1;min-width:0;}
+.challenge-toast-name{font-size:12.5px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.challenge-toast-sub{font-size:11px;color:var(--ink-muted);}
+.challenge-toast-actions{display:flex;flex-direction:column;gap:5px;}
+.challenge-toast-btn{
+  width:28px;height:28px;border-radius:50%;border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;
+}
+.challenge-toast-btn.accept{background:var(--glow);color:#0c0c14;}
+.challenge-toast-btn.decline{background:var(--surface-2);color:var(--ink-muted);border:1px solid var(--border);}
 /* ---------- feed ---------- */
 #feed-wrap{max-width:680px;margin:0 auto;padding:6px clamp(16px,5vw,24px) calc(150px + env(safe-area-inset-bottom));}
 
@@ -743,8 +802,8 @@ textarea,input,select{font-family:inherit;}
 
 <header id="topbar">
   <div class="wordmark">
-    <span class="glyph">خمّن الشخصية</span>
-    <span class="tag">لعبة تخمين الصور مع الأصدقاء</span>
+    <span class="glyph" id="app-title-text">خمّن الشخصية</span>
+    <span class="tag" id="app-tagline-text">لعبة تخمين الصور مع الأصدقاء</span>
   </div>
   <div class="top-actions">
     <div class="visitor-counter" title="عدد زوار الموقع">
@@ -755,32 +814,6 @@ textarea,input,select{font-family:inherit;}
       <span id="follow-label">متابعة</span>
       <span id="follow-count">200</span>
     </button>
-    <div class="color-picker-wrap">
-      <button class="icon-btn" id="color-picker-toggle" onclick="toggleColorPicker(event)" title="تغيير اللون"><i class="fas fa-palette"></i></button>
-      <div class="color-picker-pop" id="color-picker-pop">
-        <div class="cp-title">تغيير اللون</div>
-        <div class="cp-swatches">
-          <button class="cp-swatch" data-theme="green" style="--sw:#7bd9a5" onclick="choosePersonalTheme('green')" title="نعناعي (افتراضي)"></button>
-          <button class="cp-swatch" data-theme="red" style="--sw:#f07a6a" onclick="choosePersonalTheme('red')" title="أحمر"></button>
-          <button class="cp-swatch" data-theme="pink" style="--sw:#f0a0c8" onclick="choosePersonalTheme('pink')" title="وردي"></button>
-          <button class="cp-swatch" data-theme="purple" style="--sw:#b89af0" onclick="choosePersonalTheme('purple')" title="بنفسجي"></button>
-          <button class="cp-swatch" data-theme="blue" style="--sw:#6ab7f0" onclick="choosePersonalTheme('blue')" title="أزرق"></button>
-        </div>
-      </div>
-    </div>
-    <button class="icon-btn" id="theme-toggle" onclick="toggleTheme()" title="الوضع الليلي/النهاري"><i class="fas fa-moon"></i></button>
-    <button class="icon-btn" id="blocked-list-btn" onclick="openBlockedOverlay()" title="المحظورون">
-      <i class="fas fa-user-slash"></i>
-      <span class="badge-dot" id="blocked-count-badge" style="display:none;">0</span>
-    </button>
-    <button class="icon-btn" id="friends-btn" onclick="openFriendsOverlay()" title="الأصدقاء">
-      <i class="fas fa-users"></i>
-    </button>
-    <button class="icon-btn" id="friend-requests-btn" onclick="openFriendRequestsOverlay()" title="طلبات الصداقة">
-      <i class="fas fa-user-clock"></i>
-      <span class="badge-dot" id="friend-requests-badge" style="display:none;">0</span>
-    </button>
-    <button class="icon-btn" onclick="openMyProfile()" title="ملفي الشخصي"><i class="fas fa-user"></i></button>
   </div>
 </header>
 
@@ -809,16 +842,72 @@ textarea,input,select{font-family:inherit;}
 <div class="home-tiles" id="home-tiles">
   <button class="home-tile home-tile-play" onclick="openGameOverlay()">
     <i class="fas fa-gamepad"></i>
-    <span>ابدأ اللعب</span>
+    <span id="txt-tile-play">ابدأ اللعب</span>
   </button>
-  <button class="home-tile home-tile-search" onclick="focusHomeSearch()">
-    <i class="fas fa-magnifying-glass"></i>
-    <span>بحث عن صديق</span>
-  </button>
-  <button class="home-tile home-tile-random" id="random-match-btn" onclick="toggleRandomMatch()">
+  <button class="home-tile home-tile-random" id="random-match-btn" onclick="toggleRandomMatch()" style="grid-column:1/-1;">
     <i class="fas fa-shuffle"></i>
-    <span>لعب عشوائي</span>
+    <span id="txt-tile-random">لعب عشوائي</span>
   </button>
+</div>
+
+<!-- الشريط السفلي -->
+<nav class="bottom-nav">
+  <button class="bn-btn active" id="bn-home-btn" onclick="goHomeTab()">
+    <i class="fas fa-house"></i><span id="txt-bn-home">الرئيسية</span>
+  </button>
+  <button class="bn-btn" id="bn-friends-btn" onclick="openFriendsOverlay()">
+    <i class="fas fa-users"></i><span id="txt-bn-friends">الأصدقاء</span>
+    <span class="badge-dot" id="bn-friends-badge" style="display:none;">0</span>
+  </button>
+  <button class="bn-btn" id="bn-settings-btn" onclick="openSettingsOverlay()">
+    <i class="fas fa-gear"></i><span id="txt-bn-settings">الإعدادات</span>
+  </button>
+</nav>
+
+<!-- Modal: الإعدادات -->
+<div class="overlay" id="settings-overlay">
+  <div class="sheet" style="max-width:480px;">
+    <div class="sheet-head">
+      <h3><i class="fas fa-gear" style="color:var(--glow);"></i> الإعدادات</h3>
+      <button class="icon-btn" onclick="closeSettingsOverlay()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="sheet-body">
+      <div class="settings-row">
+        <div class="settings-row-label"><i class="fas fa-user"></i> الملف الشخصي</div>
+        <button class="settings-toggle-btn" onclick="closeSettingsOverlay();openMyProfile();" title="تعديل الملف الشخصي"><i class="fas fa-chevron-left"></i></button>
+      </div>
+      <div class="settings-row">
+        <div class="settings-row-label"><i class="fas fa-moon"></i> الوضع الليلي/النهاري</div>
+        <button class="settings-toggle-btn" id="settings-theme-toggle" onclick="toggleTheme()"><i class="fas fa-moon"></i></button>
+      </div>
+      <div class="settings-row">
+        <div class="settings-row-label"><i class="fas fa-palette"></i> لون الواجهة</div>
+        <div class="color-picker-wrap">
+          <button class="settings-toggle-btn" onclick="toggleColorPicker(event)"><i class="fas fa-palette"></i></button>
+          <div id="color-picker-pop">
+            <button class="cp-swatch" data-theme="blue" style="background:#6ab7f0" onclick="choosePersonalTheme('blue')" title="أزرق"><i class="fas fa-check"></i></button>
+            <button class="cp-swatch" data-theme="green" style="background:#7bd9a5" onclick="choosePersonalTheme('green')" title="أخضر"><i class="fas fa-check"></i></button>
+            <button class="cp-swatch" data-theme="orange" style="background:#f0b06c" onclick="choosePersonalTheme('orange')" title="برتقالي"><i class="fas fa-check"></i></button>
+            <button class="cp-swatch" data-theme="pink" style="background:#f0a0c8" onclick="choosePersonalTheme('pink')" title="وردي"><i class="fas fa-check"></i></button>
+            <button class="cp-swatch" data-theme="red" style="background:#f07a6a" onclick="choosePersonalTheme('red')" title="أحمر"><i class="fas fa-check"></i></button>
+            <button class="cp-swatch" data-theme="purple" style="background:#b89af0" onclick="choosePersonalTheme('purple')" title="بنفسجي"><i class="fas fa-check"></i></button>
+          </div>
+        </div>
+      </div>
+      <div class="settings-row">
+        <div class="settings-row-label"><i class="fas fa-music"></i> موسيقى اللعبة</div>
+        <button class="settings-toggle-btn active" id="settings-music-toggle" onclick="toggleBgMusic()"><i class="fas fa-volume-high"></i></button>
+      </div>
+      <div class="settings-row">
+        <div class="settings-row-label"><i class="fas fa-sliders"></i> مستوى صوت الموسيقى</div>
+        <input type="range" id="settings-music-volume" min="0" max="100" value="40" oninput="setBgMusicVolume(this.value)">
+      </div>
+      <div class="settings-row">
+        <div class="settings-row-label"><i class="fas fa-bell"></i> أصوات الأزرار</div>
+        <button class="settings-toggle-btn active" id="settings-sfx-toggle" onclick="toggleSfx()"><i class="fas fa-volume-high"></i></button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- Modal: الملف الشخصي لصاحب المنصة -->
@@ -929,6 +1018,20 @@ textarea,input,select{font-family:inherit;}
       <button class="icon-btn" onclick="closeFriendsOverlay()"><i class="fas fa-xmark"></i></button>
     </div>
     <div class="sheet-body">
+      <div class="friends-hub-row">
+        <button class="friends-hub-btn" onclick="closeFriendsOverlay();focusHomeSearch()">
+          <i class="fas fa-magnifying-glass"></i><span>بحث</span>
+        </button>
+        <button class="friends-hub-btn" onclick="closeFriendsOverlay();openFriendRequestsOverlay()">
+          <i class="fas fa-user-clock"></i><span>الطلبات</span>
+          <span class="badge-dot" id="friend-requests-badge" style="display:none;">0</span>
+        </button>
+        <button class="friends-hub-btn" onclick="closeFriendsOverlay();openBlockedOverlay()">
+          <i class="fas fa-user-slash"></i><span>المحظورون</span>
+          <span class="badge-dot" id="blocked-count-badge" style="display:none;">0</span>
+        </button>
+      </div>
+      <div class="section-title" style="margin-top:18px;"><i class="fas fa-user-group"></i> قائمة أصدقائك</div>
       <div id="friends-list"><div class="empty-note">لا يوجد أصدقاء بعد</div></div>
     </div>
   </div>
@@ -992,12 +1095,12 @@ textarea,input,select{font-family:inherit;}
       <div id="game-match" style="display:none;">
         <div class="vs-row">
           <div class="vs-card">
-            <div class="vs-label">الشخصية التي في يدي</div>
+            <div class="vs-label" id="txt-vs-mine">الشخصية التي في يدي</div>
             <div class="vs-secret"><i class="fas fa-question"></i></div>
           </div>
           <div class="vs-divider">VS</div>
           <div class="vs-card">
-            <div class="vs-label">الشخصية التي في يد خصمك</div>
+            <div class="vs-label" id="txt-vs-opponent">الشخصية التي في يد خصمك</div>
             <img class="vs-img" id="opponent-visible-img" src="">
           </div>
         </div>
@@ -1007,7 +1110,7 @@ textarea,input,select{font-family:inherit;}
         <div class="guess-box">
           <div class="reveal-row">
             <button class="btn btn-glow reveal-btn-small" id="reveal-request-btn" onclick="requestMutualReveal()">
-              <i class="fas fa-eye"></i> طلب رؤية الشخصيات
+              <i class="fas fa-eye"></i> <span id="txt-reveal-btn">طلب رؤية الشخصيات</span>
             </button>
             <button class="voice-circle-btn" id="voice-mic-btn" onclick="toggleMic()" title="المايك"><i class="fas fa-microphone-slash"></i></button>
             <button class="voice-circle-btn active" id="voice-speaker-btn" onclick="toggleSpeaker()" title="السماعة"><i class="fas fa-volume-high"></i></button>
@@ -1032,7 +1135,7 @@ textarea,input,select{font-family:inherit;}
         </div>
 
         <div class="game-actions-row">
-          <button class="btn btn-danger" onclick="leaveGame()"><i class="fas fa-right-from-bracket"></i> الخروج من المنافسة</button>
+          <button class="btn btn-danger" onclick="leaveGame()"><i class="fas fa-right-from-bracket"></i> <span id="txt-leave-btn">الخروج من المنافسة</span></button>
         </div>
       </div>
 
@@ -1048,23 +1151,15 @@ textarea,input,select{font-family:inherit;}
 </div>
 
 <!-- Modal: تأكيد قبول رابط التحدي -->
-<div class="overlay" id="challenge-confirm-overlay">
-  <div class="sheet" style="max-width:420px;">
-    <div class="sheet-head">
-      <h3><i class="fas fa-gamepad" style="color:var(--glow);"></i> دعوة تحدٍ</h3>
-      <button class="icon-btn" onclick="declineIncomingChallenge()"><i class="fas fa-xmark"></i></button>
-    </div>
-    <div class="sheet-body" style="text-align:center;">
-      <div id="challenge-avatar" style="width:74px;height:74px;border-radius:50%;overflow:hidden;background:var(--surface-2);margin:6px auto 16px;display:flex;align-items:center;justify-content:center;">
-        <i class="fas fa-user" style="font-size:28px;color:var(--ink-muted);"></i>
-      </div>
-      <div style="font-size:15.5px;font-weight:800;margin-bottom:8px;" id="challenge-msg">شخص ما يتحداك في لعبة خمّن الشخصية!</div>
-      <div style="font-size:13px;color:var(--ink-muted);margin-bottom:20px;">هل توافق على خوض التحدي؟</div>
-      <div class="game-actions-row">
-        <button class="btn btn-glow" style="flex:1;" onclick="acceptIncomingChallenge()"><i class="fas fa-check"></i> نعم، ابدأ اللعب</button>
-        <button class="btn btn-secondary" style="flex:1;" onclick="declineIncomingChallenge()"><i class="fas fa-xmark"></i> لا، شكراً</button>
-      </div>
-    </div>
+<div class="challenge-toast" id="challenge-toast">
+  <div class="challenge-toast-avatar" id="challenge-toast-avatar"><i class="fas fa-user" style="color:var(--ink-muted);"></i></div>
+  <div class="challenge-toast-body">
+    <div class="challenge-toast-name" id="challenge-toast-name">شخص ما</div>
+    <div class="challenge-toast-sub">يتحداك في اللعبة!</div>
+  </div>
+  <div class="challenge-toast-actions">
+    <button class="challenge-toast-btn accept" onclick="acceptIncomingChallenge()" title="قبول"><i class="fas fa-check"></i></button>
+    <button class="challenge-toast-btn decline" onclick="declineIncomingChallenge()" title="رفض"><i class="fas fa-xmark"></i></button>
   </div>
 </div>
 
@@ -1152,7 +1247,7 @@ function applyThemePreset(key){
 
 /* اللون الافتراضي للمنصة هو النعناعي؛ ويمكن لكل زائر اختيار لونه الخاص
    من زر "تغيير اللون"، ويُحفظ اختياره على جهازه فقط دون التأثير على باقي الزوار. */
-const DEFAULT_APP_THEME = 'green';
+const DEFAULT_APP_THEME = 'blue';
 const PERSONAL_THEME_KEY = 'personal_theme_choice';
 let currentEffectiveTheme = DEFAULT_APP_THEME;
 function getPersonalTheme(){ return localStorage.getItem(PERSONAL_THEME_KEY); }
@@ -1161,6 +1256,98 @@ applyThemePreset(getPersonalTheme() || DEFAULT_APP_THEME);
 db.ref('settings/appTheme').on('value', snap=>{
   if (getPersonalTheme()) return; // اختيار المستخدم الشخصي له الأولوية دائماً
   applyThemePreset(snap.val() || DEFAULT_APP_THEME);
+});
+
+// ---------- الأصوات وموسيقى اللعبة (يضبطها الأدمن من لوحة التحكم) ----------
+let soundsCache = {};
+let bgMusicUrl = '';
+let bgMusicMuted = (localStorage.getItem('bg_music_muted') === 'true');
+let bgMusicVolume = parseFloat(localStorage.getItem('bg_music_volume') || '0.4');
+let sfxMuted = (localStorage.getItem('sfx_muted') === 'true');
+const bgMusicEl = new Audio();
+bgMusicEl.loop = true;
+bgMusicEl.volume = bgMusicVolume;
+
+db.ref('settings/sounds').on('value', snap=>{ soundsCache = snap.val() || {}; });
+db.ref('settings/appConfig/bgMusicUrl').on('value', snap=>{
+  bgMusicUrl = snap.val() || '';
+  if (bgMusicUrl){
+    if (bgMusicEl.src !== bgMusicUrl) bgMusicEl.src = bgMusicUrl;
+    tryPlayBgMusic();
+  } else {
+    bgMusicEl.pause();
+  }
+});
+function tryPlayBgMusic(){
+  if (!bgMusicUrl || bgMusicMuted) return;
+  bgMusicEl.play().catch(()=>{
+    const resume = ()=>{ bgMusicEl.play().catch(()=>{}); };
+    document.addEventListener('click', resume, { once:true });
+  });
+}
+function toggleBgMusic(){
+  bgMusicMuted = !bgMusicMuted;
+  localStorage.setItem('bg_music_muted', bgMusicMuted);
+  const btn = document.getElementById('settings-music-toggle');
+  if (btn){
+    btn.classList.toggle('active', !bgMusicMuted);
+    btn.innerHTML = bgMusicMuted ? '<i class="fas fa-volume-xmark"></i>' : '<i class="fas fa-volume-high"></i>';
+  }
+  if (bgMusicMuted) bgMusicEl.pause(); else tryPlayBgMusic();
+}
+function setBgMusicVolume(val){
+  bgMusicVolume = Math.max(0, Math.min(100, Number(val))) / 100;
+  bgMusicEl.volume = bgMusicVolume;
+  localStorage.setItem('bg_music_volume', bgMusicVolume);
+}
+function toggleSfx(){
+  sfxMuted = !sfxMuted;
+  localStorage.setItem('sfx_muted', sfxMuted);
+  const btn = document.getElementById('settings-sfx-toggle');
+  if (btn){
+    btn.classList.toggle('active', !sfxMuted);
+    btn.innerHTML = sfxMuted ? '<i class="fas fa-volume-xmark"></i>' : '<i class="fas fa-volume-high"></i>';
+  }
+}
+const sfxPool = {};
+function playSound(key){
+  if (sfxMuted) return;
+  const src = soundsCache[key];
+  if (!src) return;
+  try{
+    let a = sfxPool[key];
+    if (!a){ a = new Audio(src); sfxPool[key] = a; }
+    a.currentTime = 0;
+    a.volume = 0.6;
+    a.play().catch(()=>{});
+  }catch(e){}
+}
+// صوت نقر عام يشمل تقريباً كل الأزرار (يضبطه الأدمن عبر المفتاح 'click')
+document.addEventListener('click', (e)=>{
+  const el = e.target.closest('button, .home-tile, .bn-btn, .voice-circle-btn, .icon-btn, .mini-btn, .friends-hub-btn, .cp-swatch');
+  if (el) playSound('click');
+}, true);
+
+// ---------- تعديل نصوص الواجهة من لوحة التحكم ----------
+const TEXT_KEYS = {
+  'app-title-text': 'خمّن الشخصية',
+  'app-tagline-text': 'لعبة تخمين الصور مع الأصدقاء',
+  'txt-tile-play': 'ابدأ اللعب',
+  'txt-tile-random': 'لعب عشوائي',
+  'txt-bn-home': 'الرئيسية',
+  'txt-bn-friends': 'الأصدقاء',
+  'txt-bn-settings': 'الإعدادات',
+  'txt-vs-mine': 'الشخصية التي في يدي',
+  'txt-vs-opponent': 'الشخصية التي في يد خصمك',
+  'txt-reveal-btn': 'طلب رؤية الشخصيات',
+  'txt-leave-btn': 'الخروج من المنافسة'
+};
+db.ref('settings/textOverrides').on('value', snap=>{
+  const overrides = snap.val() || {};
+  Object.keys(TEXT_KEYS).forEach(elId=>{
+    const el = document.getElementById(elId);
+    if (el) el.textContent = overrides[elId] || TEXT_KEYS[elId];
+  });
 });
 
 function choosePersonalTheme(key){
@@ -1540,6 +1727,18 @@ function refreshMyProfileUI(){
   if (myProfile.avatarUrl){ img.src = myProfile.avatarUrl; img.style.display='block'; ph.style.display='none'; }
   else { img.style.display='none'; ph.style.display='block'; }
 }
+function setActiveBottomNav(which){
+  document.querySelectorAll('.bn-btn').forEach(b=>b.classList.remove('active'));
+  const map = {home:'bn-home-btn', friends:'bn-friends-btn', settings:'bn-settings-btn'};
+  const el = document.getElementById(map[which]);
+  if (el) el.classList.add('active');
+}
+function goHomeTab(){
+  document.getElementById('friends-overlay').classList.remove('show');
+  document.getElementById('settings-overlay').classList.remove('show');
+  setActiveBottomNav('home');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
 function openMyProfile(){
   refreshMyProfileUI();
   document.getElementById('my-profile-overlay').classList.add('show');
@@ -1555,15 +1754,30 @@ function closeFriendRequestsOverlay(){
 }
 function openFriendsOverlay(){
   document.getElementById('friends-overlay').classList.add('show');
+  setActiveBottomNav('friends');
 }
 function closeFriendsOverlay(){
   document.getElementById('friends-overlay').classList.remove('show');
+  setActiveBottomNav('home');
 }
 function openBlockedOverlay(){
   document.getElementById('blocked-overlay').classList.add('show');
 }
 function closeBlockedOverlay(){
   document.getElementById('blocked-overlay').classList.remove('show');
+}
+function openSettingsOverlay(){
+  document.getElementById('settings-overlay').classList.add('show');
+  setActiveBottomNav('settings');
+  const musicBtn = document.getElementById('settings-music-toggle');
+  if (musicBtn) musicBtn.classList.toggle('active', !bgMusicMuted);
+  const sfxBtn = document.getElementById('settings-sfx-toggle');
+  if (sfxBtn) sfxBtn.classList.toggle('active', !sfxMuted);
+  document.getElementById('settings-music-volume').value = Math.round(bgMusicVolume*100);
+}
+function closeSettingsOverlay(){
+  document.getElementById('settings-overlay').classList.remove('show');
+  setActiveBottomNav('home');
 }
 async function saveMyName(){
   const name = document.getElementById('my-name-input').value.trim();
@@ -1735,6 +1949,8 @@ db.ref('friendRequests/'+currentUserId).on('value', snap=>{
   const count = Object.keys(friendRequestsCache).length;
   const badge = document.getElementById('friend-requests-badge');
   if (badge){ badge.textContent = count; badge.style.display = count ? 'flex' : 'none'; }
+  const bnBadge = document.getElementById('bn-friends-badge');
+  if (bnBadge){ bnBadge.textContent = count; bnBadge.style.display = count ? 'flex' : 'none'; }
 });
 async function acceptFriendRequest(fromUid){
   try{
@@ -2013,6 +2229,7 @@ async function createRandomMatchWith(opponentUid){
     await db.ref('activeGameFor/'+opponentUid).set(gid);
     await db.ref('activeGameFor/'+currentUserId).set(gid);
     showToast('تم إيجاد خصم عشوائي! 🎉','success');
+    playSound('match_found');
   }catch(e){ showToast('تعذّر إنشاء المنافسة العشوائية','error'); }
 }
 
@@ -2072,6 +2289,7 @@ let challengeQueue = [];
 let challengeShowing = false;
 let challengeActive = null; // { onAccept, onDecline }
 
+let challengeAutoTimer = null;
 function enqueueChallengeCard(item){
   challengeQueue.push(item);
   processChallengeQueue();
@@ -2082,19 +2300,23 @@ function processChallengeQueue(){
   const item = challengeQueue.shift();
   challengeActive = item;
   renderChallengeConfirm(item.name, item.avatarUrl);
-  document.getElementById('challenge-confirm-overlay').classList.add('show');
+  document.getElementById('challenge-toast').classList.add('show');
+  playSound('challenge');
+  clearTimeout(challengeAutoTimer);
+  challengeAutoTimer = setTimeout(()=>{ closeChallengeCard(); }, 5000);
 }
 function renderChallengeConfirm(name, avatarUrl){
-  document.getElementById('challenge-msg').textContent = name + ' يتحداك في لعبة خمّن الشخصية!';
-  document.getElementById('challenge-avatar').innerHTML = avatarUrl
-    ? `<img src="${avatarUrl}" style="width:100%;height:100%;object-fit:cover;">`
-    : '<i class="fas fa-user" style="font-size:28px;color:var(--ink-muted);"></i>';
+  document.getElementById('challenge-toast-name').textContent = name;
+  document.getElementById('challenge-toast-avatar').innerHTML = avatarUrl
+    ? `<img src="${avatarUrl}">`
+    : '<i class="fas fa-user" style="color:var(--ink-muted);"></i>';
 }
 function closeChallengeCard(){
-  document.getElementById('challenge-confirm-overlay').classList.remove('show');
+  clearTimeout(challengeAutoTimer);
+  document.getElementById('challenge-toast').classList.remove('show');
   challengeActive = null;
   challengeShowing = false;
-  setTimeout(processChallengeQueue, 350);
+  setTimeout(processChallengeQueue, 400);
 }
 function acceptIncomingChallenge(){
   const item = challengeActive;
@@ -2279,6 +2501,7 @@ async function declareGameResult(result){
   if (!currentGameId) return;
   try{
     await db.ref('games/'+currentGameId).update({ status:'finished', winner: result==='win' ? currentUserId : null });
+    if (result==='win') playSound('win');
   }catch(e){ showToast('تعذّرت العملية','error'); }
 }
 /* =========================================================

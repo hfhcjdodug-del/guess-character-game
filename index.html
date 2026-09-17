@@ -590,6 +590,22 @@ textarea,input,select{font-family:inherit;}
 .reply-send:active{transform:scale(0.9);}
 
 .toast-wrap{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:400;display:flex;flex-direction:column;gap:8px;align-items:center;width:min(90vw,380px);}
+
+/* ---------- نافذة تأكيد مخصّصة (بديل عن confirm() الأصلي) ---------- */
+#game-confirm-overlay{
+  position:fixed;inset:0;z-index:800;display:flex;align-items:center;justify-content:center;padding:24px;
+  background:rgba(0,0,0,0.55);backdrop-filter:blur(3px);
+  opacity:0;visibility:hidden;transition:opacity .2s ease,visibility .2s ease;
+}
+#game-confirm-overlay.show{opacity:1;visibility:visible;}
+.game-confirm-card{
+  width:100%;max-width:340px;background:var(--surface);border:1px solid var(--border);
+  border-radius:18px;padding:22px 20px;text-align:center;box-shadow:var(--shadow-deep);
+}
+.game-confirm-icon{font-size:32px;color:var(--glow);margin-bottom:10px;}
+.game-confirm-msg{font-size:13.5px;line-height:1.9;color:var(--ink);margin-bottom:20px;}
+.game-confirm-actions{display:flex;gap:10px;}
+.game-confirm-actions button{flex:1;}
 .toast{background:var(--surface-3);border:1px solid var(--border);color:var(--ink);padding:11px 18px;border-radius:12px;font-size:12.5px;box-shadow:var(--shadow-deep);animation:toastIn .18s ease;text-align:center;}
 .toast.success{border-color:var(--glow);}
 .toast.error{border-color:var(--danger);}
@@ -740,6 +756,13 @@ textarea,input,select{font-family:inherit;}
 .vs-divider{display:flex;align-items:center;justify-content:center;font-weight:900;color:var(--glow);font-size:13px;}
 .guess-box{background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:12px;margin-top:6px;}
 .guess-box input{width:100%;margin-bottom:8px;}
+.vs-flip-wrap{width:100%;aspect-ratio:1/1;perspective:1000px;}
+.vs-flip-inner{position:relative;width:100%;height:100%;transition:transform .6s cubic-bezier(.4,.1,.2,1);transform-style:preserve-3d;}
+.vs-flip-wrap.flipped .vs-flip-inner{transform:rotateY(180deg);}
+.vs-flip-face{position:absolute;inset:0;backface-visibility:hidden;border-radius:10px;overflow:hidden;}
+.vs-flip-face.vs-flip-back{transform:rotateY(180deg);}
+.vs-flip-face .vs-secret,.vs-flip-face .vs-img{width:100%;height:100%;aspect-ratio:unset;}
+.opponent-peek-note{font-size:10.5px;color:var(--glow);margin-bottom:6px;display:flex;align-items:center;gap:4px;justify-content:center;}
 .reveal-panel{margin-top:10px;}
 .reveal-cards-row{display:flex;gap:12px;margin-bottom:10px;}
 .reveal-card{flex:1;text-align:center;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:10px;animation:revealPop .5s cubic-bezier(.25,.8,.35,1);}
@@ -799,6 +822,16 @@ textarea,input,select{font-family:inherit;}
 <div id="app-root">
 
 <div class="toast-wrap" id="toast-wrap"></div>
+<div id="game-confirm-overlay">
+  <div class="game-confirm-card">
+    <i class="fas fa-circle-question game-confirm-icon"></i>
+    <div class="game-confirm-msg" id="game-confirm-msg"></div>
+    <div class="game-confirm-actions">
+      <button class="btn btn-secondary" id="game-confirm-cancel"><i class="fas fa-xmark"></i> إلغاء</button>
+      <button class="btn btn-glow" id="game-confirm-ok"><i class="fas fa-check"></i> تأكيد</button>
+    </div>
+  </div>
+</div>
 
 <header id="topbar">
   <div class="wordmark">
@@ -859,6 +892,9 @@ textarea,input,select{font-family:inherit;}
     <i class="fas fa-users"></i><span id="txt-bn-friends">الأصدقاء</span>
     <span class="badge-dot" id="bn-friends-badge" style="display:none;">0</span>
   </button>
+  <button class="bn-btn" id="bn-profile-btn" onclick="openMyProfile()">
+    <i class="fas fa-user"></i><span id="txt-bn-profile">الملف الشخصي</span>
+  </button>
   <button class="bn-btn" id="bn-settings-btn" onclick="openSettingsOverlay()">
     <i class="fas fa-gear"></i><span id="txt-bn-settings">الإعدادات</span>
   </button>
@@ -872,10 +908,6 @@ textarea,input,select{font-family:inherit;}
       <button class="icon-btn" onclick="closeSettingsOverlay()"><i class="fas fa-xmark"></i></button>
     </div>
     <div class="sheet-body">
-      <div class="settings-row">
-        <div class="settings-row-label"><i class="fas fa-user"></i> الملف الشخصي</div>
-        <button class="settings-toggle-btn" onclick="closeSettingsOverlay();openMyProfile();" title="تعديل الملف الشخصي"><i class="fas fa-chevron-left"></i></button>
-      </div>
       <div class="settings-row">
         <div class="settings-row-label"><i class="fas fa-moon"></i> الوضع الليلي/النهاري</div>
         <button class="settings-toggle-btn" id="settings-theme-toggle" onclick="toggleTheme()"><i class="fas fa-moon"></i></button>
@@ -1096,11 +1128,17 @@ textarea,input,select{font-family:inherit;}
         <div class="vs-row">
           <div class="vs-card">
             <div class="vs-label" id="txt-vs-mine">الشخصية التي في يدي</div>
-            <div class="vs-secret"><i class="fas fa-question"></i></div>
+            <div class="vs-flip-wrap" id="vs-mine-flip">
+              <div class="vs-flip-inner">
+                <div class="vs-flip-face vs-flip-front"><div class="vs-secret"><i class="fas fa-question"></i></div></div>
+                <div class="vs-flip-face vs-flip-back"><img class="vs-img" id="my-revealed-img" src=""></div>
+              </div>
+            </div>
           </div>
           <div class="vs-divider">VS</div>
           <div class="vs-card">
             <div class="vs-label" id="txt-vs-opponent">الشخصية التي في يد خصمك</div>
+            <div class="opponent-peek-note" id="opponent-peek-note" style="display:none;"><i class="fas fa-eye"></i> خصمك يرى الشخصية التي في يده</div>
             <img class="vs-img" id="opponent-visible-img" src="">
           </div>
         </div>
@@ -1109,22 +1147,13 @@ textarea,input,select{font-family:inherit;}
 
         <div class="guess-box">
           <div class="reveal-row">
-            <button class="btn btn-glow reveal-btn-small" id="reveal-request-btn" onclick="requestMutualReveal()">
-              <i class="fas fa-eye"></i> <span id="txt-reveal-btn">طلب رؤية الشخصيات</span>
+            <button class="btn btn-glow reveal-btn-small" id="reveal-request-btn" onclick="requestSelfReveal()">
+              <i class="fas fa-eye"></i> <span id="txt-reveal-btn">رؤية الشخصية التي في يدي</span>
             </button>
             <button class="voice-circle-btn" id="voice-mic-btn" onclick="toggleMic()" title="المايك"><i class="fas fa-microphone-slash"></i></button>
             <button class="voice-circle-btn active" id="voice-speaker-btn" onclick="toggleSpeaker()" title="السماعة"><i class="fas fa-volume-high"></i></button>
           </div>
           <div class="voice-status" id="voice-status-label"></div>
-
-          <div id="reveal-request-box" style="display:none;"></div>
-
-          <div class="reveal-panel" id="reveal-panel" style="display:none;">
-            <div class="reveal-cards-row" id="reveal-cards-row"></div>
-            <div class="game-actions-row">
-              <button class="btn btn-glow" style="width:100%;" onclick="declareGameResult('win')"><i class="fas fa-trophy"></i> تخميني كان صحيحاً، أنا الفائز</button>
-            </div>
-          </div>
         </div>
 
         <div class="section-title"><i class="fas fa-comments"></i> محادثة المنافسة (اسأل أسئلة بـ نعم/لا)</div>
@@ -1223,6 +1252,23 @@ function showToast(text, type='info') {
   t.textContent = text;
   wrap.appendChild(t);
   setTimeout(() => t.remove(), 3000);
+}
+function showGameConfirm(message){
+  return new Promise(resolve=>{
+    const overlay = document.getElementById('game-confirm-overlay');
+    document.getElementById('game-confirm-msg').textContent = message;
+    const okBtn = document.getElementById('game-confirm-ok');
+    const cancelBtn = document.getElementById('game-confirm-cancel');
+    const cleanup = (result)=>{
+      overlay.classList.remove('show');
+      okBtn.onclick = null;
+      cancelBtn.onclick = null;
+      resolve(result);
+    };
+    okBtn.onclick = ()=>cleanup(true);
+    cancelBtn.onclick = ()=>cleanup(false);
+    overlay.classList.add('show');
+  });
 }
 
 // ---------- مظهر المنصة (يتحكم فيه الأدمن لكل الزوار) ----------
@@ -1336,10 +1382,11 @@ const TEXT_KEYS = {
   'txt-tile-random': 'لعب عشوائي',
   'txt-bn-home': 'الرئيسية',
   'txt-bn-friends': 'الأصدقاء',
+  'txt-bn-profile': 'الملف الشخصي',
   'txt-bn-settings': 'الإعدادات',
   'txt-vs-mine': 'الشخصية التي في يدي',
   'txt-vs-opponent': 'الشخصية التي في يد خصمك',
-  'txt-reveal-btn': 'طلب رؤية الشخصيات',
+  'txt-reveal-btn': 'رؤية الشخصية التي في يدي',
   'txt-leave-btn': 'الخروج من المنافسة'
 };
 db.ref('settings/textOverrides').on('value', snap=>{
@@ -1729,7 +1776,7 @@ function refreshMyProfileUI(){
 }
 function setActiveBottomNav(which){
   document.querySelectorAll('.bn-btn').forEach(b=>b.classList.remove('active'));
-  const map = {home:'bn-home-btn', friends:'bn-friends-btn', settings:'bn-settings-btn'};
+  const map = {home:'bn-home-btn', friends:'bn-friends-btn', profile:'bn-profile-btn', settings:'bn-settings-btn'};
   const el = document.getElementById(map[which]);
   if (el) el.classList.add('active');
 }
@@ -1742,9 +1789,11 @@ function goHomeTab(){
 function openMyProfile(){
   refreshMyProfileUI();
   document.getElementById('my-profile-overlay').classList.add('show');
+  setActiveBottomNav('profile');
 }
 function closeMyProfile(){
   document.getElementById('my-profile-overlay').classList.remove('show');
+  setActiveBottomNav('home');
 }
 function openFriendRequestsOverlay(){
   document.getElementById('friend-requests-overlay').classList.add('show');
@@ -2399,9 +2448,9 @@ function showGameLobby(){
   document.getElementById('game-match').style.display = 'none';
   document.getElementById('game-result').style.display = 'none';
   document.getElementById('quick-match-link-box').innerHTML = '';
-  document.getElementById('reveal-panel').style.display = 'none';
-  document.getElementById('reveal-request-box').style.display = 'none';
+  document.getElementById('vs-mine-flip').classList.remove('flipped');
   document.getElementById('reveal-request-btn').style.display = 'flex';
+  document.getElementById('opponent-peek-note').style.display = 'none';
 }
 function renderGameMatchUI(){
   if (!currentGame){ showGameLobby(); return; }
@@ -2428,80 +2477,43 @@ function renderGameMatchUI(){
   document.getElementById('game-result').style.display = 'none';
   document.getElementById('game-match').style.display = 'block';
   const myRole = currentGame.player1 === currentUserId ? 'player1' : 'player2';
+  const opponentUid = myRole === 'player1' ? currentGame.player2 : currentGame.player1;
   const myImageId = myRole === 'player1' ? currentGame.player1Image : currentGame.player2Image;
   const opponentImageId = myRole === 'player1' ? currentGame.player2Image : currentGame.player1Image;
   const opImg = gameImagesCache[opponentImageId];
   document.getElementById('opponent-visible-img').src = opImg ? opImg.url : '';
-  renderRevealState(myImageId, opponentImageId);
+  renderRevealState(myImageId, opponentUid);
   if (voiceGameId !== currentGameId) setupVoiceChat(currentGameId, myRole);
 }
 
-/* ---------- إظهار الشخصية للخصم (بموافقة الطرفين) ---------- */
-function renderRevealState(myImageId, opponentImageId){
-  const btn = document.getElementById('reveal-request-btn');
-  const box = document.getElementById('reveal-request-box');
-  const panel = document.getElementById('reveal-panel');
+/* ---------- رؤية اللاعب لشخصيته الخاصة (مستقلة لكل لاعب) ---------- */
+function renderRevealState(myImageId, opponentUid){
   if (!currentGame) return;
+  const revealedBy = currentGame.revealedBy || {};
+  const flipWrap = document.getElementById('vs-mine-flip');
+  const btn = document.getElementById('reveal-request-btn');
 
-  if (currentGame.revealed){
+  if (revealedBy[currentUserId]){
+    if (!flipWrap.classList.contains('flipped')){
+      const myImg = gameImagesCache[myImageId];
+      document.getElementById('my-revealed-img').src = myImg ? myImg.url : '';
+      flipWrap.classList.add('flipped');
+    }
     btn.style.display = 'none';
-    box.style.display = 'none';
-    panel.style.display = 'block';
-    const myImg = gameImagesCache[myImageId];
-    const opImgFull = gameImagesCache[opponentImageId];
-    document.getElementById('reveal-cards-row').innerHTML = `
-      <div class="reveal-card"><div class="r-lbl">شخصيتك</div><img src="${myImg?myImg.url:''}"><div class="r-name">${escapeHtml(myImg?myImg.name:'؟')}</div></div>
-      <div class="reveal-card"><div class="r-lbl">شخصية خصمك</div><img src="${opImgFull?opImgFull.url:''}"><div class="r-name">${escapeHtml(opImgFull?opImgFull.name:'؟')}</div></div>`;
-    return;
-  }
-
-  panel.style.display = 'none';
-
-  if (currentGame.revealRequestBy === currentUserId){
-    btn.style.display = 'none';
-    box.style.display = 'block';
-    box.innerHTML = `<div class="reveal-wait"><i class="fas fa-hourglass-half"></i> بانتظار موافقة خصمك على إظهار الشخصيتين...
-      <button class="btn btn-secondary" style="width:100%;margin-top:10px;" onclick="cancelMyRevealRequest()"><i class="fas fa-xmark"></i> إلغاء الطلب</button></div>`;
-  } else if (currentGame.revealRequestBy){
-    btn.style.display = 'none';
-    box.style.display = 'block';
-    box.innerHTML = `<div class="reveal-consent">
-      يريد خصمك إظهار الشخصيتين لكما، هل توافق؟
-      <div class="game-actions-row">
-        <button class="btn btn-glow" onclick="agreeMutualReveal()"><i class="fas fa-check"></i> موافق</button>
-        <button class="btn btn-secondary" onclick="declineMutualReveal()"><i class="fas fa-xmark"></i> رفض</button>
-      </div>
-    </div>`;
   } else {
+    flipWrap.classList.remove('flipped');
     btn.style.display = 'flex';
-    box.style.display = 'none';
   }
+
+  const note = document.getElementById('opponent-peek-note');
+  note.style.display = (opponentUid && revealedBy[opponentUid]) ? 'flex' : 'none';
 }
-function requestMutualReveal(){
-  if (!currentGameId || !currentGame) return;
-  if (currentGame.revealRequestBy && currentGame.revealRequestBy !== currentUserId){
-    agreeMutualReveal();
-    return;
-  }
-  db.ref('games/'+currentGameId).update({ revealRequestBy: currentUserId }).catch(()=>{ showToast('تعذّرت العملية','error'); });
-}
-function agreeMutualReveal(){
+async function requestSelfReveal(){
   if (!currentGameId) return;
-  db.ref('games/'+currentGameId).update({ revealed: true }).catch(()=>{ showToast('تعذّرت العملية','error'); });
-}
-function declineMutualReveal(){
-  if (!currentGameId) return;
-  db.ref('games/'+currentGameId).update({ revealRequestBy: null }).catch(()=>{});
-}
-function cancelMyRevealRequest(){
-  if (!currentGameId) return;
-  db.ref('games/'+currentGameId).update({ revealRequestBy: null }).catch(()=>{});
-}
-async function declareGameResult(result){
-  if (!currentGameId) return;
+  const ok = await showGameConfirm('هل أنت متأكد من رؤية الشخصية التي في يدك؟ عند رؤيتها سيعلم الخصم بأنك رأيتها');
+  if (!ok) return;
   try{
-    await db.ref('games/'+currentGameId).update({ status:'finished', winner: result==='win' ? currentUserId : null });
-    if (result==='win') playSound('win');
+    await db.ref('games/'+currentGameId+'/revealedBy/'+currentUserId).set(true);
   }catch(e){ showToast('تعذّرت العملية','error'); }
 }
 /* =========================================================

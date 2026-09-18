@@ -369,6 +369,9 @@ textarea,input,select{font-family:inherit;}
   border-color:var(--glow);
 }
 .home-tile-play i{color:var(--glow);}
+.home-tile-play.has-cover{color:#fff;}
+.home-tile-play.has-cover i{color:#fff;text-shadow:0 2px 8px rgba(0,0,0,0.5);}
+.home-tile-play.has-cover span{text-shadow:0 2px 8px rgba(0,0,0,0.5);}
 .home-tile-search{border-color:var(--violet);}
 .home-tile-search i{color:var(--violet);}
 .home-tile-random{
@@ -379,6 +382,12 @@ textarea,input,select{font-family:inherit;}
 .home-tile-random span{font-size:13.5px;}
 .home-tile-random.waiting{border-color:var(--danger);background:rgba(239,83,80,0.08);}
 .home-tile-random.waiting i{color:var(--danger);}
+
+/* ---------- اختيار فئة (روم) اللعبة ---------- */
+.category-tiles-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.category-tile{display:flex;flex-direction:column;align-items:center;gap:6px;background:none;border:none;cursor:pointer;color:var(--ink);font-family:inherit;padding:0;}
+.category-tile-cover{width:100%;aspect-ratio:1/1;border-radius:14px;background-size:cover;background-position:center;background-color:var(--surface-2);border:1px solid var(--border);}
+.category-tile span{font-size:11.5px;font-weight:700;}
 
 .category-chip{
   flex-shrink:0;border:1px solid var(--border);background:var(--surface);
@@ -873,7 +882,7 @@ textarea,input,select{font-family:inherit;}
 </div>
 
 <div class="home-tiles" id="home-tiles">
-  <button class="home-tile home-tile-play" onclick="openGameOverlay()">
+  <button class="home-tile home-tile-play" id="play-tile-btn" onclick="openCategoryPicker(function(cat){ selectedGameCategory = cat; openGameOverlay(); })">
     <i class="fas fa-gamepad"></i>
     <span id="txt-tile-play">ابدأ اللعب</span>
   </button>
@@ -881,6 +890,19 @@ textarea,input,select{font-family:inherit;}
     <i class="fas fa-shuffle"></i>
     <span id="txt-tile-random">لعب عشوائي</span>
   </button>
+</div>
+
+<!-- Modal: اختيار فئة (روم) اللعبة -->
+<div class="overlay" id="category-picker-overlay">
+  <div class="sheet" style="max-width:420px;">
+    <div class="sheet-head">
+      <h3><i class="fas fa-layer-group" style="color:var(--glow);"></i> اختر فئة اللعبة</h3>
+      <button class="icon-btn" onclick="closeCategoryPicker()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="sheet-body">
+      <div class="category-tiles-grid" id="category-picker-list"></div>
+    </div>
+  </div>
 </div>
 
 <!-- الشريط السفلي -->
@@ -1324,12 +1346,32 @@ db.ref('settings/appConfig/bgMusicUrl').on('value', snap=>{
     bgMusicEl.pause();
   }
 });
+db.ref('settings/appConfig/playTileCoverUrl').on('value', snap=>{
+  const url = snap.val();
+  const btn = document.getElementById('play-tile-btn');
+  if (!btn) return;
+  if (url){
+    btn.style.backgroundImage = `linear-gradient(180deg, rgba(0,0,0,0.15), rgba(0,0,0,0.55)), url('${url}')`;
+    btn.style.backgroundSize = 'cover';
+    btn.style.backgroundPosition = 'center';
+    btn.classList.add('has-cover');
+  } else {
+    btn.style.backgroundImage = '';
+    btn.classList.remove('has-cover');
+  }
+});
 function tryPlayBgMusic(){
   if (!bgMusicUrl || bgMusicMuted) return;
   bgMusicEl.play().catch(()=>{
     const resume = ()=>{ bgMusicEl.play().catch(()=>{}); };
     document.addEventListener('click', resume, { once:true });
   });
+}
+function pauseBgMusicForMatch(){
+  if (!bgMusicEl.paused) bgMusicEl.pause();
+}
+function resumeBgMusicAfterMatch(){
+  tryPlayBgMusic();
 }
 function toggleBgMusic(){
   bgMusicMuted = !bgMusicMuted;
@@ -2095,10 +2137,54 @@ async function removeFriend(uid){
 let gameImagesCache = {};
 db.ref('gameImages').on('value', snap=>{ gameImagesCache = snap.val() || {}; });
 
-function pickRandomImageId(excludeId){
-  const ids = Object.keys(gameImagesCache).filter(id=>id!==excludeId);
+let gameCategoriesCache = {};
+let categoryImagesCache = {};
+db.ref('gameCategories').on('value', snap=>{ gameCategoriesCache = snap.val() || {}; });
+db.ref('categoryImages').on('value', snap=>{ categoryImagesCache = snap.val() || {}; });
+
+function getCategoryImagePool(catKey){
+  if (!catKey || catKey === 'general') return gameImagesCache;
+  return categoryImagesCache[catKey] || {};
+}
+function pickRandomImageId(excludeId, catKey){
+  const pool = getCategoryImagePool(catKey);
+  const ids = Object.keys(pool).filter(id=>id!==excludeId);
   if (!ids.length) return null;
   return ids[Math.floor(Math.random()*ids.length)];
+}
+
+/* ---------- اختيار فئة (روم) اللعبة قبل التحدي أو اللعب العشوائي ---------- */
+let selectedGameCategory = 'general';
+let categoryPickerCallback = null;
+function openCategoryPicker(callback){
+  categoryPickerCallback = callback;
+  renderCategoryPickerOptions();
+  document.getElementById('category-picker-overlay').classList.add('show');
+}
+function closeCategoryPicker(){
+  document.getElementById('category-picker-overlay').classList.remove('show');
+  categoryPickerCallback = null;
+}
+function chooseCategoryPicker(catKey){
+  const cb = categoryPickerCallback;
+  closeCategoryPicker();
+  if (cb) cb(catKey);
+}
+function renderCategoryPickerOptions(){
+  const wrap = document.getElementById('category-picker-list');
+  const cats = Object.entries(gameCategoriesCache||{}).map(([key,c])=>({key,...c}));
+  wrap.innerHTML = `
+    <button class="category-tile" onclick="chooseCategoryPicker('general')">
+      <div class="category-tile-cover" style="display:flex;align-items:center;justify-content:center;"><i class="fas fa-shapes" style="font-size:26px;color:var(--ink-muted);"></i></div>
+      <span>منوّع</span>
+    </button>
+    ${cats.map(c=>`
+      <button class="category-tile" onclick="chooseCategoryPicker('${c.key}')">
+        <div class="category-tile-cover" style="background-image:url('${c.coverUrl||''}');"></div>
+        <span>${escapeHtml(c.name||'')}</span>
+      </button>
+    `).join('')}
+  `;
 }
 
 function openGameOverlay(){
@@ -2138,43 +2224,47 @@ function renderGameFriendsList(){
   }).join('');
 }
 
-async function createQuickMatchInvite(){
-  const ids = Object.keys(gameImagesCache);
-  if (ids.length < 2){ showToast('يحتاج الأدمن لإضافة صورتين على الأقل في لوحة التحكم أولاً','error'); return; }
-  try{
-    const gid = db.ref('games').push().key;
-    const img1 = pickRandomImageId();
-    await db.ref('games/'+gid).set({ player1: currentUserId, player2: null, player1Image: img1, player2Image: null, status: 'waiting', createdAt: Date.now() });
-    await db.ref('activeGameFor/'+currentUserId).set(gid);
-    const link = location.origin + location.pathname + '?game=' + gid;
-    const filenameHasNonAscii = /[^\x00-\x7F]/.test(location.pathname);
-    const inPreviewFrame = window.top !== window.self;
-    let warningHtml = '';
-    if (inPreviewFrame){
-      warningHtml += `<div class="empty-note" style="color:var(--danger);">⚠️ أنت الآن داخل وضع المعاينة. جرّب الرابط بعد نشر الموقع فعلياً، فمعاينة المحرر لا تُنشئ رابطاً حقيقياً قابلاً للمشاركة.</div>`;
-    } else if (filenameHasNonAscii){
-      warningHtml += `<div class="empty-note" style="color:var(--danger);">⚠️ اسم ملف الموقع يحتوي حروفاً عربية، وهذا قد يمنع بعض التطبيقات (واتساب/انستقرام/تيك توك) من التعرّف على الرابط بشكل صحيح. يُفضّل رفع الملف على الاستضافة باسم إنجليزي بسيط مثل index.html.</div>`;
-    }
-    document.getElementById('quick-match-link-box').innerHTML = `
-      <div class="game-link-box"><i class="fas fa-link"></i> ${link}</div>
-      <button class="btn btn-secondary" style="width:100%;margin-top:6px;" onclick="navigator.clipboard.writeText('${link}').then(()=>showToast('تم نسخ الرابط، أرسله لصديقك!','success'))"><i class="fas fa-copy"></i> نسخ الرابط</button>
-      ${warningHtml}
-      <div class="empty-note">بانتظار انضمام الخصم عبر الرابط...</div>`;
-  }catch(e){ showToast('تعذّر إنشاء المنافسة','error'); }
+function createQuickMatchInvite(){
+  openCategoryPicker(async (cat)=>{
+    const pool = getCategoryImagePool(cat);
+    if (Object.keys(pool).length < 2){ showToast('لا توجد صور كافية في هذه الفئة بعد','error'); return; }
+    try{
+      const gid = db.ref('games').push().key;
+      const img1 = pickRandomImageId(null, cat);
+      await db.ref('games/'+gid).set({ player1: currentUserId, player2: null, player1Image: img1, player2Image: null, category: cat, status: 'waiting', createdAt: Date.now() });
+      await db.ref('activeGameFor/'+currentUserId).set(gid);
+      const link = location.origin + location.pathname + '?game=' + gid;
+      const filenameHasNonAscii = /[^\x00-\x7F]/.test(location.pathname);
+      const inPreviewFrame = window.top !== window.self;
+      let warningHtml = '';
+      if (inPreviewFrame){
+        warningHtml += `<div class="empty-note" style="color:var(--danger);">⚠️ أنت الآن داخل وضع المعاينة. جرّب الرابط بعد نشر الموقع فعلياً، فمعاينة المحرر لا تُنشئ رابطاً حقيقياً قابلاً للمشاركة.</div>`;
+      } else if (filenameHasNonAscii){
+        warningHtml += `<div class="empty-note" style="color:var(--danger);">⚠️ اسم ملف الموقع يحتوي حروفاً عربية، وهذا قد يمنع بعض التطبيقات (واتساب/انستقرام/تيك توك) من التعرّف على الرابط بشكل صحيح. يُفضّل رفع الملف على الاستضافة باسم إنجليزي بسيط مثل index.html.</div>`;
+      }
+      document.getElementById('quick-match-link-box').innerHTML = `
+        <div class="game-link-box"><i class="fas fa-link"></i> ${link}</div>
+        <button class="btn btn-secondary" style="width:100%;margin-top:6px;" onclick="navigator.clipboard.writeText('${link}').then(()=>showToast('تم نسخ الرابط، أرسله لصديقك!','success'))"><i class="fas fa-copy"></i> نسخ الرابط</button>
+        ${warningHtml}
+        <div class="empty-note">بانتظار انضمام الخصم عبر الرابط...</div>`;
+    }catch(e){ showToast('تعذّر إنشاء المنافسة','error'); }
+  });
 }
 
-async function sendGameInvite(toUid){
+async function sendGameInvite(toUid, category){
   if (blocksCache[toUid]){ showToast('لقد قمت بحظر هذا المستخدم','error'); return; }
   try{
     const theyBlockedMe = (await db.ref('blocks/'+toUid+'/'+currentUserId).once('value')).val();
     if (theyBlockedMe){ showToast('لا يمكنك تحدّي هذا المستخدم','error'); return; }
-    await db.ref('gameInvites/'+toUid).push({ fromUid: currentUserId, timestamp: Date.now() });
+    await db.ref('gameInvites/'+toUid).push({ fromUid: currentUserId, category: category||'general', timestamp: Date.now() });
     showToast('تم إرسال دعوة المنافسة!','success');
   }catch(e){ showToast('تعذّر إرسال الدعوة','error'); }
 }
 function sendGameInviteAndOpen(toUid){
-  sendGameInvite(toUid);
-  openGameOverlay();
+  openCategoryPicker(function(cat){
+    sendGameInvite(toUid, cat);
+    openGameOverlay();
+  });
 }
 
 let gameInvitesCache = {};
@@ -2223,13 +2313,14 @@ db.ref('gameInvites/'+currentUserId).on('value', snap=>{
 });
 
 async function acceptGameInvite(inviteId, fromUid){
-  const ids = Object.keys(gameImagesCache);
-  if (ids.length < 2){ showToast('لا توجد صور كافية في اللعبة حالياً','error'); return; }
+  const cat = (gameInvitesCache[inviteId] && gameInvitesCache[inviteId].category) || 'general';
+  const pool = getCategoryImagePool(cat);
+  if (Object.keys(pool).length < 2){ showToast('لا توجد صور كافية في هذه الفئة حالياً','error'); return; }
   try{
     const gid = db.ref('games').push().key;
-    const img1 = pickRandomImageId();
-    const img2 = pickRandomImageId(img1);
-    await db.ref('games/'+gid).set({ player1: fromUid, player2: currentUserId, player1Image: img1, player2Image: img2, status:'active', createdAt: Date.now() });
+    const img1 = pickRandomImageId(null, cat);
+    const img2 = pickRandomImageId(img1, cat);
+    await db.ref('games/'+gid).set({ player1: fromUid, player2: currentUserId, player1Image: img1, player2Image: img2, category: cat, status:'active', createdAt: Date.now() });
     await db.ref('activeGameFor/'+currentUserId).set(gid);
     await db.ref('activeGameFor/'+fromUid).set(gid);
     await db.ref('gameInvites/'+currentUserId+'/'+inviteId).remove();
@@ -2238,43 +2329,52 @@ async function acceptGameInvite(inviteId, fromUid){
 }
 
 /* =========================================================
-   اللعب العشوائي (مطابقة فورية مع أي شخص آخر يضغط الزر)
+   اللعب العشوائي (مطابقة فورية مع أي شخص آخر اختار نفس الفئة)
    ========================================================= */
 const RANDOM_MATCH_TIMEOUT_MS = 120000; // دقيقتان
 let randomMatchWaiting = false;
+let randomMatchCategory = null;
 let randomMatchCountdownInterval = null;
 
 async function toggleRandomMatch(){
   if (randomMatchWaiting){ cancelRandomMatch(false); return; }
-  const ids = Object.keys(gameImagesCache);
-  if (ids.length < 2){ showToast('يحتاج الأدمن لإضافة صورتين على الأقل في لوحة التحكم أولاً','error'); return; }
   if (currentGameId){ showToast('أنت بالفعل داخل منافسة حالياً','error'); return; }
+  openCategoryPicker(async (cat)=>{
+    const pool = getCategoryImagePool(cat);
+    if (Object.keys(pool).length < 2){ showToast('لا توجد صور كافية في هذه الفئة بعد','error'); return; }
+    await startRandomMatchFor(cat);
+  });
+}
+
+async function startRandomMatchFor(cat){
   try{
-    const result = await db.ref('matchmaking/waitingPlayer').transaction(current=>{
+    const path = 'matchmaking/waitingPlayer_'+cat;
+    const result = await db.ref(path).transaction(current=>{
       if (!current || (Date.now() - current.ts > RANDOM_MATCH_TIMEOUT_MS)){
         return { uid: currentUserId, ts: Date.now() };
       }
       if (current.uid === currentUserId) return; // أنا بالفعل بانتظار (لا تغيير)
-      return; // شخص آخر ينتظر بالفعل -> نطابقه بالأسفل
+      return; // شخص آخر ينتظر بالفعل بنفس الفئة -> نطابقه بالأسفل
     });
     const val = result.snapshot.val();
     if (result.committed && val && val.uid === currentUserId){
+      randomMatchCategory = cat;
       startRandomMatchWaitingUI();
     } else if (val && val.uid && val.uid !== currentUserId){
-      await createRandomMatchWith(val.uid);
+      await createRandomMatchWith(val.uid, cat);
     } else {
       showToast('حاول الضغط مرة أخرى','error');
     }
   }catch(e){ showToast('تعذّر بدء اللعب العشوائي','error'); }
 }
 
-async function createRandomMatchWith(opponentUid){
+async function createRandomMatchWith(opponentUid, cat){
   try{
-    await db.ref('matchmaking/waitingPlayer').transaction(current=> (current && current.uid===opponentUid) ? null : current);
+    await db.ref('matchmaking/waitingPlayer_'+cat).transaction(current=> (current && current.uid===opponentUid) ? null : current);
     const gid = db.ref('games').push().key;
-    const img1 = pickRandomImageId();
-    const img2 = pickRandomImageId(img1);
-    await db.ref('games/'+gid).set({ player1: opponentUid, player2: currentUserId, player1Image: img1, player2Image: img2, status:'active', createdAt: Date.now() });
+    const img1 = pickRandomImageId(null, cat);
+    const img2 = pickRandomImageId(img1, cat);
+    await db.ref('games/'+gid).set({ player1: opponentUid, player2: currentUserId, player1Image: img1, player2Image: img2, category: cat, status:'active', createdAt: Date.now() });
     await db.ref('activeGameFor/'+opponentUid).set(gid);
     await db.ref('activeGameFor/'+currentUserId).set(gid);
     showToast('تم إيجاد خصم عشوائي! 🎉','success');
@@ -2284,7 +2384,7 @@ async function createRandomMatchWith(opponentUid){
 
 function startRandomMatchWaitingUI(){
   randomMatchWaiting = true;
-  db.ref('matchmaking/waitingPlayer').onDisconnect().remove();
+  db.ref('matchmaking/waitingPlayer_'+randomMatchCategory).onDisconnect().remove();
   let secondsLeft = RANDOM_MATCH_TIMEOUT_MS / 1000;
   updateRandomMatchBtnUI(secondsLeft);
   randomMatchCountdownInterval = setInterval(()=>{
@@ -2321,14 +2421,16 @@ function resetRandomMatchBtnUI(){
 function stopRandomMatchWaitingLocalOnly(){
   if (randomMatchCountdownInterval){ clearInterval(randomMatchCountdownInterval); randomMatchCountdownInterval = null; }
   randomMatchWaiting = false;
-  try{ db.ref('matchmaking/waitingPlayer').onDisconnect().cancel(); }catch(e){}
+  try{ if (randomMatchCategory) db.ref('matchmaking/waitingPlayer_'+randomMatchCategory).onDisconnect().cancel(); }catch(e){}
+  randomMatchCategory = null;
   resetRandomMatchBtnUI();
 }
 
 async function cancelRandomMatch(timedOut){
+  const cat = randomMatchCategory;
   stopRandomMatchWaitingLocalOnly();
   try{
-    await db.ref('matchmaking/waitingPlayer').transaction(current=> (current && current.uid===currentUserId) ? null : current);
+    if (cat) await db.ref('matchmaking/waitingPlayer_'+cat).transaction(current=> (current && current.uid===currentUserId) ? null : current);
   }catch(e){}
   if (timedOut) showToast('لم يتم إيجاد خصم خلال دقيقتين، اضغط الزر لإعادة المحاولة','error');
 }
@@ -2413,10 +2515,10 @@ async function acceptLinkChallenge(gid, fromUid){
     const g = (await db.ref('games/'+gid).once('value')).val();
     if (!g){ showToast('انتهت صلاحية هذا التحدي','error'); return; }
     if (g.player2){ showToast('هذه المنافسة ممتلئة بالفعل','error'); return; }
-    const ids = Object.keys(gameImagesCache).length ? gameImagesCache : (await db.ref('gameImages').once('value')).val() || {};
-    gameImagesCache = ids;
-    const img2 = pickRandomImageId(g.player1Image);
-    if (!img2){ showToast('لا توجد صور كافية في اللعبة حالياً','error'); return; }
+    const cat = g.category || 'general';
+    const pool = getCategoryImagePool(cat);
+    const img2 = pickRandomImageId(g.player1Image, cat);
+    if (!img2){ showToast('لا توجد صور كافية في هذه الفئة حالياً','error'); return; }
     await db.ref('games/'+gid).update({ player2: currentUserId, player2Image: img2, status:'active' });
     await db.ref('activeGameFor/'+currentUserId).set(gid);
     await db.ref('activeGameFor/'+fromUid).set(gid);
@@ -2451,6 +2553,7 @@ function showGameLobby(){
   document.getElementById('vs-mine-flip').classList.remove('flipped');
   document.getElementById('reveal-request-btn').style.display = 'flex';
   document.getElementById('opponent-peek-note').style.display = 'none';
+  resumeBgMusicAfterMatch();
 }
 function renderGameMatchUI(){
   if (!currentGame){ showGameLobby(); return; }
@@ -2464,23 +2567,27 @@ function renderGameMatchUI(){
     document.getElementById('game-result-banner').innerHTML = noWinner
       ? `<div class="result-banner"><div class="r-icon"><i class="fas fa-door-open"></i></div><div>انتهت المنافسة</div></div>`
       : `<div class="result-banner ${iWon?'win':'lose'}"><div class="r-icon"><i class="fas ${iWon?'fa-trophy':'fa-face-frown'}"></i></div><div>${iWon?'🎉 مبروك، لقد فزت!':'للأسف، فاز خصمك هذه المرة'}</div></div>`;
+    resumeBgMusicAfterMatch();
     return;
   }
   if (currentGame.status === 'waiting'){
     document.getElementById('game-lobby').style.display = 'block';
     document.getElementById('game-match').style.display = 'none';
     document.getElementById('game-result').style.display = 'none';
+    resumeBgMusicAfterMatch();
     return;
   }
   // active
   document.getElementById('game-lobby').style.display = 'none';
   document.getElementById('game-result').style.display = 'none';
   document.getElementById('game-match').style.display = 'block';
+  pauseBgMusicForMatch();
   const myRole = currentGame.player1 === currentUserId ? 'player1' : 'player2';
   const opponentUid = myRole === 'player1' ? currentGame.player2 : currentGame.player1;
   const myImageId = myRole === 'player1' ? currentGame.player1Image : currentGame.player2Image;
   const opponentImageId = myRole === 'player1' ? currentGame.player2Image : currentGame.player1Image;
-  const opImg = gameImagesCache[opponentImageId];
+  const gamePool = getCategoryImagePool(currentGame.category);
+  const opImg = gamePool[opponentImageId];
   document.getElementById('opponent-visible-img').src = opImg ? opImg.url : '';
   renderRevealState(myImageId, opponentUid);
   if (voiceGameId !== currentGameId) setupVoiceChat(currentGameId, myRole);
@@ -2495,7 +2602,7 @@ function renderRevealState(myImageId, opponentUid){
 
   if (revealedBy[currentUserId]){
     if (!flipWrap.classList.contains('flipped')){
-      const myImg = gameImagesCache[myImageId];
+      const myImg = getCategoryImagePool(currentGame.category)[myImageId];
       document.getElementById('my-revealed-img').src = myImg ? myImg.url : '';
       flipWrap.classList.add('flipped');
     }

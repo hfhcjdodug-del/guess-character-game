@@ -2170,12 +2170,18 @@ function chooseCategoryPicker(catKey){
   closeCategoryPicker();
   if (cb) cb(catKey);
 }
+let generalCategoryCoverUrl = '';
+db.ref('settings/appConfig/generalCategoryCoverUrl').on('value', snap=>{
+  generalCategoryCoverUrl = snap.val() || '';
+});
 function renderCategoryPickerOptions(){
   const wrap = document.getElementById('category-picker-list');
   const cats = Object.entries(gameCategoriesCache||{}).map(([key,c])=>({key,...c}));
   wrap.innerHTML = `
     <button class="category-tile" onclick="chooseCategoryPicker('general')">
-      <div class="category-tile-cover" style="display:flex;align-items:center;justify-content:center;"><i class="fas fa-shapes" style="font-size:26px;color:var(--ink-muted);"></i></div>
+      <div class="category-tile-cover" style="${generalCategoryCoverUrl ? `background-image:url('${generalCategoryCoverUrl}');` : 'display:flex;align-items:center;justify-content:center;'}">
+        ${generalCategoryCoverUrl ? '' : '<i class="fas fa-shapes" style="font-size:26px;color:var(--ink-muted);"></i>'}
+      </div>
       <span>منوّع</span>
     </button>
     ${cats.map(c=>`

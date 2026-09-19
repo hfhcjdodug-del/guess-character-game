@@ -386,7 +386,8 @@ textarea,input,select{font-family:inherit;}
 /* ---------- اختيار فئة (روم) اللعبة ---------- */
 .category-tiles-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
 .category-tile{display:flex;flex-direction:column;align-items:center;gap:6px;background:none;border:none;cursor:pointer;color:var(--ink);font-family:inherit;padding:0;}
-.category-tile-cover{width:100%;aspect-ratio:1/1;border-radius:14px;background-size:cover;background-position:center;background-color:var(--surface-2);border:1px solid var(--border);}
+.category-tile-cover{width:100%;aspect-ratio:1/1;border-radius:14px;background-size:cover;background-position:center;background-color:var(--surface-2);border:1px solid var(--border);overflow:hidden;}
+.category-tile-cover img,.category-tile-cover video{width:100%;height:100%;object-fit:cover;display:block;}
 .category-tile span{font-size:11.5px;font-weight:700;}
 
 .category-chip{
@@ -616,6 +617,30 @@ textarea,input,select{font-family:inherit;}
 .game-confirm-actions{display:flex;gap:10px;}
 .game-confirm-actions button{flex:1;}
 .toast{background:var(--surface-3);border:1px solid var(--border);color:var(--ink);padding:11px 18px;border-radius:12px;font-size:12.5px;box-shadow:var(--shadow-deep);animation:toastIn .18s ease;text-align:center;}
+.toast.toast-pulse{animation:toastPulse .25s ease;}
+@keyframes toastPulse{0%{transform:scale(1);}40%{transform:scale(1.05);}100%{transform:scale(1);}}
+
+/* ---------- الإعلانات ---------- */
+#ad-overlay{position:fixed;inset:0;z-index:900;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.75);opacity:0;visibility:hidden;transition:opacity .25s ease,visibility .25s ease;}
+#ad-overlay.show{opacity:1;visibility:visible;}
+.ad-overlay-inner{position:relative;width:min(88vw,340px);}
+#ad-overlay-img{width:100%;border-radius:16px;display:block;max-height:80vh;object-fit:contain;background:var(--surface);}
+#ad-overlay-close{position:absolute;top:-14px;right:-14px;width:34px;height:34px;border-radius:50%;background:var(--surface);border:1px solid var(--border);color:var(--ink);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:var(--shadow-deep);font-size:14px;}
+#ad-overlay-countdown{position:absolute;top:10px;left:10px;width:30px;height:30px;border-radius:50%;background:rgba(0,0,0,0.6);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;}
+
+/* ---------- صف صورة الخصم أثناء المباراة ---------- */
+.opponent-mini-row{display:flex;align-items:center;gap:10px;background:var(--surface-2);border:1px solid var(--border);border-radius:14px;padding:10px 12px;margin-bottom:12px;}
+.opponent-mini-avatar{width:38px;height:38px;border-radius:50%;overflow:hidden;flex-shrink:0;background:var(--surface-3);display:flex;align-items:center;justify-content:center;}
+.opponent-mini-avatar img{width:100%;height:100%;object-fit:cover;}
+.opponent-mini-name{flex:1;font-size:12.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.opponent-mini-row .mini-btn{
+  display:flex;align-items:center;gap:6px;background:var(--glow);color:#0c0c14;border:none;
+  border-radius:10px;padding:7px 12px;font-size:11.5px;font-weight:700;cursor:pointer;white-space:nowrap;
+}
+.opponent-mini-row .badge{
+  display:flex;align-items:center;gap:6px;background:var(--surface-3);border:1px solid var(--border);color:var(--ink-muted);
+  border-radius:10px;padding:7px 12px;font-size:11px;white-space:nowrap;
+}
 .toast.success{border-color:var(--glow);}
 .toast.error{border-color:var(--danger);}
 @keyframes toastIn{from{opacity:0;transform:translateY(-8px);}to{opacity:1;transform:translateY(0);}}
@@ -830,6 +855,13 @@ textarea,input,select{font-family:inherit;}
 
 <div id="app-root">
 
+<div id="ad-overlay">
+  <div class="ad-overlay-inner">
+    <button id="ad-overlay-close" onclick="document.getElementById('ad-overlay').classList.remove('show')"><i class="fas fa-xmark"></i></button>
+    <div id="ad-overlay-countdown" style="display:none;">10</div>
+    <img id="ad-overlay-img" src="">
+  </div>
+</div>
 <div class="toast-wrap" id="toast-wrap"></div>
 <div id="game-confirm-overlay">
   <div class="game-confirm-card">
@@ -947,6 +979,10 @@ textarea,input,select{font-family:inherit;}
             <button class="cp-swatch" data-theme="purple" style="background:#b89af0" onclick="choosePersonalTheme('purple')" title="بنفسجي"><i class="fas fa-check"></i></button>
           </div>
         </div>
+      </div>
+      <div class="settings-row">
+        <div class="settings-row-label"><i class="fas fa-shuffle"></i> فئة اللعب العشوائي</div>
+        <button class="settings-toggle-btn" onclick="changeRandomMatchCategory()" title="تغيير الفئة"><i class="fas fa-pen"></i></button>
       </div>
       <div class="settings-row">
         <div class="settings-row-label"><i class="fas fa-music"></i> موسيقى اللعبة</div>
@@ -1130,7 +1166,7 @@ textarea,input,select{font-family:inherit;}
   <div class="sheet" style="max-width:680px;">
     <div class="sheet-head">
       <h3><i class="fas fa-gamepad" style="color:var(--glow);"></i> تحدّي التخمين</h3>
-      <button class="icon-btn" onclick="closeGameOverlay()"><i class="fas fa-xmark"></i></button>
+      <button class="icon-btn" id="game-overlay-close-btn" onclick="closeGameOverlay()"><i class="fas fa-xmark"></i></button>
     </div>
     <div class="sheet-body" id="game-body">
 
@@ -1147,6 +1183,12 @@ textarea,input,select{font-family:inherit;}
       </div>
 
       <div id="game-match" style="display:none;">
+        <div class="game-actions-row" style="margin-bottom:12px;">
+          <button class="btn btn-danger" style="width:100%;" onclick="leaveGame()"><i class="fas fa-right-from-bracket"></i> <span id="txt-leave-btn">الخروج من التحدي</span></button>
+        </div>
+
+        <div class="opponent-mini-row" id="opponent-mini-row"></div>
+
         <div class="vs-row">
           <div class="vs-card">
             <div class="vs-label" id="txt-vs-mine">الشخصية التي في يدي</div>
@@ -1184,16 +1226,12 @@ textarea,input,select{font-family:inherit;}
           <textarea class="chat-textarea" id="game-chat-input" placeholder="اكتب سؤالك أو إجابتك هنا..." rows="1"></textarea>
           <button class="reply-send" onclick="sendGameChatMessage()"><i class="fas fa-paper-plane"></i></button>
         </div>
-
-        <div class="game-actions-row">
-          <button class="btn btn-danger" onclick="leaveGame()"><i class="fas fa-right-from-bracket"></i> <span id="txt-leave-btn">الخروج من المنافسة</span></button>
-        </div>
       </div>
 
       <div id="game-result" style="display:none;">
         <div class="result-banner" id="game-result-banner"></div>
         <div class="game-actions-row">
-          <button class="btn btn-glow" onclick="leaveGame()"><i class="fas fa-arrow-right"></i> العودة للوبي</button>
+          <button class="btn btn-glow" style="width:100%;" onclick="returnHomeWithAd()"><i class="fas fa-house"></i> العودة للواجهة الرئيسية</button>
         </div>
       </div>
 
@@ -1269,11 +1307,21 @@ function getPublicId(userId){
 }
 function showToast(text, type='info') {
   const wrap = document.getElementById('toast-wrap');
+  const existing = Array.from(wrap.children).find(el => el.dataset.msg === text);
+  if (existing){
+    clearTimeout(existing._removeTimer);
+    existing.classList.remove('toast-pulse');
+    void existing.offsetWidth; // إعادة تشغيل الأنيميشن
+    existing.classList.add('toast-pulse');
+    existing._removeTimer = setTimeout(() => existing.remove(), 3000);
+    return;
+  }
   const t = document.createElement('div');
   t.className = `toast ${type}`;
   t.textContent = text;
+  t.dataset.msg = text;
   wrap.appendChild(t);
-  setTimeout(() => t.remove(), 3000);
+  t._removeTimer = setTimeout(() => t.remove(), 3000);
 }
 function showGameConfirm(message){
   return new Promise(resolve=>{
@@ -1410,7 +1458,58 @@ function playSound(key){
     a.play().catch(()=>{});
   }catch(e){}
 }
-// صوت نقر عام يشمل تقريباً كل الأزرار (يضبطه الأدمن عبر المفتاح 'click')
+// ---------- الإعلانات (يديرها الأدمن من لوحة التحكم) ----------
+let adsCache = {};
+db.ref('settings/ads').on('value', snap=>{ adsCache = snap.val() || {}; });
+function pickRandomAd(){
+  const ids = Object.keys(adsCache);
+  if (!ids.length) return null;
+  return adsCache[ids[Math.floor(Math.random()*ids.length)]].url;
+}
+let adCountdownTimer = null;
+function showAd(mode, onDone){
+  const url = pickRandomAd();
+  if (!url){ if (onDone) onDone(); return; }
+  const overlay = document.getElementById('ad-overlay');
+  document.getElementById('ad-overlay-img').src = url;
+  const closeBtn = document.getElementById('ad-overlay-close');
+  const countdownBadge = document.getElementById('ad-overlay-countdown');
+  overlay.classList.add('show');
+  clearInterval(adCountdownTimer);
+  if (mode === 'forced'){
+    closeBtn.style.display = 'none';
+    countdownBadge.style.display = 'flex';
+    let secondsLeft = 10;
+    countdownBadge.textContent = secondsLeft;
+    adCountdownTimer = setInterval(()=>{
+      secondsLeft--;
+      countdownBadge.textContent = secondsLeft;
+      if (secondsLeft <= 0){
+        clearInterval(adCountdownTimer);
+        overlay.classList.remove('show');
+        if (onDone) onDone();
+      }
+    }, 1000);
+  } else {
+    countdownBadge.style.display = 'none';
+    closeBtn.style.display = 'flex';
+    closeBtn.onclick = ()=>{ overlay.classList.remove('show'); if (onDone) onDone(); };
+  }
+}
+function returnHomeWithAd(){
+  leaveGame().then(()=>{
+    closeGameOverlay();
+    showAd('forced', ()=>{ goHomeTab(); });
+  });
+}
+// إعلان دوري وسلس في الواجهة الرئيسية (كل 3 دقائق تقريباً، فقط إذا لا توجد نافذة مفتوحة)
+setInterval(()=>{
+  const anyOverlayOpen = document.querySelector('.overlay.show');
+  const adAlreadyShown = document.getElementById('ad-overlay').classList.contains('show');
+  if (!anyOverlayOpen && !adAlreadyShown && !currentGameId){
+    showAd('dismissible');
+  }
+}, 180000);
 document.addEventListener('click', (e)=>{
   const el = e.target.closest('button, .home-tile, .bn-btn, .voice-circle-btn, .icon-btn, .mini-btn, .friends-hub-btn, .cp-swatch');
   if (el) playSound('click');
@@ -1429,7 +1528,7 @@ const TEXT_KEYS = {
   'txt-vs-mine': 'الشخصية التي في يدي',
   'txt-vs-opponent': 'الشخصية التي في يد خصمك',
   'txt-reveal-btn': 'رؤية الشخصية التي في يدي',
-  'txt-leave-btn': 'الخروج من المنافسة'
+  'txt-leave-btn': 'الخروج من التحدي'
 };
 db.ref('settings/textOverrides').on('value', snap=>{
   const overrides = snap.val() || {};
@@ -1805,6 +1904,11 @@ function loadUserProfile(uid){
     renderFriendRequests();
     renderGameInvites();
     if (viewedUserId === uid) renderViewUser();
+    if (currentGame && currentGame.status==='active'){
+      const myRole = currentGame.player1 === currentUserId ? 'player1' : 'player2';
+      const opponentUid = myRole === 'player1' ? currentGame.player2 : currentGame.player1;
+      if (opponentUid === uid) renderOpponentMiniRow(opponentUid);
+    }
   }).catch(()=>{ usersLoading.delete(uid); });
 }
 
@@ -2177,16 +2281,21 @@ db.ref('settings/appConfig/generalCategoryCoverUrl').on('value', snap=>{
 function renderCategoryPickerOptions(){
   const wrap = document.getElementById('category-picker-list');
   const cats = Object.entries(gameCategoriesCache||{}).map(([key,c])=>({key,...c}));
+  const renderCover = (url)=>{
+    if (!url) return '';
+    if (url.startsWith('data:video')) return `<video src="${url}" autoplay muted loop playsinline></video>`;
+    return `<img src="${url}">`;
+  };
   wrap.innerHTML = `
     <button class="category-tile" onclick="chooseCategoryPicker('general')">
-      <div class="category-tile-cover" style="${generalCategoryCoverUrl ? `background-image:url('${generalCategoryCoverUrl}');` : 'display:flex;align-items:center;justify-content:center;'}">
-        ${generalCategoryCoverUrl ? '' : '<i class="fas fa-shapes" style="font-size:26px;color:var(--ink-muted);"></i>'}
+      <div class="category-tile-cover" style="${generalCategoryCoverUrl && !generalCategoryCoverUrl.startsWith('data:video') ? `background-image:url('${generalCategoryCoverUrl}');` : (generalCategoryCoverUrl ? '' : 'display:flex;align-items:center;justify-content:center;')}">
+        ${generalCategoryCoverUrl ? renderCover(generalCategoryCoverUrl) : '<i class="fas fa-shapes" style="font-size:26px;color:var(--ink-muted);"></i>'}
       </div>
       <span>منوّع</span>
     </button>
     ${cats.map(c=>`
       <button class="category-tile" onclick="chooseCategoryPicker('${c.key}')">
-        <div class="category-tile-cover" style="background-image:url('${c.coverUrl||''}');"></div>
+        <div class="category-tile-cover" style="${c.coverUrl && !c.coverUrl.startsWith('data:video') ? `background-image:url('${c.coverUrl}');` : ''}">${c.coverUrl && c.coverUrl.startsWith('data:video') ? renderCover(c.coverUrl) : ''}</div>
         <span>${escapeHtml(c.name||'')}</span>
       </button>
     `).join('')}
@@ -2344,11 +2453,23 @@ let randomMatchCountdownInterval = null;
 
 async function toggleRandomMatch(){
   if (randomMatchWaiting){ cancelRandomMatch(false); return; }
-  if (currentGameId){ showToast('أنت بالفعل داخل منافسة حالياً','error'); return; }
+  if (currentGameId){ showToast('أنت بالفعل داخل منافسة حالياً','error'); openGameOverlay(); return; }
+  const savedCat = localStorage.getItem('preferred_random_category');
+  if (savedCat && Object.keys(getCategoryImagePool(savedCat)).length >= 2){
+    await startRandomMatchFor(savedCat);
+    return;
+  }
   openCategoryPicker(async (cat)=>{
     const pool = getCategoryImagePool(cat);
     if (Object.keys(pool).length < 2){ showToast('لا توجد صور كافية في هذه الفئة بعد','error'); return; }
+    localStorage.setItem('preferred_random_category', cat);
     await startRandomMatchFor(cat);
+  });
+}
+function changeRandomMatchCategory(){
+  openCategoryPicker((cat)=>{
+    localStorage.setItem('preferred_random_category', cat);
+    showToast('تم حفظ فئة اللعب العشوائي، ويمكنك تغييرها متى شئت','success');
   });
 }
 
@@ -2543,6 +2664,7 @@ db.ref('activeGameFor/'+currentUserId).on('value', snap=>{
   if (gid && randomMatchWaiting) stopRandomMatchWaitingLocalOnly();
   currentGameId = gid;
   if (gid){
+    document.getElementById('game-overlay').classList.add('show');
     db.ref('games/'+gid).on('value', s=>{ currentGame = s.val(); renderGameMatchUI(); });
     db.ref('games/'+gid+'/chat').orderByChild('timestamp').limitToLast(100).on('value', s=>{ renderGameChat(s.val()||{}); });
   } else {
@@ -2562,8 +2684,10 @@ function showGameLobby(){
   resumeBgMusicAfterMatch();
 }
 function renderGameMatchUI(){
-  if (!currentGame){ showGameLobby(); return; }
+  const closeBtn = document.getElementById('game-overlay-close-btn');
+  if (!currentGame){ if (closeBtn) closeBtn.style.display='flex'; showGameLobby(); return; }
   if (currentGame.status === 'finished'){
+    if (closeBtn) closeBtn.style.display='flex';
     document.getElementById('game-lobby').style.display = 'none';
     document.getElementById('game-match').style.display = 'none';
     const box = document.getElementById('game-result');
@@ -2577,6 +2701,7 @@ function renderGameMatchUI(){
     return;
   }
   if (currentGame.status === 'waiting'){
+    if (closeBtn) closeBtn.style.display='flex';
     document.getElementById('game-lobby').style.display = 'block';
     document.getElementById('game-match').style.display = 'none';
     document.getElementById('game-result').style.display = 'none';
@@ -2584,6 +2709,7 @@ function renderGameMatchUI(){
     return;
   }
   // active
+  if (closeBtn) closeBtn.style.display='none';
   document.getElementById('game-lobby').style.display = 'none';
   document.getElementById('game-result').style.display = 'none';
   document.getElementById('game-match').style.display = 'block';
@@ -2595,8 +2721,24 @@ function renderGameMatchUI(){
   const gamePool = getCategoryImagePool(currentGame.category);
   const opImg = gamePool[opponentImageId];
   document.getElementById('opponent-visible-img').src = opImg ? opImg.url : '';
+  renderOpponentMiniRow(opponentUid);
   renderRevealState(myImageId, opponentUid);
   if (voiceGameId !== currentGameId) setupVoiceChat(currentGameId, myRole);
+}
+
+function renderOpponentMiniRow(opponentUid){
+  const row = document.getElementById('opponent-mini-row');
+  if (!row || !opponentUid) return;
+  if (usersCache[opponentUid]===undefined){ loadUserProfile(opponentUid); row.innerHTML=''; return; }
+  const u = usersCache[opponentUid] || {};
+  const isFriend = !!friendsCache[opponentUid];
+  row.innerHTML = `
+    <div class="opponent-mini-avatar">${u.avatarUrl ? `<img src="${u.avatarUrl}">` : '<i class="fas fa-user" style="color:var(--ink-muted);"></i>'}</div>
+    <div class="opponent-mini-name">${escapeHtml(u.name||'مستخدم')}</div>
+    ${isFriend
+      ? `<span class="badge"><i class="fas fa-user-check"></i> صديقك بالفعل</span>`
+      : `<button class="mini-btn" onclick="sendFriendRequestTo('${opponentUid}')"><i class="fas fa-user-plus"></i> إضافة صديق</button>`}
+  `;
 }
 
 /* ---------- رؤية اللاعب لشخصيته الخاصة (مستقلة لكل لاعب) ---------- */

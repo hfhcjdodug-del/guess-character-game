@@ -51,6 +51,10 @@
   --shadow-deep:0 16px 40px rgba(90,70,40,0.14);
 }
 *{box-sizing:border-box;}
+button, .btn, .icon-btn, .home-tile, .bn-btn, .voice-circle-btn, .category-tile,
+.settings-toggle-btn, .cp-swatch, .rooms-side-btn, .mini-btn, .voice-btn, .challenge-toast-btn{
+  transition:transform .28s cubic-bezier(.22,1,.36,1), background-color .3s ease, border-color .3s ease, opacity .3s ease, box-shadow .3s ease, color .3s ease !important;
+}
 html,body{height:100%;}
 body{
   margin:0;
@@ -382,6 +386,16 @@ textarea,input,select{font-family:inherit;}
 .home-tile-random span{font-size:13.5px;}
 .home-tile-random.waiting{border-color:var(--danger);background:rgba(239,83,80,0.08);}
 .home-tile-random.waiting i{color:var(--danger);}
+.random-row{display:flex;gap:10px;}
+.random-row .home-tile-random{flex:1;}
+.rooms-side-btn{
+  flex-shrink:0;width:64px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  border-radius:22px;border:1px solid var(--border);background:var(--surface);color:var(--ink-soft);
+  cursor:pointer;font-family:inherit;transition:transform .15s ease,border-color .2s ease;
+}
+.rooms-side-btn:active{transform:scale(0.94);}
+.rooms-side-btn i{font-size:18px;color:var(--violet);}
+.rooms-side-btn span{font-size:10px;font-weight:700;}
 
 /* ---------- اختيار فئة (روم) اللعبة ---------- */
 .category-tiles-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
@@ -541,6 +555,12 @@ textarea,input,select{font-family:inherit;}
 .btn-glow:disabled{opacity:.45;cursor:default;}
 .btn-secondary{background:var(--surface-2);color:var(--ink);border:1px solid var(--border);}
 .btn-danger{background:var(--danger);color:#fff;}
+.btn-small{padding:9px 16px;font-size:12px;border-radius:10px;display:inline-flex;}
+
+.user-row.compact{padding:6px 10px;margin-bottom:6px;}
+.user-row.compact .u-avatar{width:32px;height:32px;}
+.user-row.compact .u-name{font-size:12.5px;}
+.user-row.compact .btn{padding:8px 10px;width:auto;}
 
 #image-upload-section{margin-top:14px;}
 #image-preview-wrap img{width:100%;border-radius:12px;max-height:260px;object-fit:cover;display:block;}
@@ -641,6 +661,20 @@ textarea,input,select{font-family:inherit;}
   display:flex;align-items:center;gap:6px;background:var(--surface-3);border:1px solid var(--border);color:var(--ink-muted);
   border-radius:10px;padding:7px 12px;font-size:11px;white-space:nowrap;
 }
+
+/* ---------- تأثيرات أسماء VIP (7 مستويات) ---------- */
+.vip-name{font-weight:800;}
+.vip-name-1{background:linear-gradient(90deg,#ff4d4d,#ff9d9d,#ff4d4d);background-size:200% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:vipWave1 2.5s linear infinite;}
+.vip-name-2{background:linear-gradient(90deg,#ff6a3d,#ffc27a,#ff6a3d);background-size:200% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:vipWave1 2.2s linear infinite;text-shadow:0 0 6px rgba(255,140,50,.4);}
+.vip-name-3{background:linear-gradient(90deg,#dcbb5a,#fff3c4,#dcbb5a);background-size:200% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:vipWave1 2s linear infinite;text-shadow:0 0 8px rgba(230,200,120,.5);}
+.vip-name-4{background:linear-gradient(90deg,#ffd700,#fff8dc,#ffd700);background-size:200% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:vipWave1 1.8s linear infinite;text-shadow:0 0 10px rgba(255,215,0,.6);}
+.vip-name-5{background:linear-gradient(90deg,#c084fc,#f0abfc,#818cf8,#c084fc);background-size:300% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:vipWave1 1.6s linear infinite;text-shadow:0 0 10px rgba(192,132,252,.6);}
+.vip-name-6{background:linear-gradient(90deg,#ff0055,#ffaa00,#00ff9d,#00aaff,#aa00ff,#ff0055);background-size:400% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:vipWave2 3s linear infinite;text-shadow:0 0 12px rgba(255,255,255,.35);}
+.vip-name-7{background:linear-gradient(90deg,#ff0055,#ffaa00,#fff700,#00ff9d,#00d4ff,#aa00ff,#ff0055);background-size:400% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:vipWave2 2s linear infinite;text-shadow:0 0 16px rgba(255,255,255,.55);letter-spacing:.3px;}
+@keyframes vipWave1{0%{background-position:0% center;}100%{background-position:200% center;}}
+@keyframes vipWave2{0%{background-position:0% center;}100%{background-position:400% center;}}
+.vip-verify-badge{font-size:11px;margin-right:3px;}
+.vip-title-tag{font-size:10px;color:var(--ink-muted);border:1px solid var(--border);border-radius:8px;padding:1px 6px;margin-right:5px;vertical-align:middle;}
 .toast.success{border-color:var(--glow);}
 .toast.error{border-color:var(--danger);}
 @keyframes toastIn{from{opacity:0;transform:translateY(-8px);}to{opacity:1;transform:translateY(0);}}
@@ -918,10 +952,16 @@ textarea,input,select{font-family:inherit;}
     <i class="fas fa-gamepad"></i>
     <span id="txt-tile-play">ابدأ اللعب</span>
   </button>
-  <button class="home-tile home-tile-random" id="random-match-btn" onclick="toggleRandomMatch()" style="grid-column:1/-1;">
-    <i class="fas fa-shuffle"></i>
-    <span id="txt-tile-random">لعب عشوائي</span>
-  </button>
+  <div class="random-row" style="grid-column:1/-1;">
+    <button class="home-tile home-tile-random" id="random-match-btn" onclick="toggleRandomMatch()">
+      <i class="fas fa-shuffle"></i>
+      <span id="txt-tile-random">لعب عشوائي</span>
+    </button>
+    <button class="rooms-side-btn" onclick="changeRandomMatchCategory()" title="تغيير الروم">
+      <i class="fas fa-layer-group"></i>
+      <span>الرومات</span>
+    </button>
+  </div>
 </div>
 
 <!-- Modal: اختيار فئة (روم) اللعبة -->
@@ -1075,6 +1115,7 @@ textarea,input,select{font-family:inherit;}
         </div>
         <span class="cam-badge"><i class="fas fa-camera"></i></span>
       </div>
+      <div id="my-name-preview" style="text-align:center;font-size:14px;margin-bottom:6px;"></div>
       <div class="name-edit-row">
         <input type="text" id="my-name-input" maxlength="30" placeholder="اسمك">
         <button class="btn btn-secondary" onclick="saveMyName()"><i class="fas fa-check"></i></button>
@@ -1083,6 +1124,9 @@ textarea,input,select{font-family:inherit;}
         <span class="id-badge">iD <span id="my-id-value">--</span></span>
         <button class="icon-btn" onclick="copyMyId()" title="نسخ الأيدي"><i class="fas fa-copy"></i></button>
       </div>
+      <div class="section-title"><i class="fas fa-feather"></i> نبذة عني</div>
+      <textarea id="my-bio-input" maxlength="120" rows="3" placeholder="اكتب نبذة قصيرة عن نفسك..." style="width:100%;resize:none;background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:10px 12px;color:var(--ink);font-family:inherit;font-size:13px;margin-bottom:8px;"></textarea>
+      <button class="btn btn-secondary" style="width:100%;" onclick="saveMyBio()"><i class="fas fa-check"></i> حفظ النبذة</button>
     </div>
   </div>
 </div>
@@ -1156,6 +1200,7 @@ textarea,input,select{font-family:inherit;}
       </div>
       <div style="font-size:15px;font-weight:800;margin-top:10px;" id="view-user-name"></div>
       <div class="my-id-row"><span class="id-badge">iD <span id="view-user-id"></span></span></div>
+      <div id="view-user-bio" style="font-size:12.5px;color:var(--ink-soft);text-align:center;margin:6px 0 4px;line-height:1.7;"></div>
       <div id="view-user-actions" style="margin-top:16px;display:flex;flex-direction:column;gap:8px;"></div>
     </div>
   </div>
@@ -1172,14 +1217,14 @@ textarea,input,select{font-family:inherit;}
 
       <div id="game-lobby">
         <div class="section-title"><i class="fas fa-link"></i> ابدأ منافسة برابط دعوة</div>
-        <button class="btn btn-glow" style="width:100%;" onclick="createQuickMatchInvite()"><i class="fas fa-plus"></i> إنشاء رابط منافسة جديد</button>
+        <button class="btn btn-secondary btn-small" style="width:auto;" onclick="createQuickMatchInvite()"><i class="fas fa-plus"></i> إنشاء رابط منافسة جديد</button>
         <div id="quick-match-link-box"></div>
 
         <div class="section-title"><i class="fas fa-bell"></i> دعوات منافسة واردة</div>
         <div id="game-invites-list"><div class="empty-note">لا توجد دعوات حالياً</div></div>
 
-        <div class="section-title"><i class="fas fa-users"></i> تحدَّ أي مستخدم</div>
-        <div id="game-friends-list" class="game-friend-list"><div class="empty-note">جاري تحميل المستخدمين...</div></div>
+        <div class="section-title"><i class="fas fa-users"></i> تحدَّ أحد أصدقائك</div>
+        <div id="game-friends-list" class="game-friend-list"><div class="empty-note">جاري التحميل...</div></div>
       </div>
 
       <div id="game-match" style="display:none;">
@@ -1884,6 +1929,15 @@ db.ref('users/'+currentUserId).on('value', snap=>{
 
 let usersCache = {};
 let usersLoading = new Set();
+const VIP_VERIFY_COLORS = {2:'#f0d020', 3:'#3fa9ff', 4:'#39e67a', 5:'#b76bff', 6:'#ff9a3d', 7:'#ff3b3b'};
+function renderUserNameHtml(u){
+  const name = escapeHtml((u && u.name) || 'مستخدم');
+  const tier = (u && u.vipTier) || 0;
+  const nameHtml = tier>=1 ? `<span class="vip-name vip-name-${tier}">${name}</span>` : `<span>${name}</span>`;
+  const verifyHtml = (tier>=2 && VIP_VERIFY_COLORS[tier]) ? `<i class="fas fa-certificate vip-verify-badge" style="color:${VIP_VERIFY_COLORS[tier]}" title="حساب موثّق"></i>` : '';
+  const titleHtml = (u && u.title) ? `<span class="vip-title-tag">${escapeHtml(u.title)}</span>` : '';
+  return `${nameHtml}${verifyHtml}${titleHtml}`;
+}
 function getUserAvatarHtml(uid){
   const u = usersCache[uid];
   if (u === undefined && !usersLoading.has(uid)) loadUserProfile(uid);
@@ -1915,6 +1969,8 @@ function loadUserProfile(uid){
 function refreshMyProfileUI(){
   document.getElementById('my-id-value').textContent = myPublicId;
   document.getElementById('my-name-input').value = myProfile.name || '';
+  document.getElementById('my-bio-input').value = myProfile.bio || '';
+  document.getElementById('my-name-preview').innerHTML = myProfile.vipTier ? renderUserNameHtml(myProfile) : '';
   const img = document.getElementById('my-avatar-img');
   const ph = document.getElementById('my-avatar-placeholder');
   if (myProfile.avatarUrl){ img.src = myProfile.avatarUrl; img.style.display='block'; ph.style.display='none'; }
@@ -1980,6 +2036,11 @@ async function saveMyName(){
   try{ await db.ref('users/'+currentUserId+'/name').set(name); showToast('تم حفظ الاسم','success'); }
   catch(e){ showToast('تعذّر الحفظ','error'); }
 }
+async function saveMyBio(){
+  const bio = document.getElementById('my-bio-input').value.trim();
+  try{ await db.ref('users/'+currentUserId+'/bio').set(bio || null); showToast('تم حفظ النبذة','success'); }
+  catch(e){ showToast('تعذّر الحفظ','error'); }
+}
 function copyMyId(){
   navigator.clipboard.writeText(myPublicId).then(()=>showToast('تم نسخ الأيدي!','success')).catch(()=>showToast('تعذّر النسخ','error'));
 }
@@ -2024,8 +2085,9 @@ function closeViewUser(){ document.getElementById('view-user-overlay').classList
 function renderViewUser(){
   if (!viewedUserId) return;
   const u = usersCache[viewedUserId] || {};
-  document.getElementById('view-user-name').textContent = u.name || ('مستخدم '+getPublicId(viewedUserId));
+  document.getElementById('view-user-name').innerHTML = u.name ? renderUserNameHtml(u) : ('مستخدم '+getPublicId(viewedUserId));
   document.getElementById('view-user-id').textContent = getPublicId(viewedUserId);
+  document.getElementById('view-user-bio').textContent = u.bio || '';
   const img = document.getElementById('view-user-avatar');
   const ph = document.getElementById('view-user-placeholder');
   if (u.avatarUrl){ img.src = u.avatarUrl; img.style.display='block'; ph.style.display='none'; }
@@ -2321,19 +2383,17 @@ function loadAllUsersOnce(){
 }
 function renderGameFriendsList(){
   const box = document.getElementById('game-friends-list');
-  if (!allUsersLoaded){ box.innerHTML = `<div class="empty-note">جاري تحميل المستخدمين...</div>`; loadAllUsersOnce(); return; }
-  const ids = Object.keys(allUsersCache).filter(uid=>uid !== currentUserId && !blocksCache[uid]);
-  if (!ids.length){ box.innerHTML = `<div class="empty-note">لا يوجد مستخدمون آخرون بعد</div>`; return; }
+  const ids = Object.keys(friendsCache||{}).filter(uid=>uid !== currentUserId && !blocksCache[uid]);
+  if (!ids.length){ box.innerHTML = `<div class="empty-note">لا يوجد أصدقاء بعد. أضف أصدقاء من قسم "الأصدقاء" لتقدر تتحداهم من هنا.</div>`; return; }
   box.innerHTML = ids.map(uid=>{
-    const u = allUsersCache[uid] || {};
-    const isFriend = !!friendsCache[uid];
+    if (usersCache[uid]===undefined) loadUserProfile(uid);
+    const u = usersCache[uid] || {};
     return `
-      <div class="user-row">
+      <div class="user-row compact">
         <div class="u-avatar" style="cursor:pointer;" onclick="openViewUser('${uid}')">${u.avatarUrl ? `<img src="${u.avatarUrl}">` : '<i class="fas fa-user" style="color:var(--ink-muted);"></i>'}</div>
         <div class="u-info" style="cursor:pointer;" onclick="openViewUser('${uid}')"><div class="u-name">${escapeHtml(u.name||'مستخدم')}</div></div>
         <div class="u-actions">
           <button class="btn btn-glow" onclick="sendGameInviteAndOpen('${uid}')" title="تحدٍّ"><i class="fas fa-gamepad"></i></button>
-          ${isFriend ? '' : `<button class="btn btn-secondary" onclick="sendFriendRequestTo('${uid}')" title="طلب صداقة"><i class="fas fa-user-plus"></i></button>`}
         </div>
       </div>`;
   }).join('');
@@ -2416,8 +2476,7 @@ db.ref('gameInvites/'+currentUserId).on('value', snap=>{
     const showCard = ()=>{
       const u = usersCache[fromUid] || {};
       enqueueChallengeCard({
-        name: u.name || ('مستخدم '+getPublicId(fromUid)),
-        avatarUrl: u.avatarUrl || '',
+        user: { name: u.name || ('مستخدم '+getPublicId(fromUid)), avatarUrl: u.avatarUrl||'', vipTier: u.vipTier||0, title: u.title||null },
         onAccept: ()=> acceptGameInvite(iid, fromUid),
         onDecline: ()=> db.ref('gameInvites/'+currentUserId+'/'+iid).remove()
       });
@@ -2577,16 +2636,16 @@ function processChallengeQueue(){
   challengeShowing = true;
   const item = challengeQueue.shift();
   challengeActive = item;
-  renderChallengeConfirm(item.name, item.avatarUrl);
+  renderChallengeConfirm(item.user);
   document.getElementById('challenge-toast').classList.add('show');
   playSound('challenge');
   clearTimeout(challengeAutoTimer);
   challengeAutoTimer = setTimeout(()=>{ closeChallengeCard(); }, 5000);
 }
-function renderChallengeConfirm(name, avatarUrl){
-  document.getElementById('challenge-toast-name').textContent = name;
-  document.getElementById('challenge-toast-avatar').innerHTML = avatarUrl
-    ? `<img src="${avatarUrl}">`
+function renderChallengeConfirm(u){
+  document.getElementById('challenge-toast-name').innerHTML = renderUserNameHtml(u);
+  document.getElementById('challenge-toast-avatar').innerHTML = (u && u.avatarUrl)
+    ? `<img src="${u.avatarUrl}">`
     : '<i class="fas fa-user" style="color:var(--ink-muted);"></i>';
 }
 function closeChallengeCard(){
@@ -2626,8 +2685,7 @@ function declineIncomingChallenge(){
     const showLinkCard = ()=>{
       const u = usersCache[fromUid] || {};
       enqueueChallengeCard({
-        name: u.name || ('مستخدم '+getPublicId(fromUid)),
-        avatarUrl: u.avatarUrl || '',
+        user: { name: u.name || ('مستخدم '+getPublicId(fromUid)), avatarUrl: u.avatarUrl||'', vipTier: u.vipTier||0, title: u.title||null },
         onAccept: ()=> acceptLinkChallenge(gid, fromUid),
         onDecline: ()=>{}
       });
@@ -2734,7 +2792,7 @@ function renderOpponentMiniRow(opponentUid){
   const isFriend = !!friendsCache[opponentUid];
   row.innerHTML = `
     <div class="opponent-mini-avatar">${u.avatarUrl ? `<img src="${u.avatarUrl}">` : '<i class="fas fa-user" style="color:var(--ink-muted);"></i>'}</div>
-    <div class="opponent-mini-name">${escapeHtml(u.name||'مستخدم')}</div>
+    <div class="opponent-mini-name">${renderUserNameHtml(u)}</div>
     ${isFriend
       ? `<span class="badge"><i class="fas fa-user-check"></i> صديقك بالفعل</span>`
       : `<button class="mini-btn" onclick="sendFriendRequestTo('${opponentUid}')"><i class="fas fa-user-plus"></i> إضافة صديق</button>`}

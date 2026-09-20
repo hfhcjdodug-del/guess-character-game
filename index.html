@@ -662,19 +662,54 @@ textarea,input,select{font-family:inherit;}
   border-radius:10px;padding:7px 12px;font-size:11px;white-space:nowrap;
 }
 
-/* ---------- تأثيرات أسماء VIP (7 مستويات) ---------- */
-.vip-name{font-weight:800;}
-.vip-name-1{background:linear-gradient(90deg,#ff4d4d,#ff9d9d,#ff4d4d);background-size:200% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:vipWave1 2.5s linear infinite;}
-.vip-name-2{background:linear-gradient(90deg,#ff6a3d,#ffc27a,#ff6a3d);background-size:200% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:vipWave1 2.2s linear infinite;text-shadow:0 0 6px rgba(255,140,50,.4);}
-.vip-name-3{background:linear-gradient(90deg,#dcbb5a,#fff3c4,#dcbb5a);background-size:200% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:vipWave1 2s linear infinite;text-shadow:0 0 8px rgba(230,200,120,.5);}
-.vip-name-4{background:linear-gradient(90deg,#ffd700,#fff8dc,#ffd700);background-size:200% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:vipWave1 1.8s linear infinite;text-shadow:0 0 10px rgba(255,215,0,.6);}
-.vip-name-5{background:linear-gradient(90deg,#c084fc,#f0abfc,#818cf8,#c084fc);background-size:300% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:vipWave1 1.6s linear infinite;text-shadow:0 0 10px rgba(192,132,252,.6);}
-.vip-name-6{background:linear-gradient(90deg,#ff0055,#ffaa00,#00ff9d,#00aaff,#aa00ff,#ff0055);background-size:400% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:vipWave2 3s linear infinite;text-shadow:0 0 12px rgba(255,255,255,.35);}
-.vip-name-7{background:linear-gradient(90deg,#ff0055,#ffaa00,#fff700,#00ff9d,#00d4ff,#aa00ff,#ff0055);background-size:400% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:vipWave2 2s linear infinite;text-shadow:0 0 16px rgba(255,255,255,.55);letter-spacing:.3px;}
-@keyframes vipWave1{0%{background-position:0% center;}100%{background-position:200% center;}}
-@keyframes vipWave2{0%{background-position:0% center;}100%{background-position:400% center;}}
-.vip-verify-badge{font-size:11px;margin-right:3px;}
-.vip-title-tag{font-size:10px;color:var(--ink-muted);border:1px solid var(--border);border-radius:8px;padding:1px 6px;margin-right:5px;vertical-align:middle;}
+/* ---------- نظام VIP الفاخر (7 مستويات) - إطارات، شارات، ألقاب ---------- */
+.vip-inline-badges{display:inline-flex;align-items:center;gap:4px;vertical-align:middle;}
+.vip-verified-badge{
+  position:relative;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;
+  width:16px;height:16px;flex-shrink:0;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.35));
+}
+.vip-verified-badge svg{width:100%;height:100%;display:block;}
+.vip-verified-badge::after{
+  content:'';position:absolute;top:0;bottom:0;left:-45%;width:35%;
+  background:linear-gradient(115deg,transparent,rgba(255,255,255,0.85),transparent);
+  animation:vipShine 2.6s ease-in-out infinite;pointer-events:none;
+}
+.vip-pill{
+  position:relative;overflow:hidden;display:inline-flex;align-items:center;gap:4px;
+  font-size:10px;font-weight:900;letter-spacing:.4px;padding:2px 8px;border-radius:9px;
+  box-shadow:0 3px 10px rgba(0,0,0,0.25);
+}
+.vip-pill::after{
+  content:'';position:absolute;top:0;bottom:0;width:35%;left:-45%;
+  background:linear-gradient(115deg,transparent,rgba(255,255,255,0.8),transparent);
+  animation:vipShine 2.6s ease-in-out infinite;
+}
+.vip-pill-1{color:#3a2405;background:linear-gradient(135deg,#e8a87c,#cd7f32,#8b5a2b);}
+.vip-pill-2{color:#04210f;background:linear-gradient(135deg,#adff2f,#39ff14,#0aff99);text-shadow:0 0 6px rgba(57,255,20,.4);}
+.vip-pill-3{color:#2a2a2a;background:linear-gradient(135deg,#ffffff,#e8e8e8,#b8b8b8);}
+.vip-pill-4{color:#3a2405;background:linear-gradient(135deg,#ffe6a8,#f0b06c,#c97a3f);}
+.vip-pill-5{color:#1c0f33;background:linear-gradient(135deg,#f0b06c,#c9aef7,#a493ff);}
+.vip-pill-6{color:#fff;background:linear-gradient(135deg,#ff8a3d,#ff512f,#dd2476);}
+.vip-pill-7{color:#0c0c14;background:linear-gradient(135deg,#e0f7ff,#8ec9ff,#c9aef7,#ffffff);}
+.vip-title-pill{
+  background:linear-gradient(135deg,var(--glow),var(--glow-2));color:#241304;
+  font-size:10.5px;font-weight:800;padding:3px 11px;border-radius:13px;
+  display:inline-flex;align-items:center;gap:4px;box-shadow:0 3px 10px rgba(224,146,90,0.3);
+}
+.vip-titles-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:4px;}
+.vip-name-plain{font-weight:800;}
+
+/* إطارات الصورة الرمزية حسب مستوى VIP (تُستخدم مع .avatar-frame الموجودة) */
+.avatar-frame.frame-vip1::before{content:'';position:absolute;inset:-4px;border-radius:50%;z-index:1;background:conic-gradient(from var(--frame-angle,0deg),#cd7f32,#e8a87c,#8b5a2b,#cd7f32);animation:frameSpin 4s linear infinite;}
+.avatar-frame.frame-vip2::before{content:'';position:absolute;inset:-4px;border-radius:50%;z-index:1;background:conic-gradient(from var(--frame-angle,0deg),#39ff14,#adff2f,#0aff99,#39ff14);animation:frameSpin 3.6s linear infinite;box-shadow:0 0 16px rgba(57,255,20,.5);}
+.avatar-frame.frame-vip3::before{content:'';position:absolute;inset:-4px;border-radius:50%;z-index:1;background:conic-gradient(from var(--frame-angle,0deg),#ffffff,#e8e8e8,#b8b8b8,#ffffff);animation:frameSpin 3.2s linear infinite;}
+.avatar-frame.frame-vip4::before{content:'';position:absolute;inset:-4px;border-radius:50%;z-index:1;background:conic-gradient(from var(--frame-angle,0deg),#ffe6a8,#f0b06c,#c97a3f,#ffe6a8);animation:frameSpin 3s linear infinite;}
+.avatar-frame.frame-vip5::before{content:'';position:absolute;inset:-4px;border-radius:50%;z-index:1;background:conic-gradient(from var(--frame-angle,0deg),#f0b06c,#a493ff,#c9aef7,#f0b06c);animation:frameSpin 2.6s linear infinite;box-shadow:0 0 16px rgba(164,147,255,.4);}
+.avatar-frame.frame-vip6::before{content:'';position:absolute;inset:-4px;border-radius:50%;z-index:1;background:conic-gradient(from var(--frame-angle,0deg),#ff8a3d,#ff512f,#dd2476,#ff8a3d);animation:frameSpin 2.2s linear infinite;box-shadow:0 0 18px rgba(255,81,47,.55);}
+.avatar-frame.frame-vip7::before{content:'';position:absolute;inset:-4px;border-radius:50%;z-index:1;background:conic-gradient(from var(--frame-angle,0deg),#e0f7ff,#8ec9ff,#c9aef7,#ffffff,#e0f7ff);animation:frameSpin 1.8s linear infinite;box-shadow:0 0 22px rgba(142,201,255,.6);}
+
+/* صف اسم الخصم أثناء المباراة - يحتاج ترتيب رأسي عند وجود شارات VIP */
+.opponent-mini-name-wrap{flex:1;min-width:0;}
 .toast.success{border-color:var(--glow);}
 .toast.error{border-color:var(--danger);}
 @keyframes toastIn{from{opacity:0;transform:translateY(-8px);}to{opacity:1;transform:translateY(0);}}
@@ -794,7 +829,7 @@ textarea,input,select{font-family:inherit;}
 .media-view-close{position:absolute;top:calc(16px + env(safe-area-inset-top));left:16px;width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,0.12);color:#fff;border:none;font-size:16px;cursor:pointer;}
 
 /* ---------- الملف الشخصي للمستخدم / الأصدقاء ---------- */
-.my-avatar-upload{position:relative;width:84px;height:84px;margin:0 auto;cursor:pointer;}
+.my-avatar-upload{position:relative;width:104px;height:104px;margin:0 auto;cursor:pointer;}
 .avatar-photo-mask{width:100%;height:100%;border-radius:50%;overflow:hidden;background:var(--surface-2);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;}
 .avatar-photo-mask img{width:100%;height:100%;object-fit:cover;}
 .my-avatar-upload .cam-badge{position:absolute;bottom:-2px;right:-2px;width:26px;height:26px;border-radius:50%;background:var(--glow);color:#241304;display:flex;align-items:center;justify-content:center;font-size:11px;border:2px solid var(--surface);}
@@ -1108,14 +1143,15 @@ textarea,input,select{font-family:inherit;}
     <div class="sheet-body">
       <div class="section-title" style="margin-top:0;"><i class="fas fa-pen"></i> تعديل الملف الشخصي</div>
       <input type="file" id="my-avatar-input" accept="image/*" style="display:none" onchange="handleMyAvatarSelect(event)">
-      <div class="my-avatar-upload" onclick="document.getElementById('my-avatar-input').click()">
+      <div class="my-avatar-upload" id="my-avatar-frame" onclick="document.getElementById('my-avatar-input').click()">
         <div class="avatar-photo-mask">
           <img id="my-avatar-img" src="" style="display:none;">
-          <i class="fas fa-user" id="my-avatar-placeholder" style="font-size:30px;color:var(--ink-muted);"></i>
+          <i class="fas fa-user" id="my-avatar-placeholder" style="font-size:34px;color:var(--ink-muted);"></i>
         </div>
         <span class="cam-badge"><i class="fas fa-camera"></i></span>
       </div>
-      <div id="my-name-preview" style="text-align:center;font-size:14px;margin-bottom:6px;"></div>
+      <div id="my-name-preview" style="text-align:center;font-size:15px;margin-bottom:4px;"></div>
+      <div id="my-titles-preview" style="justify-content:center;margin-bottom:8px;"></div>
       <div class="name-edit-row">
         <input type="text" id="my-name-input" maxlength="30" placeholder="اسمك">
         <button class="btn btn-secondary" onclick="saveMyName()"><i class="fas fa-check"></i></button>
@@ -1192,16 +1228,21 @@ textarea,input,select{font-family:inherit;}
       <button class="icon-btn" onclick="closeViewUser()"><i class="fas fa-xmark"></i></button>
     </div>
     <div class="sheet-body" style="text-align:center;">
-      <div class="my-avatar-upload" style="cursor:default;">
+      <div class="my-avatar-upload" id="view-user-avatar-frame" style="cursor:default;">
         <div class="avatar-photo-mask">
           <img id="view-user-avatar" src="" style="display:none;">
           <i class="fas fa-user" id="view-user-placeholder" style="font-size:30px;color:var(--ink-muted);"></i>
         </div>
       </div>
       <div style="font-size:15px;font-weight:800;margin-top:10px;" id="view-user-name"></div>
+      <div id="view-user-titles" style="display:flex;justify-content:center;margin-top:2px;"></div>
       <div class="my-id-row"><span class="id-badge">iD <span id="view-user-id"></span></span></div>
       <div id="view-user-bio" style="font-size:12.5px;color:var(--ink-soft);text-align:center;margin:6px 0 4px;line-height:1.7;"></div>
-      <div id="view-user-actions" style="margin-top:16px;display:flex;flex-direction:column;gap:8px;"></div>
+      <div style="display:flex;justify-content:center;gap:22px;margin:8px 0;">
+        <div style="text-align:center;"><div style="font-size:15px;font-weight:800;color:var(--glow);" id="view-user-followers-count">0</div><div style="font-size:10px;color:var(--ink-muted);">متابعون</div></div>
+      </div>
+      <button class="btn" id="view-user-follow-btn" style="width:100%;margin-bottom:6px;" onclick="toggleFollowUser()"><i class="fas fa-user-plus"></i> متابعة</button>
+      <div id="view-user-actions" style="margin-top:6px;display:flex;flex-direction:column;gap:8px;"></div>
     </div>
   </div>
 </div>
@@ -1929,14 +1970,36 @@ db.ref('users/'+currentUserId).on('value', snap=>{
 
 let usersCache = {};
 let usersLoading = new Set();
+const VIP_TIER_LABELS = {1:'VIP 1',2:'VIP 2',3:'VIP 3',4:'VIP 4',5:'VIP 5',6:'VIP 6',7:'VIP 7'};
 const VIP_VERIFY_COLORS = {2:'#f0d020', 3:'#3fa9ff', 4:'#39e67a', 5:'#b76bff', 6:'#ff9a3d', 7:'#ff3b3b'};
-function renderUserNameHtml(u){
-  const name = escapeHtml((u && u.name) || 'مستخدم');
+function vipVerifiedBadgeSvg(color){
+  return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;"><polygon points="50.0,4.0 58.5,18.1 73.0,10.2 73.3,26.7 89.8,27.0 81.9,41.5 96.0,50.0 81.9,58.5 89.8,73.0 73.3,73.3 73.0,89.8 58.5,81.9 50.0,96.0 41.5,81.9 27.0,89.8 26.7,73.3 10.2,73.0 18.1,58.5 4.0,50.0 18.1,41.5 10.2,27.0 26.7,26.7 27.0,10.2 41.5,18.1" fill="${color}"/><path d="M30 51 L44 65 L72 35" fill="none" stroke="#ffffff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+}
+function getUserTitlesArray(u){
+  if (!u) return [];
+  if (Array.isArray(u.titles)) return u.titles;
+  return u.title ? [u.title] : [];
+}
+function getUserFrameClass(u){
   const tier = (u && u.vipTier) || 0;
-  const nameHtml = tier>=1 ? `<span class="vip-name vip-name-${tier}">${name}</span>` : `<span>${name}</span>`;
-  const verifyHtml = (tier>=2 && VIP_VERIFY_COLORS[tier]) ? `<i class="fas fa-certificate vip-verify-badge" style="color:${VIP_VERIFY_COLORS[tier]}" title="حساب موثّق"></i>` : '';
-  const titleHtml = (u && u.title) ? `<span class="vip-title-tag">${escapeHtml(u.title)}</span>` : '';
-  return `${nameHtml}${verifyHtml}${titleHtml}`;
+  return tier ? ('frame-vip'+tier) : 'frame-none';
+}
+function renderUserNameHtml(u){
+  return `<span class="vip-name-plain">${escapeHtml((u && u.name) || 'مستخدم')}</span>`;
+}
+function renderUserVipBadgesHtml(u){
+  const tier = (u && u.vipTier) || 0;
+  if (!tier) return '';
+  let html = `<span class="vip-inline-badges">`;
+  if (VIP_VERIFY_COLORS[tier]) html += `<span class="vip-verified-badge" title="حساب موثّق">${vipVerifiedBadgeSvg(VIP_VERIFY_COLORS[tier])}</span>`;
+  html += `<span class="vip-pill vip-pill-${tier}"><i class="fas fa-crown"></i> ${VIP_TIER_LABELS[tier]}</span>`;
+  html += `</span>`;
+  return html;
+}
+function renderUserTitlesHtml(u){
+  const titles = getUserTitlesArray(u);
+  if (!titles.length) return '';
+  return `<div class="vip-titles-row">${titles.map(t=>`<span class="vip-title-pill"><i class="fas fa-gem"></i> ${escapeHtml(t)}</span>`).join('')}</div>`;
 }
 function getUserAvatarHtml(uid){
   const u = usersCache[uid];
@@ -1970,7 +2033,9 @@ function refreshMyProfileUI(){
   document.getElementById('my-id-value').textContent = myPublicId;
   document.getElementById('my-name-input').value = myProfile.name || '';
   document.getElementById('my-bio-input').value = myProfile.bio || '';
-  document.getElementById('my-name-preview').innerHTML = myProfile.vipTier ? renderUserNameHtml(myProfile) : '';
+  document.getElementById('my-name-preview').innerHTML = myProfile.vipTier ? (renderUserNameHtml(myProfile) + ' ' + renderUserVipBadgesHtml(myProfile)) : '';
+  document.getElementById('my-titles-preview').innerHTML = renderUserTitlesHtml(myProfile);
+  document.getElementById('my-avatar-frame').className = 'my-avatar-upload avatar-frame ' + getUserFrameClass(myProfile);
   const img = document.getElementById('my-avatar-img');
   const ph = document.getElementById('my-avatar-placeholder');
   if (myProfile.avatarUrl){ img.src = myProfile.avatarUrl; img.style.display='block'; ph.style.display='none'; }
@@ -2074,18 +2139,56 @@ function handleMyAvatarSelect(e){
 }
 
 // ---------- البحث عن مستخدم / عرض ملفه ----------
+let myFollowingCache = {};
+db.ref('following/'+currentUserId).on('value', snap=>{
+  myFollowingCache = snap.val() || {};
+  updateFollowButtonUI();
+});
+let viewedUserFollowersRef = null;
+function updateFollowButtonUI(){
+  const btn = document.getElementById('view-user-follow-btn');
+  if (!btn || !viewedUserId) return;
+  const isFollowing = !!myFollowingCache[viewedUserId];
+  btn.classList.toggle('btn-glow', !isFollowing);
+  btn.classList.toggle('btn-secondary', isFollowing);
+  btn.innerHTML = isFollowing ? '<i class="fas fa-user-check"></i> متابَع' : '<i class="fas fa-user-plus"></i> متابعة';
+}
+async function toggleFollowUser(){
+  if (!viewedUserId || viewedUserId===currentUserId) return;
+  const isFollowing = !!myFollowingCache[viewedUserId];
+  try{
+    if (isFollowing){
+      await db.ref('follows/'+viewedUserId+'/'+currentUserId).remove();
+      await db.ref('following/'+currentUserId+'/'+viewedUserId).remove();
+    } else {
+      await db.ref('follows/'+viewedUserId+'/'+currentUserId).set(true);
+      await db.ref('following/'+currentUserId+'/'+viewedUserId).set(true);
+    }
+  }catch(e){ showToast('تعذّرت العملية','error'); }
+}
 let viewedUserId = null;
 function openViewUser(uid){
   viewedUserId = uid;
   if (usersCache[uid] === undefined) loadUserProfile(uid);
+  if (viewedUserFollowersRef) viewedUserFollowersRef.off();
+  viewedUserFollowersRef = db.ref('follows/'+uid);
+  viewedUserFollowersRef.on('value', snap=>{
+    const el = document.getElementById('view-user-followers-count');
+    if (el) el.textContent = snap.exists() ? Object.keys(snap.val()).length : 0;
+  });
+  const followBtn = document.getElementById('view-user-follow-btn');
+  if (followBtn) followBtn.style.display = (uid===currentUserId) ? 'none' : 'flex';
   renderViewUser();
+  updateFollowButtonUI();
   document.getElementById('view-user-overlay').classList.add('show');
 }
 function closeViewUser(){ document.getElementById('view-user-overlay').classList.remove('show'); }
 function renderViewUser(){
   if (!viewedUserId) return;
   const u = usersCache[viewedUserId] || {};
-  document.getElementById('view-user-name').innerHTML = u.name ? renderUserNameHtml(u) : ('مستخدم '+getPublicId(viewedUserId));
+  document.getElementById('view-user-name').innerHTML = (u.name ? renderUserNameHtml(u) : ('مستخدم '+getPublicId(viewedUserId))) + ' ' + renderUserVipBadgesHtml(u);
+  document.getElementById('view-user-titles').innerHTML = renderUserTitlesHtml(u);
+  document.getElementById('view-user-avatar-frame').className = 'my-avatar-upload avatar-frame ' + getUserFrameClass(u);
   document.getElementById('view-user-id').textContent = getPublicId(viewedUserId);
   document.getElementById('view-user-bio').textContent = u.bio || '';
   const img = document.getElementById('view-user-avatar');
@@ -2643,7 +2746,7 @@ function processChallengeQueue(){
   challengeAutoTimer = setTimeout(()=>{ closeChallengeCard(); }, 5000);
 }
 function renderChallengeConfirm(u){
-  document.getElementById('challenge-toast-name').innerHTML = renderUserNameHtml(u);
+  document.getElementById('challenge-toast-name').innerHTML = renderUserNameHtml(u) + ' ' + renderUserVipBadgesHtml(u);
   document.getElementById('challenge-toast-avatar').innerHTML = (u && u.avatarUrl)
     ? `<img src="${u.avatarUrl}">`
     : '<i class="fas fa-user" style="color:var(--ink-muted);"></i>';
@@ -2792,7 +2895,10 @@ function renderOpponentMiniRow(opponentUid){
   const isFriend = !!friendsCache[opponentUid];
   row.innerHTML = `
     <div class="opponent-mini-avatar">${u.avatarUrl ? `<img src="${u.avatarUrl}">` : '<i class="fas fa-user" style="color:var(--ink-muted);"></i>'}</div>
-    <div class="opponent-mini-name">${renderUserNameHtml(u)}</div>
+    <div class="opponent-mini-name-wrap">
+      <div class="opponent-mini-name">${renderUserNameHtml(u)} ${renderUserVipBadgesHtml(u)}</div>
+      ${renderUserTitlesHtml(u)}
+    </div>
     ${isFriend
       ? `<span class="badge"><i class="fas fa-user-check"></i> صديقك بالفعل</span>`
       : `<button class="mini-btn" onclick="sendFriendRequestTo('${opponentUid}')"><i class="fas fa-user-plus"></i> إضافة صديق</button>`}

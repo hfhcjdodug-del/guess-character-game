@@ -666,16 +666,13 @@ textarea,input,select{font-family:inherit;}
 .vip-inline-badges{display:inline-flex;align-items:center;gap:4px;vertical-align:middle;}
 .vip-verified-badge{
   position:relative;display:inline-flex;align-items:center;justify-content:center;
-  width:16px;height:16px;flex-shrink:0;border-radius:50%;overflow:hidden;
-  filter:drop-shadow(0 1px 2px rgba(0,0,0,0.35));
+  width:16px;height:16px;flex-shrink:0;
 }
-.vip-verified-badge svg{width:100%;height:100%;display:block;position:relative;z-index:2;}
-.vip-verified-badge::after{
-  content:'';position:absolute;inset:-40%;border-radius:50%;z-index:1;
-  background:conic-gradient(from 0deg, transparent, rgba(255,255,255,0.9), transparent 40%);
-  animation:vipBadgeSpin 2.2s linear infinite;
+.vip-verified-badge svg{width:100%;height:100%;display:block;animation:vipBadgePulse 1.8s ease-in-out infinite;}
+@keyframes vipBadgePulse{
+  0%,100%{filter:drop-shadow(0 0 1px var(--vip-glow,#fff)) drop-shadow(0 0 2px var(--vip-glow,#fff)) brightness(1);}
+  50%{filter:drop-shadow(0 0 3px var(--vip-glow,#fff)) drop-shadow(0 0 7px var(--vip-glow,#fff)) brightness(1.3);}
 }
-@keyframes vipBadgeSpin{to{transform:rotate(360deg);}}
 .vip-pill{
   position:relative;overflow:hidden;display:inline-flex;align-items:center;gap:4px;
   font-size:10px;font-weight:900;letter-spacing:.4px;padding:2px 8px;border-radius:9px;
@@ -702,13 +699,13 @@ textarea,input,select{font-family:inherit;}
 .vip-name-plain{font-weight:800;}
 
 /* إطارات الصورة الرمزية حسب مستوى VIP (تُستخدم مع .avatar-frame الموجودة) */
-.avatar-frame.frame-vip1::before{content:'';position:absolute;inset:-4px;border-radius:50%;z-index:1;background:conic-gradient(from var(--frame-angle,0deg),#cd7f32,#e8a87c,#8b5a2b,#cd7f32);animation:frameSpin 4s linear infinite;}
-.avatar-frame.frame-vip2::before{content:'';position:absolute;inset:-4px;border-radius:50%;z-index:1;background:conic-gradient(from var(--frame-angle,0deg),#39ff14,#adff2f,#0aff99,#39ff14);animation:frameSpin 3.6s linear infinite;box-shadow:0 0 16px rgba(57,255,20,.5);}
-.avatar-frame.frame-vip3::before{content:'';position:absolute;inset:-4px;border-radius:50%;z-index:1;background:conic-gradient(from var(--frame-angle,0deg),#ffffff,#e8e8e8,#b8b8b8,#ffffff);animation:frameSpin 3.2s linear infinite;}
-.avatar-frame.frame-vip4::before{content:'';position:absolute;inset:-4px;border-radius:50%;z-index:1;background:conic-gradient(from var(--frame-angle,0deg),#ffe6a8,#f0b06c,#c97a3f,#ffe6a8);animation:frameSpin 3s linear infinite;}
-.avatar-frame.frame-vip5::before{content:'';position:absolute;inset:-4px;border-radius:50%;z-index:1;background:conic-gradient(from var(--frame-angle,0deg),#f0b06c,#a493ff,#c9aef7,#f0b06c);animation:frameSpin 2.6s linear infinite;box-shadow:0 0 16px rgba(164,147,255,.4);}
-.avatar-frame.frame-vip6::before{content:'';position:absolute;inset:-4px;border-radius:50%;z-index:1;background:conic-gradient(from var(--frame-angle,0deg),#ff8a3d,#ff512f,#dd2476,#ff8a3d);animation:frameSpin 2.2s linear infinite;box-shadow:0 0 18px rgba(255,81,47,.55);}
-.avatar-frame.frame-vip7::before{content:'';position:absolute;inset:-4px;border-radius:50%;z-index:1;background:conic-gradient(from var(--frame-angle,0deg),#e0f7ff,#8ec9ff,#c9aef7,#ffffff,#e0f7ff);animation:frameSpin 1.8s linear infinite;box-shadow:0 0 22px rgba(142,201,255,.6);}
+.avatar-frame.frame-vip1::before{content:'';position:absolute;inset:-4px;border-radius:50%;z-index:1;background:conic-gradient(from 0deg,#cd7f32,#e8a87c,#8b5a2b,#cd7f32);animation:frameSpinT 4s linear infinite;will-change:transform;}
+.avatar-frame.frame-vip2::before{content:'';position:absolute;inset:-4px;border-radius:50%;z-index:1;background:conic-gradient(from 0deg,#39ff14,#adff2f,#0aff99,#39ff14);animation:frameSpinT 3.6s linear infinite;will-change:transform;box-shadow:0 0 16px rgba(57,255,20,.5);}
+.avatar-frame.frame-vip3::before{content:'';position:absolute;inset:-4px;border-radius:50%;z-index:1;background:conic-gradient(from 0deg,#ffffff,#e8e8e8,#b8b8b8,#ffffff);animation:frameSpinT 3.2s linear infinite;will-change:transform;}
+.avatar-frame.frame-vip4::before{content:'';position:absolute;inset:-4px;border-radius:50%;z-index:1;background:conic-gradient(from 0deg,#ffe6a8,#f0b06c,#c97a3f,#ffe6a8);animation:frameSpinT 3s linear infinite;will-change:transform;}
+.avatar-frame.frame-vip5::before{content:'';position:absolute;inset:-4px;border-radius:50%;z-index:1;background:conic-gradient(from 0deg,#f0b06c,#a493ff,#c9aef7,#f0b06c);animation:frameSpinT 2.6s linear infinite;will-change:transform;box-shadow:0 0 16px rgba(164,147,255,.4);}
+.avatar-frame.frame-vip6::before{content:'';position:absolute;inset:-4px;border-radius:50%;z-index:1;background:conic-gradient(from 0deg,#ff8a3d,#ff512f,#dd2476,#ff8a3d);animation:frameSpinT 2.2s linear infinite;will-change:transform;box-shadow:0 0 18px rgba(255,81,47,.55);}
+.avatar-frame.frame-vip7::before{content:'';position:absolute;inset:-4px;border-radius:50%;z-index:1;background:conic-gradient(from 0deg,#e0f7ff,#8ec9ff,#c9aef7,#ffffff,#e0f7ff);animation:frameSpinT 1.8s linear infinite;will-change:transform;box-shadow:0 0 22px rgba(142,201,255,.6);}
 
 /* صف اسم الخصم أثناء المباراة - يحتاج ترتيب رأسي عند وجود شارات VIP */
 .opponent-mini-name-wrap{flex:1;min-width:0;}
@@ -738,18 +735,17 @@ textarea,input,select{font-family:inherit;}
 .avatar-frame.frame-gold::before,
 .avatar-frame.frame-violet::before{
   content:'';position:absolute;inset:-4px;border-radius:50%;z-index:1;
-  background:conic-gradient(from var(--frame-angle,0deg), #f7d18a, #a493ff, #f0925a, #a493ff, #f7d18a);
-  animation:frameSpin 3.5s linear infinite;
+  background:conic-gradient(from 0deg, #f7d18a, #a493ff, #f0925a, #a493ff, #f7d18a);
+  animation:frameSpinT 3.5s linear infinite;will-change:transform;
 }
 .avatar-frame.frame-violet::before{
-  background:conic-gradient(from var(--frame-angle,0deg), #a493ff, #6a58c9, #c9aef7, #6a58c9, #a493ff);
+  background:conic-gradient(from 0deg, #a493ff, #6a58c9, #c9aef7, #6a58c9, #a493ff);
 }
 .avatar-frame.frame-none::before{display:none;}
 .avatar-frame::after{
   content:'';position:absolute;inset:-1px;border-radius:50%;z-index:2;background:var(--bg-2);
 }
-@keyframes frameSpin{to{--frame-angle:360deg;}}
-@property --frame-angle{syntax:'<angle>';inherits:true;initial-value:0deg;}
+@keyframes frameSpinT{to{transform:rotate(360deg);}}
 
 .profile-hero{display:flex;flex-direction:column;align-items:center;text-align:center;padding:6px 4px 18px;}
 .profile-hero .avatar-frame{width:104px;height:104px;margin-bottom:14px;}
@@ -1154,7 +1150,7 @@ textarea,input,select{font-family:inherit;}
         <div id="my-name-view" style="font-size:16px;margin-top:12px;"></div>
         <div id="my-titles-view" style="display:flex;justify-content:center;flex-wrap:wrap;margin-top:5px;"></div>
         <div class="my-id-row" style="justify-content:center;margin-top:10px;">
-          <span class="id-badge">iD <span id="my-id-value-view">--</span></span>
+          <span class="id-badge" id="my-id-badge-view">iD <span id="my-id-value-view">--</span></span>
         </div>
         <div id="my-bio-view" class="profile-bio" style="margin:12px auto 0;"></div>
         <button class="btn btn-secondary btn-small" style="margin-top:20px;" onclick="enterProfileEditMode()"><i class="fas fa-pen"></i> تعديل</button>
@@ -1174,7 +1170,7 @@ textarea,input,select{font-family:inherit;}
           <button class="btn btn-secondary" onclick="saveMyName()"><i class="fas fa-check"></i></button>
         </div>
         <div class="my-id-row">
-          <span class="id-badge">iD <span id="my-id-value">--</span></span>
+          <span class="id-badge" id="my-id-badge-edit">iD <span id="my-id-value">--</span></span>
           <button class="icon-btn" onclick="copyMyId()" title="نسخ الأيدي"><i class="fas fa-copy"></i></button>
         </div>
         <div class="section-title"><i class="fas fa-feather"></i> نبذة عني</div>
@@ -1255,7 +1251,7 @@ textarea,input,select{font-family:inherit;}
       </div>
       <div style="font-size:15px;font-weight:800;margin-top:10px;" id="view-user-name"></div>
       <div id="view-user-titles" style="display:flex;justify-content:center;margin-top:2px;"></div>
-      <div class="my-id-row"><span class="id-badge">iD <span id="view-user-id"></span></span></div>
+      <div class="my-id-row"><span class="id-badge" id="view-user-id-badge">iD <span id="view-user-id"></span></span></div>
       <div id="view-user-bio" style="font-size:12.5px;color:var(--ink-soft);text-align:center;margin:6px 0 4px;line-height:1.7;"></div>
       <div style="display:flex;justify-content:center;gap:22px;margin:8px 0;">
         <div style="text-align:center;"><div style="font-size:15px;font-weight:800;color:var(--glow);" id="view-user-followers-count">0</div><div style="font-size:10px;color:var(--ink-muted);">متابعون</div></div>
@@ -1405,6 +1401,8 @@ function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<
 const VERIFIED_BADGE_SVG = '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;"><polygon points="50.0,4.0 58.5,18.1 73.0,10.2 73.3,26.7 89.8,27.0 81.9,41.5 96.0,50.0 81.9,58.5 89.8,73.0 73.3,73.3 73.0,89.8 58.5,81.9 50.0,96.0 41.5,81.9 27.0,89.8 26.7,73.3 10.2,73.0 18.1,58.5 4.0,50.0 18.1,41.5 10.2,27.0 26.7,26.7 27.0,10.2 41.5,18.1" fill="#2f7de0"/><path d="M30 51 L44 65 L72 35" fill="none" stroke="#ffffff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 function getPublicId(userId){
   if (userId === 'admin') return '1-iD';
+  const custom = usersCache[userId] && usersCache[userId].customId;
+  if (custom) return custom;
   let hash = 0;
   const str = String(userId||'');
   for (let i=0;i<str.length;i++){ hash = (hash*31 + str.charCodeAt(i)) >>> 0; }
@@ -2010,7 +2008,7 @@ function renderUserVipBadgesHtml(u){
   const tier = (u && u.vipTier) || 0;
   if (!tier) return '';
   let html = `<span class="vip-inline-badges">`;
-  if (VIP_VERIFY_COLORS[tier]) html += `<span class="vip-verified-badge" title="حساب موثّق">${vipVerifiedBadgeSvg(VIP_VERIFY_COLORS[tier])}</span>`;
+  if (VIP_VERIFY_COLORS[tier]) html += `<span class="vip-verified-badge" style="--vip-glow:${VIP_VERIFY_COLORS[tier]}" title="حساب موثّق">${vipVerifiedBadgeSvg(VIP_VERIFY_COLORS[tier])}</span>`;
   html += `<span class="vip-pill vip-pill-${tier}"><i class="fas fa-crown"></i> ${VIP_TIER_LABELS[tier]}</span>`;
   html += `</span>`;
   return html;
@@ -2050,7 +2048,8 @@ function loadUserProfile(uid){
 
 function refreshMyProfileUI(){
   // وضع العرض
-  document.getElementById('my-id-value-view').textContent = myPublicId;
+  document.getElementById('my-id-value-view').textContent = getPublicId(currentUserId);
+  document.getElementById('my-id-badge-view').classList.toggle('owner', !!(myProfile.vipTier || myProfile.customId));
   document.getElementById('my-name-view').innerHTML = renderUserNameHtml(myProfile) + ' ' + renderUserVipBadgesHtml(myProfile);
   document.getElementById('my-titles-view').innerHTML = renderUserTitlesHtml(myProfile);
   document.getElementById('my-bio-view').textContent = myProfile.bio || 'لا توجد نبذة بعد';
@@ -2061,7 +2060,8 @@ function refreshMyProfileUI(){
   else { imgV.style.display='none'; phV.style.display='block'; }
 
   // وضع التعديل
-  document.getElementById('my-id-value').textContent = myPublicId;
+  document.getElementById('my-id-value').textContent = getPublicId(currentUserId);
+  document.getElementById('my-id-badge-edit').classList.toggle('owner', !!(myProfile.vipTier || myProfile.customId));
   document.getElementById('my-name-input').value = myProfile.name || '';
   document.getElementById('my-bio-input').value = myProfile.bio || '';
   document.getElementById('my-avatar-frame').className = 'my-avatar-upload avatar-frame ' + getUserFrameClass(myProfile);
@@ -2147,7 +2147,7 @@ async function saveMyBio(){
   catch(e){ showToast('تعذّر الحفظ','error'); }
 }
 function copyMyId(){
-  navigator.clipboard.writeText(myPublicId).then(()=>showToast('تم نسخ الأيدي!','success')).catch(()=>showToast('تعذّر النسخ','error'));
+  navigator.clipboard.writeText(getPublicId(currentUserId)).then(()=>showToast('تم نسخ الأيدي!','success')).catch(()=>showToast('تعذّر النسخ','error'));
 }
 function handleMyAvatarSelect(e){
   const file = e.target.files[0];
@@ -2230,6 +2230,7 @@ function renderViewUser(){
   document.getElementById('view-user-titles').innerHTML = renderUserTitlesHtml(u);
   document.getElementById('view-user-avatar-frame').className = 'my-avatar-upload avatar-frame ' + getUserFrameClass(u);
   document.getElementById('view-user-id').textContent = getPublicId(viewedUserId);
+  document.getElementById('view-user-id-badge').classList.toggle('owner', !!(u.vipTier || u.customId));
   document.getElementById('view-user-bio').textContent = u.bio || '';
   const img = document.getElementById('view-user-avatar');
   const ph = document.getElementById('view-user-placeholder');
@@ -2882,6 +2883,8 @@ function showGameLobby(){
   document.getElementById('vs-mine-flip').classList.remove('flipped');
   document.getElementById('reveal-request-btn').style.display = 'flex';
   document.getElementById('opponent-peek-note').style.display = 'none';
+  const closeBtn = document.getElementById('game-overlay-close-btn');
+  if (closeBtn) closeBtn.style.display = 'flex';
   resumeBgMusicAfterMatch();
 }
 function renderGameMatchUI(){

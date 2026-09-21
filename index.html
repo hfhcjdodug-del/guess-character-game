@@ -681,7 +681,7 @@ textarea,input,select{font-family:inherit;}
 .vip-pill::after{
   content:'';position:absolute;top:0;bottom:0;width:35%;left:-45%;
   background:linear-gradient(115deg,transparent,rgba(255,255,255,0.8),transparent);
-  animation:vipShine 2.6s ease-in-out infinite;
+  animation:vipShine 2.6s ease-in-out infinite;will-change:transform;
 }
 .vip-pill-1{color:#3a2405;background:linear-gradient(135deg,#e8a87c,#cd7f32,#8b5a2b);}
 .vip-pill-2{color:#04210f;background:linear-gradient(135deg,#adff2f,#39ff14,#0aff99);text-shadow:0 0 6px rgba(57,255,20,.4);}
@@ -773,7 +773,7 @@ textarea,input,select{font-family:inherit;}
   background:linear-gradient(115deg,transparent,rgba(255,255,255,0.75),transparent);
   animation:vipShine 2.6s ease-in-out infinite;
 }
-@keyframes vipShine{0%{left:-45%;}100%{left:120%;}}
+@keyframes vipShine{0%{transform:translateX(0);}100%{transform:translateX(370%);}}
 .id-badge{
   display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:700;
   padding:2px 9px;border-radius:10px;background:var(--surface-2);color:var(--ink-muted);
@@ -1990,7 +1990,7 @@ let usersLoading = new Set();
 const VIP_TIER_LABELS = {1:'VIP 1',2:'VIP 2',3:'VIP 3',4:'VIP 4',5:'VIP 5',6:'VIP 6',7:'VIP 7'};
 const VIP_VERIFY_COLORS = {2:'#f0d020', 3:'#3fa9ff', 4:'#39e67a', 5:'#b76bff', 6:'#ff9a3d', 7:'#ff3b3b'};
 function vipVerifiedBadgeSvg(color){
-  return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;"><polygon points="50.0,4.0 58.5,18.1 73.0,10.2 73.3,26.7 89.8,27.0 81.9,41.5 96.0,50.0 81.9,58.5 89.8,73.0 73.3,73.3 73.0,89.8 58.5,81.9 50.0,96.0 41.5,81.9 27.0,89.8 26.7,73.3 10.2,73.0 18.1,58.5 4.0,50.0 18.1,41.5 10.2,27.0 26.7,26.7 27.0,10.2 41.5,18.1" fill="${color}"/><path d="M30 51 L44 65 L72 35" fill="none" stroke="#ffffff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;--vip-glow:${color};"><polygon points="50.0,4.0 58.5,18.1 73.0,10.2 73.3,26.7 89.8,27.0 81.9,41.5 96.0,50.0 81.9,58.5 89.8,73.0 73.3,73.3 73.0,89.8 58.5,81.9 50.0,96.0 41.5,81.9 27.0,89.8 26.7,73.3 10.2,73.0 18.1,58.5 4.0,50.0 18.1,41.5 10.2,27.0 26.7,26.7 27.0,10.2 41.5,18.1" fill="${color}"/><path d="M30 51 L44 65 L72 35" fill="none" stroke="#ffffff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 }
 function getUserTitlesArray(u){
   if (!u) return [];
@@ -3175,6 +3175,7 @@ async function leaveGame(){
     }
     await db.ref('games/'+gid+'/voice').remove();
   }catch(e){}
+  closeGameOverlay();
 }
 function renderGameChat(msgs){
   const thread = document.getElementById('game-chat-thread');

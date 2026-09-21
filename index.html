@@ -1396,6 +1396,8 @@ try{
   });
 }catch(e){}
 
+let usersCache = {};
+let usersLoading = new Set();
 function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 /* شعار التوثيق (نجمة زرقاء بـ 12 رأساً وعلامة صح بيضاء) */
 const VERIFIED_BADGE_SVG = '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;"><polygon points="50.0,4.0 58.5,18.1 73.0,10.2 73.3,26.7 89.8,27.0 81.9,41.5 96.0,50.0 81.9,58.5 89.8,73.0 73.3,73.3 73.0,89.8 58.5,81.9 50.0,96.0 41.5,81.9 27.0,89.8 26.7,73.3 10.2,73.0 18.1,58.5 4.0,50.0 18.1,41.5 10.2,27.0 26.7,26.7 27.0,10.2 41.5,18.1" fill="#2f7de0"/><path d="M30 51 L44 65 L72 35" fill="none" stroke="#ffffff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/></svg>';
@@ -1713,7 +1715,8 @@ function toggleTheme() {
   const body = document.body;
   const isDark = body.getAttribute('data-theme') === 'dark';
   body.setAttribute('data-theme', isDark ? 'light' : 'dark');
-  document.getElementById('theme-toggle').innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+  const tbtn = document.getElementById('settings-theme-toggle');
+  if (tbtn) tbtn.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
 }
 
 // ---------- الزوار والمتابعون (مشتركة بين كل الأجهزة) ----------
@@ -1985,8 +1988,6 @@ db.ref('users/'+currentUserId).on('value', snap=>{
   refreshMyProfileUI();
 });
 
-let usersCache = {};
-let usersLoading = new Set();
 const VIP_TIER_LABELS = {1:'VIP 1',2:'VIP 2',3:'VIP 3',4:'VIP 4',5:'VIP 5',6:'VIP 6',7:'VIP 7'};
 const VIP_VERIFY_COLORS = {2:'#f0d020', 3:'#3fa9ff', 4:'#39e67a', 5:'#b76bff', 6:'#ff9a3d', 7:'#ff3b3b'};
 function vipVerifiedBadgeSvg(color){

@@ -879,6 +879,135 @@ textarea,input,select{font-family:inherit;}
 .result-banner.lose .r-icon{color:var(--ink-muted);}
 .game-actions-row{display:flex;gap:8px;justify-content:center;margin-top:14px;}
 .game-friend-list{margin-top:6px;}
+
+/* =====================================================================
+   إصلاح لمعان/تموّج الـ ID والشارات + تأثيرات أسماء VIP + الإطارات + الغرف
+   ===================================================================== */
+/* السبب القديم: ::after لم يكن له left محدد فيبدأ من حافة الصفحة RTL ويخرج خارج الشارة فيختفي اللمعان */
+@keyframes shineSweep{0%{transform:translateX(0);}70%,100%{transform:translateX(430%);}}
+.id-badge.owner::after,.vip-badge::after,.vip-pill::after,.verified-badge::after{
+  left:-45%;right:auto;animation:shineSweep 2.8s ease-in-out infinite;will-change:transform;
+}
+.id-badge.owner{direction:ltr;}
+.id-badge.owner[data-tier="1"]{background:linear-gradient(135deg,#e8a87c,#cd7f32,#8b5a2b);color:#2b1704;}
+.id-badge.owner[data-tier="2"]{background:linear-gradient(135deg,#adff2f,#39ff14,#0aff99);color:#04210f;}
+.id-badge.owner[data-tier="3"]{background:linear-gradient(135deg,#ffffff,#e8e8e8,#b8b8b8);color:#2a2a2a;}
+.id-badge.owner[data-tier="4"]{background:linear-gradient(135deg,#ffe6a8,#f0b06c,#c97a3f);color:#3a2405;}
+.id-badge.owner[data-tier="5"]{background:linear-gradient(135deg,#f0b06c,#c9aef7,#a493ff);color:#1c0f33;}
+.id-badge.owner[data-tier="6"]{background:linear-gradient(135deg,#ff8a3d,#ff512f,#dd2476);color:#fff;}
+.id-badge.owner[data-tier="7"]{background:linear-gradient(135deg,#e0f7ff,#8ec9ff,#c9aef7,#ffffff);color:#0c0c14;}
+
+/* ---------- أسماء VIP المتموّجة (كل مستوى أفخم من السابق) ---------- */
+.vn{display:inline-block;font-weight:900;color:transparent;-webkit-text-fill-color:transparent;
+  -webkit-background-clip:text;background-clip:text;background-size:200% 100%;position:relative;
+  animation:vnWave 3.6s linear infinite;}
+@keyframes vnWave{0%{background-position:0% 50%;}100%{background-position:200% 50%;}}
+@keyframes vnGlowPulse{0%,100%{filter:drop-shadow(0 0 2px var(--vg,#fff));}50%{filter:drop-shadow(0 0 7px var(--vg,#fff));}}
+@keyframes vnFlicker{0%,100%{filter:drop-shadow(0 0 3px #ff5a2a);}30%{filter:drop-shadow(0 0 8px #ffb02a);}60%{filter:drop-shadow(0 0 4px #ff3b1a);}}
+@keyframes vnSpark{0%,100%{opacity:0;transform:scale(.4) rotate(0);}50%{opacity:1;transform:scale(1) rotate(90deg);}}
+.vn-1{background-image:linear-gradient(90deg,#ff9a3d,#ffd36b,#ff6b6b,#ffd36b,#ff9a3d);}
+.vn-2{background-image:linear-gradient(90deg,#39ff14,#0aff99,#00e5ff,#adff2f,#39ff14);--vg:#39ff14;
+  animation:vnWave 3s linear infinite,vnGlowPulse 2s ease-in-out infinite;}
+.vn-3{background-image:linear-gradient(90deg,#b8c6db,#ffffff,#8ec9ff,#ffffff,#b8c6db);--vg:#8ec9ff;
+  animation:vnWave 2.4s linear infinite,vnGlowPulse 1.8s ease-in-out infinite;}
+.vn-4{background-image:linear-gradient(90deg,#ffd76b,#fff6cf,#f0a020,#fff6cf,#ffd76b);--vg:#ffc857;
+  animation:vnWave 2.4s linear infinite,vnGlowPulse 1.6s ease-in-out infinite;}
+.vn-5{background-image:linear-gradient(90deg,#f0b06c,#c9aef7,#ff7ad9,#a493ff,#f0b06c);--vg:#c9aef7;letter-spacing:.3px;
+  animation:vnWave 2.2s linear infinite,vnGlowPulse 1.5s ease-in-out infinite;}
+.vn-6{background-image:linear-gradient(90deg,#ff512f,#ff9a3d,#ffe259,#ff512f,#dd2476,#ff512f);letter-spacing:.3px;
+  animation:vnWave 1.8s linear infinite,vnFlicker 1.2s ease-in-out infinite;}
+.vn-7{background-image:linear-gradient(90deg,#7df9ff,#ffffff,#c9aef7,#ff9ad5,#ffe08a,#7df9ff);--vg:#9fe8ff;letter-spacing:.4px;
+  animation:vnWave 1.5s linear infinite,vnGlowPulse 1.2s ease-in-out infinite;}
+.vn-7::after{content:'✦';position:absolute;top:-7px;right:-9px;font-size:9px;color:#fff;-webkit-text-fill-color:#fff;animation:vnSpark 1.6s ease-in-out infinite;}
+.vn-7::before{content:'✦';position:absolute;bottom:-5px;left:-8px;font-size:7px;color:#fff;-webkit-text-fill-color:#fff;animation:vnSpark 1.6s ease-in-out .8s infinite;}
+
+/* ---------- الإطارات المصوّرة (ثابتة/متحركة) ---------- */
+.avatar-frame.frame-overlay::before,.avatar-frame.frame-overlay::after{display:none;}
+.avatar-frame .avatar-photo-mask{position:relative;z-index:3;}
+.avatar-frame > img.cf-overlay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none;
+  z-index:6;object-fit:contain;max-width:none;border-radius:0;background:none;display:block;}
+.mini-circle{width:100%;height:100%;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;}
+.mini-circle img{width:100%;height:100%;object-fit:cover;}
+.opponent-mini-avatar.framed{overflow:visible;position:relative;margin:0 12px;}
+.opponent-mini-avatar.framed > img.cf-overlay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none;z-index:6;max-width:none;object-fit:contain;}
+
+/* ---------- مزايا VIP في الملف الشخصي ---------- */
+.visitors-btn{display:inline-flex;align-items:center;gap:7px;margin-bottom:12px;padding:7px 16px;border-radius:20px;
+  border:1px solid var(--border);background:var(--surface-2);color:var(--ink);font-family:inherit;font-size:12px;font-weight:800;cursor:pointer;}
+.visitors-btn .lk{font-size:10px;color:var(--ink-muted);}
+.vip-hub{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:16px;}
+.vip-hub-btn{position:relative;display:flex;align-items:center;justify-content:center;gap:6px;padding:11px 8px;border-radius:12px;
+  border:1px solid var(--border);background:var(--surface-2);color:var(--ink);font-family:inherit;font-size:12px;font-weight:800;cursor:pointer;}
+.vip-hub-btn.locked{opacity:.5;}
+.vip-hub-btn .tier-tag{font-size:9px;background:var(--glow);color:#241304;border-radius:8px;padding:1px 6px;font-weight:900;}
+.vip-hub-btn i{color:var(--glow);}
+
+/* ---------- غرف VIP ---------- */
+.vip-rooms{margin:20px 0 8px;padding:0 2px;}
+.vr-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;font-weight:800;font-size:14px;}
+.vr-head i{color:var(--glow);}
+.vr-create{border:1px solid var(--glow);background:transparent;color:var(--glow);border-radius:12px;padding:6px 12px;font-family:inherit;font-size:12px;font-weight:800;cursor:pointer;}
+.vr-card{display:flex;align-items:center;gap:10px;background:var(--surface-2);border:1px solid var(--border);border-radius:14px;padding:10px 12px;margin-bottom:8px;}
+.vr-card .vr-av{width:42px;height:42px;border-radius:50%;overflow:hidden;background:var(--surface);flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.vr-card .vr-av img{width:100%;height:100%;object-fit:cover;}
+.vr-card .vr-info{flex:1;min-width:0;}
+.vr-card .vr-title{font-size:13px;font-weight:800;}
+.vr-card .vr-sub{font-size:11px;color:var(--ink-muted);margin-top:2px;}
+.vr-member{display:flex;align-items:center;gap:9px;background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:7px 10px;margin-bottom:6px;}
+.vr-member .vr-av{width:34px;height:34px;border-radius:50%;overflow:hidden;flex-shrink:0;background:var(--surface);display:flex;align-items:center;justify-content:center;}
+.vr-member .vr-av img{width:100%;height:100%;object-fit:cover;}
+.vr-member .vr-nm{flex:1;min-width:0;font-size:12.5px;font-weight:700;}
+.vr-member .vr-ic{color:var(--ink-muted);font-size:12px;}
+.vr-member .vr-ic.on{color:var(--glow);}
+.vr-member button{border:none;background:var(--surface);color:var(--ink);border-radius:9px;width:30px;height:30px;cursor:pointer;}
+.vr-msg{display:flex;flex-direction:column;gap:2px;}
+.vr-msg.me{align-items:flex-end;}
+.vr-msg-name{font-size:10.5px;color:var(--ink-muted);padding:0 4px;}
+.vr-voice-bar{display:flex;align-items:center;gap:10px;margin:10px 0;}
+
+/* ---------- نوافذ VIP الأخرى ---------- */
+.frame-opt{display:flex;align-items:center;gap:12px;padding:10px;border:1px solid var(--border);border-radius:14px;background:var(--surface-2);margin-bottom:8px;cursor:pointer;}
+.frame-opt.sel{border-color:var(--glow);box-shadow:0 0 0 1px var(--glow) inset;}
+.frame-opt .fo-av{position:relative;width:54px;height:54px;flex-shrink:0;margin:14px;}
+.frame-opt .fo-av .fo-c{width:100%;height:100%;border-radius:50%;overflow:hidden;background:var(--surface);display:flex;align-items:center;justify-content:center;}
+.frame-opt .fo-av .fo-c img{width:100%;height:100%;object-fit:cover;}
+.frame-opt .fo-av > img.cf-overlay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none;max-width:none;object-fit:contain;}
+.frame-opt .fo-nm{font-size:13px;font-weight:800;}
+.frame-opt .fo-sub{font-size:11px;color:var(--ink-muted);margin-top:2px;}
+.vip-field{width:100%;background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:10px 12px;color:var(--ink);font-family:inherit;font-size:13px;margin-bottom:8px;}
+textarea.vip-field{resize:none;}
+.visitor-row{display:flex;align-items:center;gap:10px;background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:8px 12px;margin-bottom:8px;cursor:pointer;}
+.visitor-row .vr-av{width:38px;height:38px;border-radius:50%;overflow:hidden;background:var(--surface);flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.visitor-row .vr-av img{width:100%;height:100%;object-fit:cover;}
+.song-btn{display:inline-flex;align-items:center;gap:7px;margin:8px auto 2px;padding:7px 16px;border-radius:20px;border:1px solid var(--glow);background:transparent;color:var(--glow);font-family:inherit;font-size:12px;font-weight:800;cursor:pointer;}
+.song-btn.playing{background:var(--glow);color:#241304;}
+
+/* ---------- شاشة الحظر المؤقت ---------- */
+#ban-screen{display:none;position:fixed;inset:0;z-index:99999;background:radial-gradient(circle at 50% 30%,#2a0d14,#07060b 70%);
+  color:#fff;align-items:center;justify-content:center;text-align:center;padding:30px;flex-direction:column;gap:14px;}
+#ban-screen.show{display:flex;}
+#ban-screen .ban-ic{font-size:54px;color:#ff5a6a;}
+#ban-screen .ban-t{font-size:20px;font-weight:900;}
+#ban-screen .ban-c{font-size:34px;font-weight:900;letter-spacing:2px;font-variant-numeric:tabular-nums;direction:ltr;color:#ffb3bb;}
+#ban-screen .ban-r{font-size:13px;color:#c9b8bc;max-width:320px;line-height:1.8;}
+
+/* ---------- رسالة التعميم (VIP 7) ---------- */
+#bc-show{display:none;position:fixed;inset:0;z-index:9000;background:rgba(6,5,10,.82);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:20px;}
+#bc-show.show{display:flex;}
+.bc-card{position:relative;width:min(92vw,380px);border-radius:24px;padding:26px 20px 22px;text-align:center;
+  background:radial-gradient(circle at 50% 0%,#3a2a66,#14101f 70%);border:1px solid rgba(255,214,120,.45);
+  box-shadow:0 0 40px rgba(255,200,90,.25),0 20px 60px rgba(0,0,0,.6);animation:bcIn .5s cubic-bezier(.2,1.3,.4,1);}
+@keyframes bcIn{from{opacity:0;transform:scale(.8) translateY(30px);}to{opacity:1;transform:none;}}
+.bc-tag{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:900;color:#241304;background:linear-gradient(135deg,#ffe6a8,#f0b06c);padding:3px 12px;border-radius:12px;}
+.bc-av{position:relative;width:76px;height:76px;margin:46px auto 40px;}
+.bc-av .bc-c{width:100%;height:100%;border-radius:50%;overflow:hidden;background:var(--surface);display:flex;align-items:center;justify-content:center;}
+.bc-av .bc-c img{width:100%;height:100%;object-fit:cover;}
+.bc-av > img.cf-overlay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none;max-width:none;object-fit:contain;}
+.bc-name{font-size:19px;}
+.bc-msg{margin-top:12px;font-size:15px;line-height:1.9;color:#f4eefc;word-break:break-word;}
+.bc-close{position:absolute;top:10px;left:12px;background:rgba(255,255,255,.1);border:none;color:#fff;width:30px;height:30px;border-radius:50%;cursor:pointer;}
+.bc-av .bc-c{position:relative;z-index:3;}
+
 </style>
 </head>
 <body data-theme="dark">
@@ -996,6 +1125,15 @@ textarea,input,select{font-family:inherit;}
     </button>
   </div>
 </div>
+<!-- غرف VIP (تظهر على الرئيسية) -->
+<div class="vip-rooms" id="vip-rooms-section">
+  <div class="vr-head">
+    <span><i class="fas fa-crown"></i> غرف VIP</span>
+    <button class="vr-create" id="vr-create-btn" onclick="vrCreateOrOpenMine()"><i class="fas fa-plus"></i> غرفتي</button>
+  </div>
+  <div id="vr-list"><div class="empty-note">لا توجد غرف مفتوحة الآن</div></div>
+</div>
+
 
 <!-- Modal: اختيار فئة (روم) اللعبة -->
 <div class="overlay" id="category-picker-overlay">
@@ -1153,7 +1291,12 @@ textarea,input,select{font-family:inherit;}
           <span class="id-badge" id="my-id-badge-view">iD <span id="my-id-value-view">--</span></span>
         </div>
         <div id="my-bio-view" class="profile-bio" style="margin:12px auto 0;"></div>
-        <button class="btn btn-secondary btn-small" style="margin-top:20px;" onclick="enterProfileEditMode()"><i class="fas fa-pen"></i> تعديل</button>
+        <div id="my-song-view" style="margin-top:8px;"></div>
+        <button class="visitors-btn" onclick="openVisitors()" style="margin-top:14px;">
+          <i class="fas fa-eye"></i> زوّار ملفي <span class="lk" id="my-visitors-lock"><i class="fas fa-lock"></i></span>
+        </button>
+        <div class="vip-hub" id="my-vip-hub"></div>
+        <button class="btn btn-secondary btn-small" style="margin-top:16px;" onclick="enterProfileEditMode()"><i class="fas fa-pen"></i> تعديل</button>
       </div>
 
       <div id="my-profile-edit-mode" style="display:none;">
@@ -1253,6 +1396,7 @@ textarea,input,select{font-family:inherit;}
       <div id="view-user-titles" style="display:flex;justify-content:center;margin-top:2px;"></div>
       <div class="my-id-row"><span class="id-badge" id="view-user-id-badge">iD <span id="view-user-id"></span></span></div>
       <div id="view-user-bio" style="font-size:12.5px;color:var(--ink-soft);text-align:center;margin:6px 0 4px;line-height:1.7;"></div>
+      <div id="view-user-song" style="margin:6px 0;"></div>
       <div style="display:flex;justify-content:center;gap:22px;margin:8px 0;">
         <div style="text-align:center;"><div style="font-size:15px;font-weight:800;color:var(--glow);" id="view-user-followers-count">0</div><div style="font-size:10px;color:var(--ink-muted);">متابعون</div></div>
       </div>
@@ -1398,6 +1542,14 @@ try{
 
 let usersCache = {};
 let usersLoading = new Set();
+/* ---- حالة نظام VIP (تُعرَّف مبكراً لتفادي أخطاء TDZ) ---- */
+let frameCache = {};            // customFrames/<id> -> {src,scale,name} | false
+let frameLoading = new Set();
+let animAvatarCache = {};       // uid -> dataURL للصورة المتحركة
+let animAvatarLoading = new Set();
+let myBan = null;
+let visitorsList = [];
+let songPlayingUid = null;
 function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 /* شعار التوثيق (نجمة زرقاء بـ 12 رأساً وعلامة صح بيضاء) */
 const VERIFIED_BADGE_SVG = '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;"><polygon points="50.0,4.0 58.5,18.1 73.0,10.2 73.3,26.7 89.8,27.0 81.9,41.5 96.0,50.0 81.9,58.5 89.8,73.0 73.3,73.3 73.0,89.8 58.5,81.9 50.0,96.0 41.5,81.9 27.0,89.8 26.7,73.3 10.2,73.0 18.1,58.5 4.0,50.0 18.1,41.5 10.2,27.0 26.7,26.7 27.0,10.2 41.5,18.1" fill="#2f7de0"/><path d="M30 51 L44 65 L72 35" fill="none" stroke="#ffffff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/></svg>';
@@ -1798,10 +1950,10 @@ function updateOwnerProfileHeader(){
   document.getElementById('profile-bio').textContent = ownerProfile.bio || '';
   document.getElementById('profile-bio').style.display = ownerProfile.bio ? 'block' : 'none';
   const frameEl = document.getElementById('profile-avatar-frame');
-  frameEl.className = 'avatar-frame frame-' + (ownerProfile.frame || 'none');
   frameEl.innerHTML = ownerProfile.avatarVideo
     ? `<video src="${ownerProfile.avatarVideo}" autoplay loop muted playsinline></video>`
     : `<i class="fas fa-crown" style="font-size:34px;color:var(--glow);position:relative;z-index:3;"></i>`;
+  applyOwnerFrameTo(frameEl);
 
   // شريط مالك المنصة أعلى الشاشة
   document.getElementById('strip-owner-name').textContent = ownerProfile.name || 'مالك المنصة';
@@ -1810,7 +1962,7 @@ function updateOwnerProfileHeader(){
   if (ownerProfile.verified) stripBadge.innerHTML = VERIFIED_BADGE_SVG;
   document.getElementById('strip-vip-badge').style.display = ownerProfile.vip ? 'inline-flex' : 'none';
   const stripFrame = document.getElementById('strip-avatar-frame');
-  stripFrame.className = 'avatar-frame frame-' + (ownerProfile.frame || 'none');
+  applyOwnerFrameTo(stripFrame);
   const stripVideo = document.getElementById('strip-avatar-video');
   const stripFallback = document.getElementById('strip-avatar-fallback');
   if (ownerProfile.avatarVideo){ stripVideo.src = ownerProfile.avatarVideo; stripVideo.style.display='block'; stripFallback.style.display='none'; }
@@ -2003,7 +2155,9 @@ function getUserFrameClass(u){
   return tier ? ('frame-vip'+tier) : 'frame-none';
 }
 function renderUserNameHtml(u){
-  return `<span class="vip-name-plain">${escapeHtml((u && u.name) || 'مستخدم')}</span>`;
+  const tier = (u && u.vipTier) || 0;
+  const cls = tier ? ('vn vn-'+tier) : 'vip-name-plain';
+  return `<span class="${cls}">${escapeHtml((u && u.name) || 'مستخدم')}</span>`;
 }
 function renderUserVipBadgesHtml(u){
   const tier = (u && u.vipTier) || 0;
@@ -2044,17 +2198,18 @@ function loadUserProfile(uid){
       const opponentUid = myRole === 'player1' ? currentGame.player2 : currentGame.player1;
       if (opponentUid === uid) renderOpponentMiniRow(opponentUid);
     }
+    vipOnUserLoaded(uid);
   }).catch(()=>{ usersLoading.delete(uid); });
 }
 
 function refreshMyProfileUI(){
   // وضع العرض
   document.getElementById('my-id-value-view').textContent = getPublicId(currentUserId);
-  document.getElementById('my-id-badge-view').classList.toggle('owner', !!(myProfile.vipTier || myProfile.customId));
+  setIdBadge(document.getElementById('my-id-badge-view'), myProfile);
   document.getElementById('my-name-view').innerHTML = renderUserNameHtml(myProfile) + ' ' + renderUserVipBadgesHtml(myProfile);
   document.getElementById('my-titles-view').innerHTML = renderUserTitlesHtml(myProfile);
   document.getElementById('my-bio-view').textContent = myProfile.bio || 'لا توجد نبذة بعد';
-  document.getElementById('my-avatar-frame-view').className = 'my-avatar-upload avatar-frame ' + getUserFrameClass(myProfile);
+  applyFrameTo(document.getElementById('my-avatar-frame-view'), 'my-avatar-upload avatar-frame', myProfile);
   const imgV = document.getElementById('my-avatar-img-view');
   const phV = document.getElementById('my-avatar-placeholder-view');
   if (myProfile.avatarUrl){ imgV.src = myProfile.avatarUrl; imgV.style.display='block'; phV.style.display='none'; }
@@ -2062,14 +2217,16 @@ function refreshMyProfileUI(){
 
   // وضع التعديل
   document.getElementById('my-id-value').textContent = getPublicId(currentUserId);
-  document.getElementById('my-id-badge-edit').classList.toggle('owner', !!(myProfile.vipTier || myProfile.customId));
+  setIdBadge(document.getElementById('my-id-badge-edit'), myProfile);
   document.getElementById('my-name-input').value = myProfile.name || '';
   document.getElementById('my-bio-input').value = myProfile.bio || '';
-  document.getElementById('my-avatar-frame').className = 'my-avatar-upload avatar-frame ' + getUserFrameClass(myProfile);
+  applyFrameTo(document.getElementById('my-avatar-frame'), 'my-avatar-upload avatar-frame', myProfile);
   const img = document.getElementById('my-avatar-img');
   const ph = document.getElementById('my-avatar-placeholder');
   if (myProfile.avatarUrl){ img.src = myProfile.avatarUrl; img.style.display='block'; ph.style.display='none'; }
   else { img.style.display='none'; ph.style.display='block'; }
+  renderVipHub();
+  rerenderSongButtons();
 }
 function enterProfileEditMode(){
   document.getElementById('my-profile-view-mode').style.display = 'none';
@@ -2229,10 +2386,12 @@ function renderViewUser(){
   const u = usersCache[viewedUserId] || {};
   document.getElementById('view-user-name').innerHTML = (u.name ? renderUserNameHtml(u) : ('مستخدم '+getPublicId(viewedUserId))) + ' ' + renderUserVipBadgesHtml(u);
   document.getElementById('view-user-titles').innerHTML = renderUserTitlesHtml(u);
-  document.getElementById('view-user-avatar-frame').className = 'my-avatar-upload avatar-frame ' + getUserFrameClass(u);
+  applyFrameTo(document.getElementById('view-user-avatar-frame'), 'my-avatar-upload avatar-frame', u);
   document.getElementById('view-user-id').textContent = getPublicId(viewedUserId);
-  document.getElementById('view-user-id-badge').classList.toggle('owner', !!(u.vipTier || u.customId));
+  setIdBadge(document.getElementById('view-user-id-badge'), u);
   document.getElementById('view-user-bio').textContent = u.bio || '';
+  rerenderSongButtons();
+  recordProfileVisit(viewedUserId);
   const img = document.getElementById('view-user-avatar');
   const ph = document.getElementById('view-user-placeholder');
   if (u.avatarUrl){ img.src = u.avatarUrl; img.style.display='block'; ph.style.display='none'; }
@@ -2252,6 +2411,7 @@ function renderViewUser(){
       html += `<button class="btn btn-secondary" onclick="sendFriendRequestTo('${viewedUserId}');closeViewUser();"><i class="fas fa-user-plus"></i> إرسال طلب صداقة</button>`;
     }
     html += `<button class="btn btn-secondary" onclick="blockUser('${viewedUserId}');closeViewUser();"><i class="fas fa-user-slash"></i> حظر هذا المستخدم</button>`;
+    html += `<button class="btn btn-secondary" onclick="openComplaint(getPublicId('${viewedUserId}'))"><i class="fas fa-flag"></i> شكوى على هذا المستخدم</button>`;
   }
   actions.innerHTML = html;
 }
@@ -3208,6 +3368,953 @@ async function sendGameChatMessage(){
   try{ await db.ref('games/'+currentGameId+'/chat').push({ from: currentUserId, text, timestamp: Date.now() }); }
   catch(e){ showToast('تعذّر إرسال الرسالة','error'); }
 }
+
+/* =====================================================================
+   نظام VIP المتكامل: أسماء متموّجة، إطارات، زوّار، أغاني، غرف صوتية،
+   رسائل تعميم، شكاوى، طلب لعبة، حظر مؤقت
+   ===================================================================== */
+function myTier(){ return (myProfile && myProfile.vipTier) || 0; }
+function needTier(t){
+  if (myTier() >= t) return true;
+  showToast('لا تملك صلاحيات VIP — هذه الميزة تبدأ من VIP '+t, 'error');
+  return false;
+}
+function vipTimeAgo(ts){
+  if (!ts) return '';
+  const s = Math.max(1, Math.floor((Date.now()-ts)/1000));
+  if (s < 60) return 'الآن';
+  const m = Math.floor(s/60); if (m < 60) return 'منذ '+m+' د';
+  const h = Math.floor(m/60); if (h < 24) return 'منذ '+h+' س';
+  return 'منذ '+Math.floor(h/24)+' يوم';
+}
+function vipAvatarInner(u){
+  return (u && u.avatarUrl) ? `<img src="${escapeHtml(u.avatarUrl)}">` : '<i class="fas fa-user" style="color:var(--ink-muted);font-size:13px;"></i>';
+}
+function vipPillHtml(tier){
+  if (!tier) return '';
+  return `<span class="vip-pill vip-pill-${tier}"><i class="fas fa-crown"></i> ${VIP_TIER_LABELS[tier]||('VIP '+tier)}</span>`;
+}
+function setIdBadge(el, u){
+  if (!el) return;
+  const tier = (u && u.vipTier) || 0;
+  el.classList.toggle('owner', !!(tier || (u && u.customId)));
+  if (tier) el.setAttribute('data-tier', tier); else el.removeAttribute('data-tier');
+}
+
+/* ---------------- الإطارات المدمجة (SVG فاخرة بأجنحة وجواهر) ---------------- */
+const BUILTIN_FRAMES = {
+  b_gold:  { name:'الجناح الذهبي',      minTier:5, p:{ l:'#fff6c9', m:'#f5bf4f', d:'#a5670f', g1:'#ff4d8d', g2:'#ffd3e6', glow:'#ffc857' } },
+  b_flame: { name:'التاج الناري',        minTier:6, p:{ l:'#ffe6b8', m:'#ff8a3d', d:'#a82312', g1:'#ffd23d', g2:'#fff2b0', glow:'#ff6a2a' } },
+  b_royal: { name:'الملكي البنفسجي',     minTier:6, p:{ l:'#f3e8ff', m:'#b58cff', d:'#5a36a8', g1:'#6fe3ff', g2:'#d8f8ff', glow:'#b58cff' } },
+  b_ice:   { name:'الكريستال الجليدي',   minTier:7, p:{ l:'#eafcff', m:'#72d3ff', d:'#1e6db3', g1:'#ffffff', g2:'#bfeeff', glow:'#72d3ff' } },
+  b_rose:  { name:'الوردي الملكي',       minTier:7, p:{ l:'#ffe9f4', m:'#ff8fc2', d:'#b03a76', g1:'#ffffff', g2:'#ffd0e6', glow:'#ff8fc2' } }
+};
+const DEFAULT_FRAME_BY_TIER = { 5:'b_gold', 6:'b_flame', 7:'b_royal' };
+const _bfCache = {};
+function buildFrameSvg(key){
+  const p = BUILTIN_FRAMES[key].p;
+  const feather = (len,w)=>`M0,0 C${-w},${(-len*0.28).toFixed(1)} ${-w},${(-len*0.78).toFixed(1)} 0,${-len} C${w},${(-len*0.78).toFixed(1)} ${w},${(-len*0.28).toFixed(1)} 0,0Z`;
+  const thetas = [195,180,165,150,135,120];
+  const lens   = [36,44,48,48,42,32];
+  let back = '', front = '', inner = '';
+  thetas.forEach((th,i)=>{
+    const r = th*Math.PI/180;
+    const px = (100 + 50*Math.cos(r)).toFixed(1), py = (100 - 50*Math.sin(r)).toFixed(1);
+    const a = (90 - th).toFixed(1);
+    back  += `<path d="${feather(lens[i]+6,11)}" transform="translate(${px},${py}) rotate(${a})" fill="url(#d${key})"/>`;
+    front += `<path d="${feather(lens[i],9)}" transform="translate(${px},${py}) rotate(${a})" fill="url(#w${key})" stroke="${p.d}" stroke-width=".8"/>`;
+    inner += `<path d="${feather(lens[i]*0.55,5)}" transform="translate(${px},${py}) rotate(${a})" fill="${p.l}" opacity=".55"/>`;
+  });
+  const wing = back + front + inner;
+  const gem = (cx,cy,s)=>`<path d="M${cx},${cy-s} L${cx+s*0.75},${cy} L${cx},${cy+s} L${cx-s*0.75},${cy}Z" fill="url(#g${key})" stroke="${p.d}" stroke-width=".8"><animate attributeName="opacity" values="1;.6;1" dur="2.2s" repeatCount="indefinite"/></path>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+<defs>
+<linearGradient id="m${key}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${p.l}"/><stop offset=".5" stop-color="${p.m}"/><stop offset="1" stop-color="${p.d}"/></linearGradient>
+<linearGradient id="w${key}" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="${p.d}"/><stop offset=".55" stop-color="${p.m}"/><stop offset="1" stop-color="${p.l}"/></linearGradient>
+<linearGradient id="d${key}" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#000" stop-opacity=".55"/><stop offset="1" stop-color="${p.d}"/></linearGradient>
+<radialGradient id="g${key}"><stop offset="0" stop-color="${p.g2}"/><stop offset="1" stop-color="${p.g1}"/></radialGradient>
+</defs>
+<g>${wing}</g>
+<g transform="translate(200,0) scale(-1,1)">${wing}</g>
+<circle cx="100" cy="100" r="54" fill="none" stroke="url(#m${key})" stroke-width="7"/>
+<circle cx="100" cy="100" r="50.2" fill="none" stroke="${p.d}" stroke-width="1.2" opacity=".85"/>
+<circle cx="100" cy="100" r="58.2" fill="none" stroke="${p.l}" stroke-width="1" opacity=".85"/>
+<path d="M76,50 Q100,16 124,50 Q100,38 76,50Z" fill="url(#m${key})" stroke="${p.d}" stroke-width=".8"/>
+${gem(100,30,13)}
+<circle cx="80" cy="45" r="3.2" fill="url(#g${key})"/><circle cx="120" cy="45" r="3.2" fill="url(#g${key})"/>
+<path d="M78,152 Q100,172 122,152 Q100,160 78,152Z" fill="url(#m${key})" stroke="${p.d}" stroke-width=".8"/>
+${gem(100,162,9)}
+${gem(46,100,6)}${gem(154,100,6)}
+</svg>`;
+}
+function builtinFrameSrc(key){
+  return _bfCache[key] || (_bfCache[key] = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(buildFrameSvg(key)));
+}
+function frameObj(key){ return { src: builtinFrameSrc(key), scale: 200, glow: BUILTIN_FRAMES[key].p.glow }; }
+
+function getFrameData(id){
+  const c = frameCache[id];
+  if (c) return c;
+  if (c === undefined && !frameLoading.has(id)){
+    frameLoading.add(id);
+    db.ref('customFrames/'+id).once('value').then(s=>{
+      const v = s.val();
+      frameCache[id] = (v && v.src) ? { src:v.src, scale:Number(v.scale)||170, name:v.name||'إطار' } : false;
+      frameLoading.delete(id);
+      refreshFrameConsumers();
+    }).catch(()=>{ frameLoading.delete(id); frameCache[id] = false; });
+  }
+  return null;
+}
+function resolveFrame(u){
+  if (!u) return null;
+  const tier = u.vipTier || 0;
+  const eq = u.equippedFrame;
+  if (eq === 'none') return null;
+  if (eq && BUILTIN_FRAMES[eq] && tier >= BUILTIN_FRAMES[eq].minTier) return frameObj(eq);
+  if (eq && String(eq).indexOf('c:') === 0){
+    const id = String(eq).slice(2);
+    if (u.ownedFrames && u.ownedFrames[id]){
+      const d = getFrameData(id);
+      return d ? { src:d.src, scale:d.scale } : null;
+    }
+  }
+  const def = DEFAULT_FRAME_BY_TIER[tier];
+  return def ? frameObj(def) : null;
+}
+function resolveOwnerFrame(op){
+  const fr = op && op.frame;
+  if (fr && BUILTIN_FRAMES[fr]) return frameObj(fr);
+  if (fr && String(fr).indexOf('c:') === 0){
+    const d = getFrameData(String(fr).slice(2));
+    return d ? { src:d.src, scale:d.scale } : null;
+  }
+  return null;
+}
+function frameOverlayHtml(f){
+  return `<img class="cf-overlay" alt="" src="${escapeHtml(f.src)}" style="width:${f.scale}%;height:${f.scale}%;${f.glow?('filter:drop-shadow(0 0 5px '+f.glow+');'):''}">`;
+}
+function stripOverlays(el){
+  Array.from(el.children).forEach(c=>{ if (c.classList && c.classList.contains('cf-overlay')) c.remove(); });
+}
+function frameMargins(el, f){
+  if (!f){ el.style.marginTop = ''; el.style.marginBottom = ''; return; }
+  const ex = Math.max(0, Math.round(104*(f.scale/100-1)/2));
+  el.style.marginTop = Math.max(0, ex-14)+'px';
+  el.style.marginBottom = Math.max(0, ex-10)+'px';
+}
+function applyFrameTo(el, baseClass, u){
+  if (!el) return;
+  const f = resolveFrame(u);
+  el.className = baseClass + ' ' + (f ? 'frame-overlay' : getUserFrameClass(u));
+  stripOverlays(el);
+  if (f) el.insertAdjacentHTML('beforeend', frameOverlayHtml(f));
+  frameMargins(el, f);
+}
+function applyOwnerFrameTo(el){
+  if (!el) return;
+  const f = resolveOwnerFrame(ownerProfile);
+  const fr = (ownerProfile && ownerProfile.frame) || 'none';
+  const legacy = (fr === 'gold' || fr === 'violet') ? fr : 'none';
+  el.className = 'avatar-frame ' + (f ? 'frame-overlay' : 'frame-'+legacy);
+  stripOverlays(el);
+  if (f) el.insertAdjacentHTML('beforeend', frameOverlayHtml(f));
+  frameMargins(el, f);
+}
+
+/* ---------------- الصور المتحركة (VIP 4) ---------------- */
+function avatarSrcFor(uid, u){
+  if (u && u.hasAnimAvatar){
+    if (animAvatarCache[uid]) return animAvatarCache[uid];
+    if (!animAvatarLoading.has(uid)){
+      animAvatarLoading.add(uid);
+      db.ref('userMedia/'+uid+'/avatarAnim').once('value').then(s=>{
+        const v = s.val(); if (v) animAvatarCache[uid] = v;
+        animAvatarLoading.delete(uid);
+        refreshFrameConsumers();
+      }).catch(()=>{ animAvatarLoading.delete(uid); });
+    }
+  }
+  return (u && u.avatarUrl) ? u.avatarUrl : '';
+}
+function applyMyProfileFrames(){
+  applyFrameTo(document.getElementById('my-avatar-frame-view'), 'my-avatar-upload avatar-frame', myProfile);
+  applyFrameTo(document.getElementById('my-avatar-frame'), 'my-avatar-upload avatar-frame', myProfile);
+  const src = avatarSrcFor(currentUserId, myProfile);
+  ['my-avatar-img-view','my-avatar-img'].forEach(id=>{
+    const el = document.getElementById(id);
+    if (el && myProfile.avatarUrl && el.getAttribute('src') !== src) el.src = src;
+  });
+}
+function refreshFrameConsumers(){
+  try{ applyMyProfileFrames(); }catch(e){}
+  try{ if (document.getElementById('view-user-overlay').classList.contains('show')) renderViewUser(); }catch(e){}
+  try{ if (typeof currentGame !== 'undefined' && currentGame && currentGame.status === 'active'){
+    const myRole = currentGame.player1 === currentUserId ? 'player1' : 'player2';
+    renderOpponentMiniRow(myRole === 'player1' ? currentGame.player2 : currentGame.player1);
+  } }catch(e){}
+  try{ if (document.getElementById('owner-profile-overlay').classList.contains('show')) updateOwnerProfileHeader(); }catch(e){}
+  try{ if (document.getElementById('frames-overlay').classList.contains('show')) renderFramesPicker(); }catch(e){}
+}
+/* يُستدعى عند وصول ملف مستخدم جديد من الشبكة */
+function vipOnUserLoaded(uid){
+  try{ vrRenderList(); }catch(e){}
+  try{ if (vrCurrent){ vrRenderMembers(); vrRenderChat(); } }catch(e){}
+  try{ if (document.getElementById('visitors-overlay').classList.contains('show')) renderVisitors(); }catch(e){}
+  try{ bcNext(); }catch(e){}
+}
+
+/* ---------------- اختيار الإطار ---------------- */
+function hasOwnedFrames(){ return !!(myProfile.ownedFrames && Object.keys(myProfile.ownedFrames).length); }
+function openFramesPicker(){
+  if (!(myTier() >= 5 || hasOwnedFrames())){ needTier(5); return; }
+  closeMyProfile();
+  document.getElementById('frames-overlay').classList.add('show');
+  renderFramesPicker();
+}
+function closeFramesPicker(){ document.getElementById('frames-overlay').classList.remove('show'); }
+function renderFramesPicker(){
+  const box = document.getElementById('frames-list');
+  if (!box) return;
+  const tier = myTier();
+  const eq = myProfile.equippedFrame;
+  const effective = (eq && eq !== 'auto') ? eq : (DEFAULT_FRAME_BY_TIER[tier] || 'none');
+  const av = myProfile.avatarUrl ? `<img src="${escapeHtml(myProfile.avatarUrl)}">` : '<i class="fas fa-user" style="color:var(--ink-muted);"></i>';
+  const opt = (key, label, sub, f)=>`
+    <div class="frame-opt ${effective===key?'sel':''}" onclick="equipFrame('${key}')">
+      <div class="fo-av"><span class="fo-c">${av}</span>${f ? frameOverlayHtml({src:f.src, scale:Math.min(f.scale,200), glow:f.glow}) : ''}</div>
+      <div><div class="fo-nm">${escapeHtml(label)}</div><div class="fo-sub">${escapeHtml(sub)}</div></div>
+    </div>`;
+  let html = opt('none','بدون إطار','إخفاء الإطار من ملفك',null);
+  Object.keys(BUILTIN_FRAMES).forEach(k=>{
+    const b = BUILTIN_FRAMES[k];
+    if (tier >= b.minTier) html += opt(k, b.name, 'إطار VIP '+b.minTier, frameObj(k));
+  });
+  Object.keys(myProfile.ownedFrames || {}).forEach(id=>{
+    const d = getFrameData(id);
+    html += d ? opt('c:'+id, d.name, 'إطار خاص منحك إياه المطور', d)
+              : `<div class="frame-opt"><div class="fo-nm">جاري تحميل الإطار...</div></div>`;
+  });
+  box.innerHTML = html;
+}
+async function equipFrame(key){
+  try{
+    await db.ref('users/'+currentUserId+'/equippedFrame').set(key);
+    showToast('تم تطبيق الإطار','success');
+  }catch(e){ showToast('تعذّر تطبيق الإطار','error'); }
+}
+
+/* ---------------- الزوّار (VIP 4) ---------------- */
+const _visitWritten = {};
+function recordProfileVisit(uid){
+  if (!uid || uid === currentUserId || uid === 'admin') return;
+  if (Date.now() - (_visitWritten[uid]||0) < 60000) return;
+  _visitWritten[uid] = Date.now();
+  db.ref('profileVisits/'+uid+'/'+currentUserId).set({ ts: Date.now() }).catch(()=>{});
+}
+function openVisitors(){
+  if (!needTier(4)) return;
+  closeMyProfile();
+  const box = document.getElementById('visitors-list');
+  box.innerHTML = '<div class="empty-note">جاري التحميل...</div>';
+  document.getElementById('visitors-overlay').classList.add('show');
+  db.ref('profileVisits/'+currentUserId).orderByChild('ts').limitToLast(50).once('value').then(snap=>{
+    const arr = [];
+    snap.forEach(ch=>{ arr.push({ uid: ch.key, ts: (ch.val()||{}).ts || 0 }); });
+    arr.sort((a,b)=>b.ts-a.ts);
+    visitorsList = arr;
+    arr.forEach(v=>{ if (usersCache[v.uid] === undefined && !usersLoading.has(v.uid)) loadUserProfile(v.uid); });
+    renderVisitors();
+  }).catch(()=>{ box.innerHTML = '<div class="empty-note">تعذّر تحميل الزوّار</div>'; });
+}
+function renderVisitors(){
+  const box = document.getElementById('visitors-list');
+  if (!visitorsList.length){ box.innerHTML = '<div class="empty-note">لم يزر ملفك أحد بعد</div>'; return; }
+  box.innerHTML = visitorsList.map(v=>{
+    const u = usersCache[v.uid] || {};
+    const nm = u.name ? u : { name: 'مستخدم '+getPublicId(v.uid), vipTier: u.vipTier };
+    return `<div class="visitor-row" onclick="closeVisitors();openViewUser('${v.uid}')">
+      <span class="vr-av">${vipAvatarInner(u)}</span>
+      <div style="flex:1;min-width:0;font-size:13px;">${renderUserNameHtml(nm)} ${renderUserVipBadgesHtml(u)}</div>
+      <span style="font-size:11px;color:var(--ink-muted);white-space:nowrap;">${vipTimeAgo(v.ts)}</span>
+    </div>`;
+  }).join('');
+}
+function closeVisitors(){ document.getElementById('visitors-overlay').classList.remove('show'); }
+
+/* ---------------- أغنية الملف الشخصي (VIP 7) ---------------- */
+function renderSongButton(containerId, uid, u){
+  const box = document.getElementById(containerId);
+  if (!box) return;
+  if (u && u.hasSong && (u.vipTier||0) >= 7){
+    const playing = songPlayingUid === uid;
+    box.innerHTML = `<button class="song-btn ${playing?'playing':''}" onclick="toggleProfileSong('${uid}')"><i class="fas ${playing?'fa-pause':'fa-play'}"></i> ${escapeHtml(u.songName||'أغنية الملف')}</button>`;
+  } else box.innerHTML = '';
+}
+function rerenderSongButtons(){
+  renderSongButton('view-user-song', viewedUserId, usersCache[viewedUserId]);
+  renderSongButton('my-song-view', currentUserId, myProfile);
+}
+function stopProfileSong(){
+  const a = document.getElementById('vip-song-audio');
+  try{ a.pause(); }catch(e){}
+  songPlayingUid = null;
+  rerenderSongButtons();
+}
+async function toggleProfileSong(uid){
+  const audio = document.getElementById('vip-song-audio');
+  if (songPlayingUid === uid){ stopProfileSong(); return; }
+  try{
+    const s = await db.ref('userMedia/'+uid+'/song').once('value');
+    const src = s.val();
+    if (!src){ showToast('لا توجد أغنية','error'); return; }
+    audio.src = src; audio.loop = true;
+    await audio.play();
+    songPlayingUid = uid;
+  }catch(e){ showToast('تعذّر تشغيل الأغنية','error'); songPlayingUid = null; }
+  rerenderSongButtons();
+}
+function vipEditSong(){
+  if (!needTier(7)) return;
+  closeMyProfile();
+  renderSongSheet();
+  document.getElementById('song-overlay').classList.add('show');
+}
+function closeSongSheet(){ document.getElementById('song-overlay').classList.remove('show'); }
+function renderSongSheet(){
+  const box = document.getElementById('song-sheet-body');
+  const has = !!myProfile.hasSong;
+  box.innerHTML = `
+    <div style="font-size:12.5px;color:var(--ink-soft);line-height:1.9;margin-bottom:12px;">تظهر أغنيتك في ملفك الشخصي، ويستطيع أي زائر تشغيلها بزر واحد. الحد الأقصى للملف 1.5MB.</div>
+    ${has ? `<div id="my-song-preview" style="margin-bottom:10px;text-align:center;"></div>` : '<div class="empty-note">لا توجد أغنية بعد</div>'}
+    <button class="btn btn-glow" style="width:100%;margin-bottom:8px;" onclick="document.getElementById('vip-song-input').click()"><i class="fas fa-upload"></i> ${has?'استبدال الأغنية':'اختيار أغنية من جهازك'}</button>
+    ${has ? `<button class="btn btn-danger" style="width:100%;" onclick="vipRemoveSong()"><i class="fas fa-trash-can"></i> حذف الأغنية</button>` : ''}`;
+  if (has) renderSongButton('my-song-preview', currentUserId, myProfile);
+}
+function vipHandleSongFile(e){
+  const f = e.target.files[0];
+  e.target.value = '';
+  if (!f) return;
+  if (!needTier(7)) return;
+  if (!f.type.startsWith('audio/')){ showToast('اختر ملفاً صوتياً','error'); return; }
+  if (f.size > 1500*1024){ showToast('حجم الأغنية كبير، الحد الأقصى 1.5MB','error'); return; }
+  const r = new FileReader();
+  r.onload = async ev=>{
+    try{
+      showToast('جاري رفع الأغنية...');
+      stopProfileSong();
+      await db.ref('userMedia/'+currentUserId+'/song').set(ev.target.result);
+      await db.ref('users/'+currentUserId).update({ hasSong:true, songName:(f.name||'أغنية').replace(/\.[^.]+$/,'').slice(0,40) });
+      showToast('تمت إضافة الأغنية','success');
+      setTimeout(renderSongSheet, 400);
+    }catch(err){ showToast('تعذّر رفع الأغنية','error'); }
+  };
+  r.readAsDataURL(f);
+}
+async function vipRemoveSong(){
+  try{
+    stopProfileSong();
+    await db.ref('users/'+currentUserId).update({ hasSong:null, songName:null });
+    await db.ref('userMedia/'+currentUserId+'/song').remove();
+    showToast('تم حذف الأغنية','success');
+    setTimeout(renderSongSheet, 400);
+  }catch(e){ showToast('تعذّر الحذف','error'); }
+}
+
+/* ---------------- الحظر المؤقت ---------------- */
+let banTimer = null;
+db.ref('bans/'+currentUserId).on('value', s=>{ myBan = s.val(); checkBan(); });
+function checkBan(){
+  const scr = document.getElementById('ban-screen');
+  const active = myBan && myBan.until && myBan.until > Date.now();
+  if (!active){
+    scr.classList.remove('show');
+    if (banTimer){ clearInterval(banTimer); banTimer = null; }
+    return;
+  }
+  scr.classList.add('show');
+  document.getElementById('ban-reason').textContent = myBan.reason ? ('السبب: '+myBan.reason) : 'بسبب مخالفة قوانين اللعبة.';
+  const tick = ()=>{
+    const left = myBan.until - Date.now();
+    if (left <= 0){ checkBan(); return; }
+    const h = Math.floor(left/3600000), m = Math.floor(left%3600000/60000), sec = Math.floor(left%60000/1000);
+    document.getElementById('ban-countdown').textContent = [h,m,sec].map(x=>String(x).padStart(2,'0')).join(':');
+  };
+  tick();
+  if (!banTimer) banTimer = setInterval(tick, 1000);
+}
+
+/* ---------------- شكوى / طلب لعبة / محادثة المطور ---------------- */
+function vipOpenDevChat(){
+  if (!needTier(3)) return;
+  closeMyProfile();
+  openChatModal();
+}
+function openComplaint(prefillId){
+  if (!needTier(3)) return;
+  closeMyProfile(); closeViewUser();
+  document.getElementById('complaint-target').value = prefillId || '';
+  document.getElementById('complaint-text').value = '';
+  document.getElementById('complaint-overlay').classList.add('show');
+}
+function closeComplaint(){ document.getElementById('complaint-overlay').classList.remove('show'); }
+async function submitComplaint(){
+  if (!needTier(3)) return;
+  const targetId = document.getElementById('complaint-target').value.trim();
+  const text = document.getElementById('complaint-text').value.trim();
+  if (!text){ showToast('اشرح المشكلة أولاً','error'); return; }
+  let against = null;
+  try{
+    if (targetId){ const s = await db.ref('publicIdIndex/'+targetId).once('value'); against = s.val() || null; }
+  }catch(e){}
+  try{
+    await db.ref('complaints').push({
+      from: currentUserId, fromPublicId: getPublicId(currentUserId), fromName: myProfile.name || '',
+      against: against, againstPublicId: targetId || '', text: text.slice(0,400), ts: Date.now()
+    });
+    closeComplaint();
+    showToast('تم إرسال شكواك للمطور','success');
+  }catch(e){ showToast('تعذّر إرسال الشكوى','error'); }
+}
+function openGameRequest(){
+  if (!needTier(6)) return;
+  closeMyProfile();
+  document.getElementById('gamereq-text').value = '';
+  document.getElementById('gamereq-overlay').classList.add('show');
+}
+function closeGameRequest(){ document.getElementById('gamereq-overlay').classList.remove('show'); }
+async function submitGameRequest(){
+  if (!needTier(6)) return;
+  const text = document.getElementById('gamereq-text').value.trim();
+  if (!text){ showToast('اكتب فكرة اللعبة','error'); return; }
+  try{
+    await db.ref('gameRequests').push({ from: currentUserId, fromPublicId: getPublicId(currentUserId), fromName: myProfile.name || '', text: text.slice(0,500), ts: Date.now() });
+    closeGameRequest();
+    showToast('تم إرسال طلبك للمطور','success');
+  }catch(e){ showToast('تعذّر إرسال الطلب','error'); }
+}
+
+/* ---------------- رسالة التعميم (VIP 7) ---------------- */
+function openBroadcastCompose(){
+  if (!needTier(7)) return;
+  closeMyProfile();
+  document.getElementById('broadcast-text').value = '';
+  document.getElementById('broadcast-overlay').classList.add('show');
+}
+function closeBroadcastCompose(){ document.getElementById('broadcast-overlay').classList.remove('show'); }
+async function sendBroadcast(){
+  if (!needTier(7)) return;
+  const text = document.getElementById('broadcast-text').value.trim();
+  if (!text){ showToast('اكتب رسالتك أولاً','error'); return; }
+  if (Date.now() - Number(myProfile.lastBroadcast||0) < 180000){ showToast('يمكنك الإرسال مرة كل 3 دقائق','error'); return; }
+  try{
+    await db.ref('broadcasts').push({ uid: currentUserId, text: text.slice(0,140), ts: Date.now() });
+    await db.ref('users/'+currentUserId+'/lastBroadcast').set(Date.now());
+    closeBroadcastCompose();
+    showToast('تم إرسال التعميم للجميع','success');
+  }catch(e){ showToast('تعذّر الإرسال','error'); }
+}
+const bcQueue = [];
+let bcShowing = false;
+let bcTimer = null;
+db.ref('broadcasts').orderByChild('ts').startAt(Date.now()).on('child_added', snap=>{
+  const v = snap.val();
+  if (!v || !v.uid || !v.text) return;
+  if (Date.now() - (v.ts||0) > 120000) return;
+  try{ if (blocksCache && blocksCache[v.uid]) return; }catch(e){}
+  bcQueue.push(v);
+  bcNext();
+});
+function bcNext(){
+  if (bcShowing || !bcQueue.length) return;
+  const v = bcQueue[0];
+  if (usersCache[v.uid] === undefined){
+    if (!usersLoading.has(v.uid)) loadUserProfile(v.uid);
+    setTimeout(()=>{ if (bcQueue[0] === v && usersCache[v.uid] === undefined){ bcQueue.shift(); bcNext(); } }, 6000);
+    return;
+  }
+  bcQueue.shift();
+  const u = usersCache[v.uid];
+  if (!u || (u.vipTier||0) < 7){ bcNext(); return; }
+  bcShowing = true;
+  const f = resolveFrame(u);
+  const av = document.getElementById('bc-av');
+  av.className = 'bc-av avatar-frame ' + (f ? 'frame-overlay' : 'frame-none');
+  av.innerHTML = `<span class="bc-c">${vipAvatarInner(u)}</span>` + (f ? frameOverlayHtml(f) : '');
+  document.getElementById('bc-name').innerHTML = renderUserNameHtml(u) + ' ' + renderUserVipBadgesHtml(u);
+  document.getElementById('bc-msg').textContent = v.text;
+  document.getElementById('bc-show').classList.add('show');
+  clearTimeout(bcTimer);
+  bcTimer = setTimeout(closeBroadcastShow, 10000);
+}
+function closeBroadcastShow(){
+  clearTimeout(bcTimer);
+  document.getElementById('bc-show').classList.remove('show');
+  bcShowing = false;
+  setTimeout(bcNext, 350);
+}
+
+/* ---------------- مركز مزايا VIP في الملف الشخصي ---------------- */
+function renderVipHub(){
+  const box = document.getElementById('my-vip-hub');
+  if (!box) return;
+  const tier = myTier();
+  const feats = [
+    { t:2, icon:'fa-microphone-lines', label:'غرفتي الصوتية', fn:'vrCreateOrOpenMine()' },
+    { t:3, icon:'fa-headset',          label:'مراسلة المطور', fn:'vipOpenDevChat()' },
+    { t:3, icon:'fa-flag',             label:'تقديم شكوى',   fn:"openComplaint('')" },
+    { t:4, icon:'fa-image',            label:'صورة متحركة',  fn:'vipPickAnimAvatar()' },
+    { t:5, icon:'fa-crown',            label:'إطاراتي',      fn:'openFramesPicker()', unlocked: hasOwnedFrames() },
+    { t:6, icon:'fa-gamepad',          label:'اطلب لعبة',    fn:'openGameRequest()' },
+    { t:7, icon:'fa-music',            label:'أغنية الملف',  fn:'vipEditSong()' },
+    { t:7, icon:'fa-bullhorn',         label:'رسالة تعميم',  fn:'openBroadcastCompose()' }
+  ];
+  box.innerHTML = feats.map(f=>{
+    const ok = tier >= f.t || f.unlocked;
+    return `<button class="vip-hub-btn ${ok?'':'locked'}" onclick="${f.fn}"><i class="fas ${f.icon}"></i> ${f.label}${ok ? '' : `<span class="tier-tag">VIP ${f.t}</span>`}</button>`;
+  }).join('');
+  const lk = document.getElementById('my-visitors-lock');
+  if (lk) lk.style.display = tier >= 4 ? 'none' : 'inline';
+}
+function vipPickAnimAvatar(){
+  if (!needTier(4)) return;
+  showToast('اختر صورة GIF أو WebP متحركة (حتى 1.2MB)');
+  document.getElementById('my-avatar-input').click();
+}
+
+/* =====================================================================
+   غرف VIP: دردشة نصية + مايكات صوتية (WebRTC mesh) + تحدّي الأعضاء
+   ===================================================================== */
+let vrRooms = {};
+let vrCurrent = null;            // { id, owner, joinTs }
+let vrMembersCache = {};
+let vrChatCache = {};
+let vrMembersRef = null, vrChatRef = null, vrRoomRef = null;
+let vrPeers = {};
+let vrLocalStream = null, vrMicTrack = null, vrMicOn = false;
+const VR_MAX = 8;
+
+db.ref('vipRooms').on('value', s=>{ vrRooms = s.val() || {}; vrRenderList(); });
+
+function vrRenderList(){
+  const box = document.getElementById('vr-list');
+  if (!box) return;
+  const btn = document.getElementById('vr-create-btn');
+  if (btn) btn.innerHTML = vrRooms[currentUserId] ? '<i class="fas fa-door-open"></i> غرفتي' : '<i class="fas fa-plus"></i> فتح غرفة';
+  const list = Object.entries(vrRooms).map(([id,r])=>({ id, ...r })).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+  if (!list.length){ box.innerHTML = '<div class="empty-note">لا توجد غرف مفتوحة الآن</div>'; return; }
+  box.innerHTML = list.map(r=>{
+    if (usersCache[r.id] === undefined && !usersLoading.has(r.id)) loadUserProfile(r.id);
+    const u = usersCache[r.id] || {};
+    const cnt = Object.keys(r.members || {}).length;
+    return `<div class="vr-card">
+      <span class="vr-av">${vipAvatarInner(u)}</span>
+      <div class="vr-info">
+        <div class="vr-title">${escapeHtml(r.title || 'غرفة VIP')}</div>
+        <div class="vr-sub">${renderUserNameHtml(u)} ${vipPillHtml(u.vipTier)} · <i class="fas fa-users"></i> ${cnt}/${VR_MAX}</div>
+      </div>
+      <button class="btn btn-glow btn-small" onclick="vrJoin('${r.id}')">دخول</button>
+    </div>`;
+  }).join('');
+}
+async function vrCreateOrOpenMine(){
+  if (!needTier(2)) return;
+  closeMyProfile();
+  if (vrRooms[currentUserId] || (vrCurrent && vrCurrent.id === currentUserId)){ vrJoin(currentUserId); return; }
+  try{
+    const ref = db.ref('vipRooms/'+currentUserId);
+    await ref.set({ ownerUid: currentUserId, title: 'غرفة ' + (myProfile.name || 'VIP'), createdAt: Date.now() });
+    ref.onDisconnect().remove();
+    db.ref('vipRoomChat/'+currentUserId).onDisconnect().remove();
+    db.ref('vipRoomSig/'+currentUserId).onDisconnect().remove();
+    setTimeout(()=>vrJoin(currentUserId), 250);
+  }catch(e){ showToast('تعذّر فتح الغرفة','error'); }
+}
+async function vrJoin(rid){
+  if (vrCurrent){
+    if (vrCurrent.id === rid){ document.getElementById('vr-overlay').classList.add('show'); return; }
+    await vrLeave();
+  }
+  const room = vrRooms[rid];
+  if (!room){ showToast('الغرفة لم تعد متاحة','error'); return; }
+  const members = room.members || {};
+  if (!members[currentUserId] && Object.keys(members).length >= VR_MAX){ showToast('الغرفة ممتلئة','error'); return; }
+  closeFriendsOverlay && closeFriendsOverlay();
+  vrCurrent = { id: rid, owner: rid === currentUserId, joinTs: Date.now() };
+  document.getElementById('vr-title').textContent = room.title || 'غرفة VIP';
+  document.getElementById('vr-overlay').classList.add('show');
+  document.getElementById('vr-chat').innerHTML = '';
+  document.getElementById('vr-members').innerHTML = '';
+  vrSetVoiceStatus('جاري تجهيز المايك...');
+  await vrInitMic();
+  if (!vrCurrent || vrCurrent.id !== rid) return;
+  const mref = db.ref('vipRooms/'+rid+'/members/'+currentUserId);
+  try{ await mref.set({ ts: vrCurrent.joinTs, mic: false }); mref.onDisconnect().remove(); }
+  catch(e){ showToast('تعذّر دخول الغرفة','error'); vrLeave(); return; }
+  vrMembersRef = db.ref('vipRooms/'+rid+'/members');
+  vrMembersRef.on('value', s=>{ vrMembersCache = s.val() || {}; vrRenderMembers(); vrSyncPeers(); });
+  vrChatRef = db.ref('vipRoomChat/'+rid).limitToLast(60);
+  vrChatRef.on('value', s=>{ vrChatCache = s.val() || {}; vrRenderChat(); });
+  vrRoomRef = db.ref('vipRooms/'+rid);
+  vrRoomRef.on('value', s=>{
+    if (!s.exists() && vrCurrent && vrCurrent.id === rid && !vrCurrent.owner){ showToast('أغلق صاحب الغرفة غرفته'); vrLeave(); }
+  });
+}
+function vrSetVoiceStatus(t){ const el = document.getElementById('vr-voice-status'); if (el) el.textContent = t || ''; }
+async function vrInitMic(){
+  vrMicOn = false;
+  const btn = document.getElementById('vr-mic-btn');
+  if (btn){ btn.classList.remove('active'); btn.innerHTML = '<i class="fas fa-microphone-slash"></i>'; btn.disabled = false; }
+  try{
+    const stream = await navigator.mediaDevices.getUserMedia({ audio:true });
+    if (!vrCurrent){ stream.getTracks().forEach(t=>t.stop()); return; }
+    vrLocalStream = stream;
+    vrMicTrack = vrLocalStream.getAudioTracks()[0];
+    vrMicTrack.enabled = false;
+    vrSetVoiceStatus('المايك مغلق — اضغط لتتحدث');
+  }catch(e){
+    vrLocalStream = null; vrMicTrack = null;
+    if (btn) btn.disabled = true;
+    vrSetVoiceStatus('تستطيع السماع فقط (لا يوجد إذن للمايك)');
+  }
+}
+function vrToggleMic(){
+  if (!vrCurrent || !vrMicTrack) return;
+  vrMicOn = !vrMicOn;
+  vrMicTrack.enabled = vrMicOn;
+  const btn = document.getElementById('vr-mic-btn');
+  btn.classList.toggle('active', vrMicOn);
+  btn.innerHTML = vrMicOn ? '<i class="fas fa-microphone"></i>' : '<i class="fas fa-microphone-slash"></i>';
+  vrSetVoiceStatus(vrMicOn ? 'المايك مفتوح — الجميع يسمعك' : 'المايك مغلق — اضغط لتتحدث');
+  db.ref('vipRooms/'+vrCurrent.id+'/members/'+currentUserId+'/mic').set(vrMicOn).catch(()=>{});
+}
+function vrRenderMembers(){
+  const box = document.getElementById('vr-members');
+  if (!box || !vrCurrent) return;
+  const ids = Object.keys(vrMembersCache).sort((a,b)=>{
+    if (a === vrCurrent.id) return -1; if (b === vrCurrent.id) return 1;
+    return ((vrMembersCache[a]||{}).ts||0) - ((vrMembersCache[b]||{}).ts||0);
+  });
+  document.getElementById('vr-count').textContent = '(' + ids.length + '/' + VR_MAX + ')';
+  box.innerHTML = ids.map(uid=>{
+    if (usersCache[uid] === undefined && !usersLoading.has(uid)) loadUserProfile(uid);
+    const u = usersCache[uid] || {};
+    const m = vrMembersCache[uid] || {};
+    const nm = u.name ? u : { name: 'مستخدم '+getPublicId(uid), vipTier: u.vipTier };
+    return `<div class="vr-member">
+      <span class="vr-av">${vipAvatarInner(u)}</span>
+      <div class="vr-nm">${renderUserNameHtml(nm)} ${vipPillHtml(u.vipTier)} ${uid===vrCurrent.id?'<i class="fas fa-crown" style="color:var(--glow);font-size:11px;"></i>':''}</div>
+      <i class="fas ${m.mic?'fa-microphone on':'fa-microphone-slash'} vr-ic ${m.mic?'on':''}"></i>
+      ${uid===currentUserId ? '' : `<button onclick="closeVrForProfile('${uid}')" title="الملف"><i class="fas fa-user"></i></button><button onclick="vrChallenge('${uid}')" title="تحدّي"><i class="fas fa-gamepad"></i></button>`}
+    </div>`;
+  }).join('');
+}
+function closeVrForProfile(uid){
+  document.getElementById('vr-overlay').classList.remove('show');
+  openViewUser(uid);
+  // عند إغلاق ملف المستخدم نعود للغرفة
+  const back = ()=>{ if (vrCurrent && !document.getElementById('view-user-overlay').classList.contains('show')) document.getElementById('vr-overlay').classList.add('show'); };
+  const iv = setInterval(()=>{ if (!document.getElementById('view-user-overlay').classList.contains('show')){ clearInterval(iv); back(); } }, 500);
+}
+function vrChallenge(uid){
+  document.getElementById('vr-overlay').classList.remove('show');
+  sendGameInviteAndOpen(uid);
+  const iv = setInterval(()=>{
+    const gameOpen = document.getElementById('game-overlay').classList.contains('show');
+    if (!gameOpen){ clearInterval(iv); if (vrCurrent) document.getElementById('vr-overlay').classList.add('show'); }
+  }, 800);
+  setTimeout(()=>clearInterval(iv), 600000);
+}
+function vrRenderChat(){
+  const box = document.getElementById('vr-chat');
+  if (!box) return;
+  const msgs = Object.values(vrChatCache).sort((a,b)=>(a.ts||0)-(b.ts||0));
+  box.innerHTML = msgs.map(m=>{
+    const mine = m.uid === currentUserId;
+    if (usersCache[m.uid] === undefined && !usersLoading.has(m.uid)) loadUserProfile(m.uid);
+    const u = usersCache[m.uid] || {};
+    const nm = u.name ? u : { name: 'مستخدم '+getPublicId(m.uid), vipTier: u.vipTier };
+    return `<div class="vr-msg ${mine?'me':''}"><span class="vr-msg-name">${renderUserNameHtml(nm)}</span><div class="chat-bubble ${mine?'me':'owner'}">${escapeHtml(m.text||'')}</div></div>`;
+  }).join('');
+  box.scrollTop = box.scrollHeight;
+}
+async function vrSend(){
+  const inp = document.getElementById('vr-input');
+  const text = inp.value.trim();
+  if (!text || !vrCurrent) return;
+  inp.value = '';
+  try{ await db.ref('vipRoomChat/'+vrCurrent.id).push({ uid: currentUserId, text: text.slice(0,300), ts: Date.now() }); }
+  catch(e){ showToast('تعذّر الإرسال','error'); }
+}
+async function vrLeaveClick(){
+  if (vrCurrent && vrCurrent.owner){
+    const ok = await showGameConfirm('إغلاق غرفتك؟ سيخرج الجميع منها.');
+    if (!ok) return;
+  }
+  vrLeave();
+}
+async function vrLeave(){
+  const cur = vrCurrent;
+  vrCurrent = null;
+  vrTeardownVoice(cur);
+  try{ if (vrMembersRef) vrMembersRef.off(); if (vrChatRef) vrChatRef.off(); if (vrRoomRef) vrRoomRef.off(); }catch(e){}
+  vrMembersRef = vrChatRef = vrRoomRef = null;
+  vrMembersCache = {}; vrChatCache = {};
+  document.getElementById('vr-overlay').classList.remove('show');
+  if (!cur) return;
+  try{
+    const m = db.ref('vipRooms/'+cur.id+'/members/'+currentUserId);
+    m.onDisconnect().cancel();
+    await m.remove();
+    if (cur.owner){
+      db.ref('vipRooms/'+cur.id).onDisconnect().cancel();
+      db.ref('vipRoomChat/'+cur.id).onDisconnect().cancel();
+      db.ref('vipRoomSig/'+cur.id).onDisconnect().cancel();
+      await db.ref('vipRooms/'+cur.id).remove();
+      await db.ref('vipRoomChat/'+cur.id).remove();
+      await db.ref('vipRoomSig/'+cur.id).remove();
+    }
+  }catch(e){}
+}
+
+/* ---- الصوت: كل عضو يتصل بكل عضو (mesh)؛ الأصغر uid هو من يرسل العرض ---- */
+function vrPairKey(a,b){ return a < b ? a+'_'+b : b+'_'+a; }
+function vrSyncPeers(){
+  if (!vrCurrent) return;
+  const ids = Object.keys(vrMembersCache).filter(u=>u !== currentUserId);
+  ids.forEach(uid=>{
+    const m = vrMembersCache[uid] || {};
+    const p = vrPeers[uid];
+    if (p && p.memberTs !== (m.ts||0)){ vrClosePeer(uid); }   // أعاد الدخول: نبدأ اتصالاً جديداً
+    if (!vrPeers[uid]) vrCreatePeer(uid, m.ts||0);
+  });
+  Object.keys(vrPeers).forEach(uid=>{ if (!vrMembersCache[uid]) vrClosePeer(uid); });
+}
+function vrCreatePeer(uid, memberTs){
+  const rid = vrCurrent.id;
+  const base = 'vipRoomSig/'+rid+'/'+vrPairKey(currentUserId, uid);
+  const pc = new RTCPeerConnection({ iceServers: VOICE_ICE_SERVERS });
+  const peer = { pc, uid, base, memberTs, sid:null, refs:[], cands:[], audio:null };
+  vrPeers[uid] = peer;
+  if (vrMicTrack) pc.addTrack(vrMicTrack, vrLocalStream);
+  else pc.addTransceiver('audio', { direction:'recvonly' });
+  pc.ontrack = ev=>{
+    if (peer.audio) return;
+    const a = document.createElement('audio');
+    a.autoplay = true; a.playsInline = true;
+    a.srcObject = (ev.streams && ev.streams[0]) ? ev.streams[0] : new MediaStream([ev.track]);
+    document.getElementById('vr-audio-wrap').appendChild(a);
+    peer.audio = a;
+    a.play().catch(()=>{});
+  };
+  pc.onicecandidate = ev=>{
+    if (ev.candidate && peer.sid) db.ref(base+'/c_'+currentUserId).push({ sid: peer.sid, c: ev.candidate.toJSON() }).catch(()=>{});
+  };
+  pc.onconnectionstatechange = ()=>{
+    if (vrPeers[uid] !== peer) return;
+    if (pc.connectionState === 'failed') vrSetVoiceStatus('تعذّر الاتصال الصوتي مع أحد الأعضاء');
+  };
+  const cref = db.ref(base+'/c_'+uid);
+  peer.refs.push(cref);
+  cref.on('child_added', s=>{ const v = s.val(); if (v) { peer.cands.push(v); vrFlushCands(peer); } });
+
+  if (currentUserId < uid){
+    // أنا من يرسل العرض
+    peer.sid = Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+    (async ()=>{
+      try{
+        await db.ref(base).remove();
+        const offer = await pc.createOffer();
+        await pc.setLocalDescription(offer);
+        await db.ref(base+'/offer').set({ sid: peer.sid, ts: Date.now(), sdp: offer.sdp, type: offer.type });
+      }catch(e){}
+    })();
+    const aref = db.ref(base+'/answer');
+    peer.refs.push(aref);
+    aref.on('value', async s=>{
+      const v = s.val();
+      if (!v || v.sid !== peer.sid || pc.currentRemoteDescription) return;
+      try{ await pc.setRemoteDescription({ type: v.type, sdp: v.sdp }); vrFlushCands(peer); }catch(e){}
+    });
+  } else {
+    const oref = db.ref(base+'/offer');
+    peer.refs.push(oref);
+    oref.on('value', async s=>{
+      const v = s.val();
+      if (!v || peer.sid === v.sid) return;
+      if ((v.ts||0) < Math.max(vrCurrent ? vrCurrent.joinTs : 0, memberTs) - 60000) return;   // عرض قديم جداً
+      if (peer.sid){   // سبق أن أجبنا على عرض آخر (قديم): نعيد بناء الاتصال ليقرأ العرض الحالي
+        vrClosePeer(uid);
+        if (vrCurrent && vrMembersCache[uid]) vrCreatePeer(uid, memberTs);
+        return;
+      }
+      peer.sid = v.sid;
+      try{
+        await pc.setRemoteDescription({ type: v.type, sdp: v.sdp });
+        const ans = await pc.createAnswer();
+        await pc.setLocalDescription(ans);
+        await db.ref(base+'/answer').set({ sid: v.sid, sdp: ans.sdp, type: ans.type });
+        vrFlushCands(peer);
+      }catch(e){}
+    });
+  }
+}
+function vrFlushCands(peer){
+  if (!peer.pc.remoteDescription || !peer.sid) return;
+  const rest = [];
+  peer.cands.forEach(v=>{
+    if (v.sid === peer.sid) peer.pc.addIceCandidate(new RTCIceCandidate(v.c)).catch(()=>{});
+    else rest.push(v);
+  });
+  peer.cands = [];   // غير المطابقين لجلسة الاتصال الحالية قديمون فنتجاهلهم
+}
+function vrClosePeer(uid){
+  const p = vrPeers[uid];
+  if (!p) return;
+  delete vrPeers[uid];
+  try{ p.refs.forEach(r=>r.off()); }catch(e){}
+  try{ p.pc.close(); }catch(e){}
+  if (p.audio){ try{ p.audio.srcObject = null; p.audio.remove(); }catch(e){} }
+}
+function vrTeardownVoice(cur){
+  Object.keys(vrPeers).forEach(uid=>{
+    const base = vrPeers[uid].base;
+    vrClosePeer(uid);
+    try{ db.ref(base).remove(); }catch(e){}
+  });
+  if (vrLocalStream){ vrLocalStream.getTracks().forEach(t=>t.stop()); }
+  vrLocalStream = null; vrMicTrack = null; vrMicOn = false;
+  const w = document.getElementById('vr-audio-wrap'); if (w) w.innerHTML = '';
+  vrSetVoiceStatus('');
+}
+
 </script>
+
+<!-- ================= نوافذ نظام VIP ================= -->
+<div id="vr-audio-wrap" style="display:none;"></div>
+<audio id="vip-song-audio" style="display:none;"></audio>
+<input type="file" id="vip-song-input" accept="audio/*" style="display:none" onchange="vipHandleSongFile(event)">
+
+<!-- غرفة VIP -->
+<div class="overlay" id="vr-overlay">
+  <div class="sheet" style="max-width:480px;">
+    <div class="sheet-head">
+      <h3><i class="fas fa-crown" style="color:var(--glow);"></i> <span id="vr-title">غرفة VIP</span></h3>
+      <button class="icon-btn" onclick="vrLeaveClick()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="sheet-body">
+      <div class="vr-voice-bar">
+        <button class="voice-circle-btn" id="vr-mic-btn" onclick="vrToggleMic()" title="المايك"><i class="fas fa-microphone-slash"></i></button>
+        <span class="voice-status" id="vr-voice-status" style="margin:0;text-align:start;"></span>
+      </div>
+      <div class="section-title" style="margin-top:6px;"><i class="fas fa-users"></i> الموجودون <span id="vr-count"></span></div>
+      <div id="vr-members"></div>
+      <div class="section-title"><i class="fas fa-comments"></i> دردشة الغرفة</div>
+      <div class="chat-thread" id="vr-chat"></div>
+    </div>
+    <div class="composer-bar">
+      <textarea class="chat-textarea" id="vr-input" placeholder="اكتب في الغرفة..." rows="1"></textarea>
+      <button class="reply-send" onclick="vrSend()"><i class="fas fa-paper-plane"></i></button>
+    </div>
+  </div>
+</div>
+
+<!-- اختيار الإطار -->
+<div class="overlay" id="frames-overlay">
+  <div class="sheet" style="max-width:440px;">
+    <div class="sheet-head">
+      <h3><i class="fas fa-crown" style="color:var(--glow);"></i> إطاراتي</h3>
+      <button class="icon-btn" onclick="closeFramesPicker()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="sheet-body" id="frames-list"></div>
+  </div>
+</div>
+
+<!-- زوّار الملف -->
+<div class="overlay" id="visitors-overlay">
+  <div class="sheet" style="max-width:440px;">
+    <div class="sheet-head">
+      <h3><i class="fas fa-eye" style="color:var(--glow);"></i> زوّار ملفك الشخصي</h3>
+      <button class="icon-btn" onclick="closeVisitors()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="sheet-body" id="visitors-list"></div>
+  </div>
+</div>
+
+<!-- شكوى -->
+<div class="overlay" id="complaint-overlay">
+  <div class="sheet" style="max-width:440px;">
+    <div class="sheet-head">
+      <h3><i class="fas fa-flag" style="color:var(--glow);"></i> تقديم شكوى للمطور</h3>
+      <button class="icon-btn" onclick="closeComplaint()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="sheet-body">
+      <div style="font-size:12px;color:var(--ink-muted);margin-bottom:10px;line-height:1.8;">إن ضايقك أحد اكتب الـ ID الخاص به واشرح ما حدث، وسيراجع المطور شكواك ويتخذ الإجراء المناسب.</div>
+      <input class="vip-field" id="complaint-target" placeholder="الـ ID الخاص بالمشتكى عليه (اختياري)" inputmode="numeric">
+      <textarea class="vip-field" id="complaint-text" rows="4" maxlength="400" placeholder="اشرح المشكلة..."></textarea>
+      <button class="btn btn-glow" style="width:100%;" onclick="submitComplaint()"><i class="fas fa-paper-plane"></i> إرسال الشكوى</button>
+    </div>
+  </div>
+</div>
+
+<!-- طلب لعبة -->
+<div class="overlay" id="gamereq-overlay">
+  <div class="sheet" style="max-width:440px;">
+    <div class="sheet-head">
+      <h3><i class="fas fa-gamepad" style="color:var(--glow);"></i> اطلب لعبة من المطور</h3>
+      <button class="icon-btn" onclick="closeGameRequest()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="sheet-body">
+      <textarea class="vip-field" id="gamereq-text" rows="5" maxlength="500" placeholder="اكتب فكرة اللعبة التي تريد إضافتها..."></textarea>
+      <button class="btn btn-glow" style="width:100%;" onclick="submitGameRequest()"><i class="fas fa-paper-plane"></i> إرسال الطلب</button>
+    </div>
+  </div>
+</div>
+
+<!-- رسالة تعميم -->
+<div class="overlay" id="broadcast-overlay">
+  <div class="sheet" style="max-width:440px;">
+    <div class="sheet-head">
+      <h3><i class="fas fa-bullhorn" style="color:var(--glow);"></i> رسالة تعميم لكل اللاعبين</h3>
+      <button class="icon-btn" onclick="closeBroadcastCompose()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="sheet-body">
+      <div style="font-size:12px;color:var(--ink-muted);margin-bottom:10px;line-height:1.8;">ستظهر رسالتك مع صورتك واسمك لكل من يلعب الآن. يمكنك الإرسال مرة كل 3 دقائق.</div>
+      <textarea class="vip-field" id="broadcast-text" rows="4" maxlength="140" placeholder="اكتب رسالتك (حتى 140 حرفاً)..."></textarea>
+      <button class="btn btn-glow" style="width:100%;" onclick="sendBroadcast()"><i class="fas fa-bullhorn"></i> إرسال للجميع</button>
+    </div>
+  </div>
+</div>
+
+<!-- أغنية الملف الشخصي -->
+<div class="overlay" id="song-overlay">
+  <div class="sheet" style="max-width:420px;">
+    <div class="sheet-head">
+      <h3><i class="fas fa-music" style="color:var(--glow);"></i> أغنية ملفي الشخصي</h3>
+      <button class="icon-btn" onclick="closeSongSheet()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="sheet-body" id="song-sheet-body"></div>
+  </div>
+</div>
+
+<!-- عرض رسالة التعميم -->
+<div id="bc-show">
+  <div class="bc-card">
+    <button class="bc-close" onclick="closeBroadcastShow()"><i class="fas fa-xmark"></i></button>
+    <span class="bc-tag"><i class="fas fa-bullhorn"></i> رسالة تعميم</span>
+    <div class="bc-av avatar-frame" id="bc-av"></div>
+    <div class="bc-name" id="bc-name"></div>
+    <div class="bc-msg" id="bc-msg"></div>
+  </div>
+</div>
+
+<!-- شاشة الحظر المؤقت -->
+<div id="ban-screen">
+  <div class="ban-ic"><i class="fas fa-ban"></i></div>
+  <div class="ban-t">تم حظرك مؤقتاً من اللعبة</div>
+  <div class="ban-c" id="ban-countdown">--:--:--</div>
+  <div class="ban-r" id="ban-reason"></div>
+</div>
+
 </body>
 </html>

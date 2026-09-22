@@ -948,15 +948,19 @@ textarea,input,select{font-family:inherit;}
 .vr-head i{color:var(--glow);}
 .vr-create{border:1px solid var(--glow);background:transparent;color:var(--glow);border-radius:12px;padding:6px 12px;font-family:inherit;font-size:12px;font-weight:800;cursor:pointer;}
 .vr-card{display:flex;align-items:center;gap:10px;background:var(--surface-2);border:1px solid var(--border);border-radius:14px;padding:10px 12px;margin-bottom:8px;}
-.vr-card .vr-av{width:42px;height:42px;border-radius:50%;overflow:hidden;background:var(--surface);flex-shrink:0;display:flex;align-items:center;justify-content:center;}
-.vr-card .vr-av img{width:100%;height:100%;object-fit:cover;}
+.vr-card .vr-av{width:42px;height:42px;position:relative;flex-shrink:0;margin:8px;}
+.vr-card .vr-av .vr-av-c{width:100%;height:100%;border-radius:50%;overflow:hidden;background:var(--surface);display:flex;align-items:center;justify-content:center;}
+.vr-card .vr-av .vr-av-c img{width:100%;height:100%;object-fit:cover;}
+.vr-card .vr-av > img.cf-overlay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none;max-width:none;object-fit:contain;}
 .vr-card .vr-info{flex:1;min-width:0;}
-.vr-card .vr-title{font-size:13px;font-weight:800;}
-.vr-card .vr-sub{font-size:11px;color:var(--ink-muted);margin-top:2px;}
+.vr-card .vr-title{font-size:13px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.vr-card .vr-sub{font-size:11px;color:var(--ink-muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .vr-member{display:flex;align-items:center;gap:9px;background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:7px 10px;margin-bottom:6px;}
-.vr-member .vr-av{width:34px;height:34px;border-radius:50%;overflow:hidden;flex-shrink:0;background:var(--surface);display:flex;align-items:center;justify-content:center;}
-.vr-member .vr-av img{width:100%;height:100%;object-fit:cover;}
-.vr-member .vr-nm{flex:1;min-width:0;font-size:12.5px;font-weight:700;}
+.vr-member .vr-av{width:34px;height:34px;position:relative;flex-shrink:0;margin:7px;}
+.vr-member .vr-av .vr-av-c{width:100%;height:100%;border-radius:50%;overflow:hidden;background:var(--surface);display:flex;align-items:center;justify-content:center;}
+.vr-member .vr-av .vr-av-c img{width:100%;height:100%;object-fit:cover;}
+.vr-member .vr-av > img.cf-overlay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none;max-width:none;object-fit:contain;}
+.vr-member .vr-nm{flex:1;min-width:0;font-size:12.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .vr-member .vr-ic{color:var(--ink-muted);font-size:12px;}
 .vr-member .vr-ic.on{color:var(--glow);}
 .vr-member button{border:none;background:var(--surface);color:var(--ink);border-radius:9px;width:30px;height:30px;cursor:pointer;}
@@ -1007,6 +1011,106 @@ textarea.vip-field{resize:none;}
 .bc-msg{margin-top:12px;font-size:15px;line-height:1.9;color:#f4eefc;word-break:break-word;}
 .bc-close{position:absolute;top:10px;left:12px;background:rgba(255,255,255,.1);border:none;color:#fff;width:30px;height:30px;border-radius:50%;cursor:pointer;}
 .bc-av .bc-c{position:relative;z-index:3;}
+
+
+/* =====================================================================
+   الاقتصاد: الماسات/العملات، المتجر، الروليت اليومي، الدخوليات الفخمة
+   ===================================================================== */
+.currency-row{display:flex;gap:8px;justify-content:center;margin:10px 0 4px;}
+.currency-chip{display:inline-flex;align-items:center;gap:6px;background:var(--surface-2);border:1px solid var(--border);
+  border-radius:16px;padding:6px 14px;font-size:12.5px;font-weight:800;}
+.currency-chip.diamond i{color:#7fd8ff;}
+.currency-chip.coin i{color:#ffcf5c;}
+.topup-btn{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#2fb8ff,#1782ff);
+  color:#fff;border:none;border-radius:16px;padding:6px 14px;font-size:12px;font-weight:800;cursor:pointer;}
+
+/* ---- بطاقات الشحن ---- */
+.topup-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.topup-card{position:relative;overflow:hidden;border-radius:16px;padding:16px 10px 12px;text-align:center;cursor:pointer;
+  background:radial-gradient(circle at 30% 0%,rgba(127,216,255,.25),transparent 60%),var(--surface-2);
+  border:1px solid var(--border);}
+.topup-card:active{transform:scale(.97);}
+.topup-card .tc-diamond{font-size:26px;color:#7fd8ff;filter:drop-shadow(0 0 6px rgba(127,216,255,.6));}
+.topup-card .tc-amount{font-weight:900;font-size:16px;margin-top:6px;}
+.topup-card .tc-price{margin-top:6px;font-size:12px;font-weight:800;color:var(--glow);
+  background:rgba(240,176,108,.12);border-radius:10px;padding:3px 10px;display:inline-block;}
+.topup-card.best::before{content:'الأفضل';position:absolute;top:8px;left:-26px;transform:rotate(-40deg);
+  background:#ff512f;color:#fff;font-size:9px;font-weight:900;padding:2px 30px;}
+
+/* ---- شراء VIP ---- */
+.vip-buy-card{display:flex;align-items:center;gap:12px;border-radius:16px;padding:12px 14px;margin-bottom:10px;
+  background:var(--surface-2);border:1px solid var(--border);}
+.vip-buy-card .vb-ic{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:18px;flex-shrink:0;}
+.vip-buy-card .vb-info{flex:1;min-width:0;}
+.vip-buy-card .vb-name{font-weight:900;font-size:13.5px;}
+.vip-buy-card .vb-price{font-size:11.5px;color:#7fd8ff;font-weight:800;margin-top:2px;}
+.vip-buy-card button{border:none;background:linear-gradient(135deg,var(--glow),var(--glow-2));color:#241304;
+  font-weight:900;border-radius:12px;padding:8px 14px;font-size:12px;cursor:pointer;white-space:nowrap;}
+
+/* ---- المتجر: الإطارات/الدخوليات ---- */
+.shop-tabs{display:flex;gap:8px;margin-bottom:12px;}
+.shop-tab{flex:1;text-align:center;padding:8px;border-radius:12px;border:1px solid var(--border);
+  background:var(--surface-2);font-size:12.5px;font-weight:800;cursor:pointer;}
+.shop-tab.active{background:linear-gradient(135deg,var(--glow),var(--glow-2));color:#241304;border-color:transparent;}
+.shop-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.shop-item{position:relative;border-radius:16px;padding:14px 8px 10px;text-align:center;background:var(--surface-2);
+  border:1px solid var(--border);}
+.shop-item .si-prev{width:64px;height:64px;position:relative;margin:0 auto 8px;}
+.shop-item .si-prev-c{width:100%;height:100%;border-radius:50%;background:var(--surface-3);display:flex;align-items:center;justify-content:center;}
+.shop-item .si-prev img.cf-overlay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none;object-fit:contain;}
+.shop-item .si-name{font-size:12px;font-weight:800;min-height:30px;display:flex;align-items:center;justify-content:center;}
+.shop-item .si-price{font-size:11.5px;font-weight:800;margin:6px 0;}
+.shop-item .si-price .old{text-decoration:line-through;color:var(--ink-muted);font-weight:600;margin-left:4px;font-size:10.5px;}
+.shop-item .si-badge{position:absolute;top:6px;right:6px;background:#ff512f;color:#fff;font-size:9px;font-weight:900;border-radius:8px;padding:2px 6px;}
+.shop-item .si-tmp{font-size:9.5px;color:var(--ink-muted);margin-bottom:6px;}
+.shop-item button{width:100%;border:none;border-radius:10px;padding:7px;font-size:12px;font-weight:800;cursor:pointer;
+  background:var(--surface-3);color:var(--ink);}
+.shop-item button.owned{background:rgba(123,201,160,.18);color:var(--ok);}
+.shop-item .si-ent-prev{height:52px;border-radius:10px;margin-bottom:8px;display:flex;align-items:center;justify-content:center;
+  font-size:20px;color:#fff;position:relative;overflow:hidden;}
+
+/* ---- الروليت اليومي ---- */
+.roulette-btn{position:relative;display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#ff512f,#dd2476);
+  color:#fff;border:none;border-radius:16px;padding:6px 14px;font-size:12px;font-weight:800;cursor:pointer;}
+.roulette-btn .rb-dot{position:absolute;top:-3px;left:-3px;width:9px;height:9px;background:#39ff14;border-radius:50%;
+  box-shadow:0 0 6px #39ff14;}
+.wheel-wrap{position:relative;width:250px;height:250px;margin:10px auto 20px;}
+.wheel-pointer{position:absolute;top:-8px;left:50%;transform:translateX(-50%);font-size:26px;color:#ffd23d;z-index:5;
+  filter:drop-shadow(0 2px 3px rgba(0,0,0,.5));}
+#wheel-svg{width:100%;height:100%;transition:transform 4.2s cubic-bezier(.15,.85,.25,1);}
+.wheel-hub{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:52px;height:52px;border-radius:50%;
+  background:radial-gradient(circle,#ffe6a8,#c9793e);display:flex;align-items:center;justify-content:center;
+  font-size:20px;color:#3a2405;box-shadow:0 0 14px rgba(240,176,108,.6);z-index:4;}
+.roulette-spin-btn{display:block;width:100%;border:none;border-radius:14px;padding:12px;font-size:14px;font-weight:900;
+  cursor:pointer;background:linear-gradient(135deg,#ff512f,#dd2476);color:#fff;}
+.roulette-spin-btn:disabled{opacity:.45;cursor:default;}
+.roulette-result{text-align:center;padding:16px 0 4px;}
+.roulette-result .rr-icon{font-size:40px;margin-bottom:10px;}
+.roulette-cooldown{text-align:center;font-size:12.5px;color:var(--ink-muted);padding:10px 0;}
+
+/* ---- بانر الدخولية الفخم ---- */
+#entrance-stage{position:fixed;top:0;left:0;right:0;z-index:8500;display:flex;justify-content:center;pointer-events:none;
+  padding-top:calc(env(safe-area-inset-top,0px) + 8px);}
+.entrance-banner{display:flex;align-items:center;gap:10px;padding:8px 18px 8px 10px;border-radius:30px;
+  transform:translateY(-120px);opacity:0;transition:transform .55s cubic-bezier(.2,1.4,.4,1),opacity .4s;
+  box-shadow:0 10px 30px rgba(0,0,0,.4);max-width:92vw;position:relative;overflow:hidden;}
+.entrance-banner.show{transform:translateY(0);opacity:1;}
+.entrance-banner .eb-shine{position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.35) 50%,transparent 70%);
+  transform:translateX(-100%);animation:ebShine 2.2s ease-in-out infinite;}
+@keyframes ebShine{to{transform:translateX(100%);}}
+.entrance-banner .eb-av{width:38px;height:38px;border-radius:50%;overflow:hidden;flex-shrink:0;background:rgba(0,0,0,.25);
+  display:flex;align-items:center;justify-content:center;position:relative;z-index:2;border:2px solid rgba(255,255,255,.7);}
+.entrance-banner .eb-av img{width:100%;height:100%;object-fit:cover;}
+.entrance-banner .eb-txt{position:relative;z-index:2;color:#fff;font-size:13px;font-weight:800;white-space:nowrap;}
+.entrance-banner .eb-sub{font-size:10px;opacity:.85;font-weight:600;}
+.entrance-banner .eb-ic{font-size:16px;color:#fff;position:relative;z-index:2;}
+
+/* ---- طلب صداقة مدفوع ---- */
+.rel-opt{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:14px;border:1px solid var(--border);
+  background:var(--surface-2);margin-bottom:8px;cursor:pointer;}
+.rel-opt.sel{border-color:var(--glow);box-shadow:0 0 0 1px var(--glow) inset;}
+.rel-opt i{color:var(--glow);font-size:16px;}
 
 </style>
 </head>
@@ -1295,7 +1399,9 @@ textarea.vip-field{resize:none;}
         <button class="visitors-btn" onclick="openVisitors()" style="margin-top:14px;">
           <i class="fas fa-eye"></i> زوّار ملفي <span class="lk" id="my-visitors-lock"><i class="fas fa-lock"></i></span>
         </button>
+        <div class="currency-row" id="my-currency-row"></div>
         <div class="vip-hub" id="my-vip-hub"></div>
+        <div class="vip-hub" id="my-economy-hub"></div>
         <button class="btn btn-secondary btn-small" style="margin-top:16px;" onclick="enterProfileEditMode()"><i class="fas fa-pen"></i> تعديل</button>
       </div>
 
@@ -2227,6 +2333,8 @@ function refreshMyProfileUI(){
   else { img.style.display='none'; ph.style.display='block'; }
   renderVipHub();
   rerenderSongButtons();
+  renderCurrencyRow();
+  renderEconomyHub();
 }
 function enterProfileEditMode(){
   document.getElementById('my-profile-view-mode').style.display = 'none';
@@ -3097,8 +3205,10 @@ function renderOpponentMiniRow(opponentUid){
   if (usersCache[opponentUid]===undefined){ loadUserProfile(opponentUid); row.innerHTML=''; return; }
   const u = usersCache[opponentUid] || {};
   const isFriend = !!friendsCache[opponentUid];
+  const of = resolveFrame(u);
+  if (typeof currentGameId !== 'undefined' && currentGameId) maybeShowMatchEntrance(currentGameId, opponentUid);
   row.innerHTML = `
-    <div class="opponent-mini-avatar">${u.avatarUrl ? `<img src="${u.avatarUrl}">` : '<i class="fas fa-user" style="color:var(--ink-muted);"></i>'}</div>
+    <div class="opponent-mini-avatar ${of?'framed':''}"><span class="mini-circle">${u.avatarUrl ? `<img src="${u.avatarUrl}">` : '<i class="fas fa-user" style="color:var(--ink-muted);"></i>'}</span>${of ? frameOverlayHtml(of) : ''}</div>
     <div class="opponent-mini-name-wrap">
       <div class="opponent-mini-name">${renderUserNameHtml(u)} ${renderUserVipBadgesHtml(u)}</div>
       ${renderUserTitlesHtml(u)}
@@ -3146,7 +3256,42 @@ const VOICE_ICE_SERVERS = [
   { urls: 'stun:stun.l.google.com:19302' },
   { urls: 'stun:stun1.l.google.com:19302' }
 ];
+/* سياق صوت مشترك يُفعَّل مع أول لمسة للمستخدم في الصفحة، لتفادي منع المتصفح (خصوصاً Safari/iOS)
+   لتشغيل الصوت تلقائياً حين يصل صوت الطرف الآخر لاحقاً بدون تفاعل مباشر في تلك اللحظة */
+let sharedAudioCtx = null;
+function ensureAudioCtx(){
+  if (!sharedAudioCtx){
+    try{ sharedAudioCtx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ return null; }
+  }
+  if (sharedAudioCtx.state === 'suspended') sharedAudioCtx.resume().catch(()=>{});
+  return sharedAudioCtx;
+}
+['pointerdown','touchstart','click','keydown'].forEach(evt=>{
+  document.addEventListener(evt, ()=>{ ensureAudioCtx(); }, { passive:true });
+});
+function playRemoteStream(stream, key){
+  const ctx = ensureAudioCtx();
+  if (ctx){
+    try{
+      const src = ctx.createMediaStreamSource(stream);
+      const gain = ctx.createGain();
+      src.connect(gain); gain.connect(ctx.destination);
+      return { ctx, src, gain, kind:'wa' };
+    }catch(e){}
+  }
+  const a = document.createElement('audio');
+  a.autoplay = true; a.playsInline = true; a.srcObject = stream;
+  document.getElementById('vr-audio-wrap') && document.getElementById('vr-audio-wrap').appendChild(a);
+  a.play().catch(()=>{});
+  return { audio:a, kind:'audio' };
+}
+function stopRemoteStream(h){
+  if (!h) return;
+  if (h.kind === 'wa'){ try{ h.src.disconnect(); h.gain.disconnect(); }catch(e){} }
+  else if (h.audio){ try{ h.audio.srcObject = null; h.audio.remove(); }catch(e){} }
+}
 let voicePC = null;
+let voiceRemoteHandle = null;
 let voiceLocalStream = null;
 let voiceLocalTrack = null;
 let voiceGameId = null;
@@ -3190,12 +3335,13 @@ async function setupVoiceChat(gid, role){
   voicePC = pc;
   pc.addTrack(voiceLocalTrack, stream);
 
-  const remoteAudio = document.getElementById('remote-voice-audio');
   pc.ontrack = (ev)=>{
-    remoteAudio.srcObject = ev.streams[0];
-    remoteAudio.muted = !speakerOn;
-    remoteAudio.play().catch(()=>{});
-    setupRemoteAudioAnalyser(ev.streams[0]);
+    const stream = ev.streams[0];
+    stopRemoteStream(voiceRemoteHandle);
+    voiceRemoteHandle = playRemoteStream(stream);
+    if (voiceRemoteHandle.kind === 'wa') voiceRemoteHandle.gain.gain.value = speakerOn ? 1 : 0;
+    else voiceRemoteHandle.audio.muted = !speakerOn;
+    setupRemoteAudioAnalyser(stream);
   };
 
   const myKey = role;
@@ -3259,14 +3405,13 @@ function teardownVoiceChat(){
     db.ref('games/'+voiceGameId+'/voice/candidates/player2').off();
   }
   if (voicePC){ try{ voicePC.close(); }catch(e){} voicePC = null; }
+  stopRemoteStream(voiceRemoteHandle); voiceRemoteHandle = null;
   if (voiceLocalStream){ voiceLocalStream.getTracks().forEach(t=>t.stop()); voiceLocalStream = null; }
   voiceLocalTrack = null;
   voiceGameId = null;
   micOn = false;
   speakerOn = true;
   teardownRemoteAudioAnalyser();
-  const remoteAudio = document.getElementById('remote-voice-audio');
-  if (remoteAudio) remoteAudio.srcObject = null;
   const micBtn = document.getElementById('voice-mic-btn');
   if (micBtn) micBtn.disabled = false;
   updateVoiceUI('');
@@ -3318,8 +3463,10 @@ function toggleMic(){
 }
 function toggleSpeaker(){
   speakerOn = !speakerOn;
-  const remoteAudio = document.getElementById('remote-voice-audio');
-  if (remoteAudio) remoteAudio.muted = !speakerOn;
+  if (voiceRemoteHandle){
+    if (voiceRemoteHandle.kind === 'wa') voiceRemoteHandle.gain.gain.value = speakerOn ? 1 : 0;
+    else voiceRemoteHandle.audio.muted = !speakerOn;
+  }
   updateVoiceUI();
 }
 
@@ -3876,6 +4023,16 @@ function renderVipHub(){
   const lk = document.getElementById('my-visitors-lock');
   if (lk) lk.style.display = tier >= 4 ? 'none' : 'inline';
 }
+function renderEconomyHub(){
+  const box = document.getElementById('my-economy-hub');
+  if (!box) return;
+  box.innerHTML = `
+    <button class="vip-hub-btn" onclick="openVipBuy()"><i class="fas fa-crown"></i> احصل على VIP</button>
+    <button class="vip-hub-btn" onclick="openShop()"><i class="fas fa-store"></i> متجر الإطارات والدخوليات</button>
+    <button class="vip-hub-btn" onclick="openRoulette()"><i class="fas fa-dharmachakra"></i> روليت الحظ اليومي</button>
+    <button class="vip-hub-btn" onclick="openTopup()"><i class="fas fa-gem"></i> شحن الماسات</button>
+  `;
+}
 function vipPickAnimAvatar(){
   if (!needTier(4)) return;
   showToast('اختر صورة GIF أو WebP متحركة (حتى 1.2MB)');
@@ -3907,8 +4064,9 @@ function vrRenderList(){
     if (usersCache[r.id] === undefined && !usersLoading.has(r.id)) loadUserProfile(r.id);
     const u = usersCache[r.id] || {};
     const cnt = Object.keys(r.members || {}).length;
+    const rf = resolveFrame(u);
     return `<div class="vr-card">
-      <span class="vr-av">${vipAvatarInner(u)}</span>
+      <span class="vr-av"><span class="vr-av-c">${vipAvatarInner(u)}</span>${rf ? frameOverlayHtml(rf) : ''}</span>
       <div class="vr-info">
         <div class="vr-title">${escapeHtml(r.title || 'غرفة VIP')}</div>
         <div class="vr-sub">${renderUserNameHtml(u)} ${vipPillHtml(u.vipTier)} · <i class="fas fa-users"></i> ${cnt}/${VR_MAX}</div>
@@ -3931,6 +4089,7 @@ async function vrCreateOrOpenMine(){
   }catch(e){ showToast('تعذّر فتح الغرفة','error'); }
 }
 async function vrJoin(rid){
+  ensureAudioCtx();
   if (vrCurrent){
     if (vrCurrent.id === rid){ document.getElementById('vr-overlay').classList.add('show'); return; }
     await vrLeave();
@@ -3953,6 +4112,7 @@ async function vrJoin(rid){
   catch(e){ showToast('تعذّر دخول الغرفة','error'); vrLeave(); return; }
   vrMembersRef = db.ref('vipRooms/'+rid+'/members');
   vrMembersRef.on('value', s=>{ vrMembersCache = s.val() || {}; vrRenderMembers(); vrSyncPeers(); });
+  vrBindEntrances(rid);
   vrChatRef = db.ref('vipRoomChat/'+rid).limitToLast(60);
   vrChatRef.on('value', s=>{ vrChatCache = s.val() || {}; vrRenderChat(); });
   vrRoomRef = db.ref('vipRooms/'+rid);
@@ -4001,8 +4161,9 @@ function vrRenderMembers(){
     const u = usersCache[uid] || {};
     const m = vrMembersCache[uid] || {};
     const nm = u.name ? u : { name: 'مستخدم '+getPublicId(uid), vipTier: u.vipTier };
+    const mf = resolveFrame(u);
     return `<div class="vr-member">
-      <span class="vr-av">${vipAvatarInner(u)}</span>
+      <span class="vr-av"><span class="vr-av-c">${vipAvatarInner(u)}</span>${mf ? frameOverlayHtml(mf) : ''}</span>
       <div class="vr-nm">${renderUserNameHtml(nm)} ${vipPillHtml(u.vipTier)} ${uid===vrCurrent.id?'<i class="fas fa-crown" style="color:var(--glow);font-size:11px;"></i>':''}</div>
       <i class="fas ${m.mic?'fa-microphone on':'fa-microphone-slash'} vr-ic ${m.mic?'on':''}"></i>
       ${uid===currentUserId ? '' : `<button onclick="closeVrForProfile('${uid}')" title="الملف"><i class="fas fa-user"></i></button><button onclick="vrChallenge('${uid}')" title="تحدّي"><i class="fas fa-gamepad"></i></button>`}
@@ -4059,6 +4220,7 @@ async function vrLeave(){
   vrTeardownVoice(cur);
   try{ if (vrMembersRef) vrMembersRef.off(); if (vrChatRef) vrChatRef.off(); if (vrRoomRef) vrRoomRef.off(); }catch(e){}
   vrMembersRef = vrChatRef = vrRoomRef = null;
+  vrUnbindEntrances();
   vrMembersCache = {}; vrChatCache = {};
   document.getElementById('vr-overlay').classList.remove('show');
   if (!cur) return;
@@ -4099,13 +4261,9 @@ function vrCreatePeer(uid, memberTs){
   if (vrMicTrack) pc.addTrack(vrMicTrack, vrLocalStream);
   else pc.addTransceiver('audio', { direction:'recvonly' });
   pc.ontrack = ev=>{
-    if (peer.audio) return;
-    const a = document.createElement('audio');
-    a.autoplay = true; a.playsInline = true;
-    a.srcObject = (ev.streams && ev.streams[0]) ? ev.streams[0] : new MediaStream([ev.track]);
-    document.getElementById('vr-audio-wrap').appendChild(a);
-    peer.audio = a;
-    a.play().catch(()=>{});
+    if (peer.remoteHandle) return;
+    const stream = (ev.streams && ev.streams[0]) ? ev.streams[0] : new MediaStream([ev.track]);
+    peer.remoteHandle = playRemoteStream(stream);
   };
   pc.onicecandidate = ev=>{
     if (ev.candidate && peer.sid) db.ref(base+'/c_'+currentUserId).push({ sid: peer.sid, c: ev.candidate.toJSON() }).catch(()=>{});
@@ -4174,7 +4332,7 @@ function vrClosePeer(uid){
   delete vrPeers[uid];
   try{ p.refs.forEach(r=>r.off()); }catch(e){}
   try{ p.pc.close(); }catch(e){}
-  if (p.audio){ try{ p.audio.srcObject = null; p.audio.remove(); }catch(e){} }
+  stopRemoteStream(p.remoteHandle);
 }
 function vrTeardownVoice(cur){
   Object.keys(vrPeers).forEach(uid=>{
@@ -4186,6 +4344,502 @@ function vrTeardownVoice(cur){
   vrLocalStream = null; vrMicTrack = null; vrMicOn = false;
   const w = document.getElementById('vr-audio-wrap'); if (w) w.innerHTML = '';
   vrSetVoiceStatus('');
+}
+
+
+/* =====================================================================
+   الاقتصاد: الماسات/العملات + المتجر (إطارات ودخوليات) + الروليت اليومي
+   + الدخوليات الفخمة + الشحن + شراء VIP + طلب صداقة مدفوع
+   ===================================================================== */
+
+/* ---------------- إعداد المتجر (يُحمَّل من لوحة التحكم، وله قيم افتراضية جاهزة) ---------------- */
+let shopConfig = {
+  vipPrices: { 1:100, 2:250, 3:500, 4:900, 5:1500, 6:2500, 7:5000 },
+  frames: {},      // key -> {price,currency,discount,permanent,days}
+  entrances: {},   // key -> {price,currency,discount,permanent,days}
+  friendPrice: 50,
+  roulette: [
+    { id:'c1', type:'coins',    amount:50,   label:'50 عملة',   icon:'fa-coins',  color:'#ffcf5c', weight:26 },
+    { id:'c2', type:'coins',    amount:150,  label:'150 عملة',  icon:'fa-coins',  color:'#ffb02a', weight:18 },
+    { id:'d1', type:'diamonds', amount:5,    label:'5 ماسات',   icon:'fa-gem',    color:'#7fd8ff', weight:20 },
+    { id:'d2', type:'diamonds', amount:15,   label:'15 ماسة',   icon:'fa-gem',    color:'#39c9ff', weight:12 },
+    { id:'d3', type:'diamonds', amount:40,   label:'40 ماسة',   icon:'fa-gem',    color:'#0aa5ff', weight:5  },
+    { id:'x1', type:'coins',    amount:20,   label:'20 عملة',   icon:'fa-coins',  color:'#ffe08a', weight:15 },
+    { id:'f1', type:'frame',    itemId:'s_emerald', label:'إطار الزمرد', icon:'fa-crown', color:'#7bffb0', weight:3 },
+    { id:'e1', type:'entrance', itemId:'s_comet',    label:'دخولية المذنّب', icon:'fa-meteor', color:'#c9aef7', weight:1 }
+  ]
+};
+let shopConfigLoaded = false;
+db.ref('settings/shop').on('value', s=>{
+  const v = s.val() || {};
+  shopConfig.vipPrices = Object.assign({}, shopConfig.vipPrices, v.vipPrices || {});
+  shopConfig.frames = v.frames || {};
+  shopConfig.entrances = v.entrances || {};
+  shopConfig.friendPrice = (v.friendPrice !== undefined && v.friendPrice !== null) ? v.friendPrice : 50;
+  if (Array.isArray(v.roulette) && v.roulette.length) shopConfig.roulette = v.roulette;
+  shopConfigLoaded = true;
+  try{ if (document.getElementById('shop-overlay').classList.contains('show')) renderShopGrid(); }catch(e){}
+  try{ if (document.getElementById('vipbuy-overlay').classList.contains('show')) renderVipBuyList(); }catch(e){}
+});
+
+function fmtNum(n){ n = Number(n)||0; return n.toLocaleString('en-US'); }
+function myDiamonds(){ return Number(myProfile.diamonds)||0; }
+function myCoins(){ return Number(myProfile.coins)||0; }
+function ownedActive(v){ return v === true || (v && typeof v === 'object' && v.until && v.until > Date.now()); }
+
+function renderCurrencyRow(){
+  const box = document.getElementById('my-currency-row');
+  if (!box) return;
+  box.innerHTML = `
+    <span class="currency-chip diamond"><i class="fas fa-gem"></i> ${fmtNum(myDiamonds())}</span>
+    <span class="currency-chip coin"><i class="fas fa-coins"></i> ${fmtNum(myCoins())}</span>
+    <button class="topup-btn" onclick="openTopup()"><i class="fas fa-plus"></i> شحن</button>
+  `;
+}
+
+/* ---------------- توسعة الإطارات: نُبقي إطارات VIP المجانية كما هي، ونضيف إطارات متجر إضافية ---------------- */
+BUILTIN_FRAMES.b_gold.free = true;
+BUILTIN_FRAMES.b_flame.free = true;
+BUILTIN_FRAMES.b_royal.free = true;
+BUILTIN_FRAMES.b_ice.free = true;
+BUILTIN_FRAMES.b_rose.free = true;
+Object.assign(BUILTIN_FRAMES, {
+  s_emerald:{ name:'تاج الزمرد',       minTier:0, p:{ l:'#e3fff0', m:'#3fe09a', d:'#0c6b45', g1:'#a8ffd9', g2:'#e9fff5', glow:'#3fe09a' } },
+  s_sunset: { name:'غروب الصحراء',     minTier:0, p:{ l:'#ffe7c2', m:'#ff9a3d', d:'#a83e12', g1:'#ffd36b', g2:'#fff2cf', glow:'#ff9a3d' } },
+  s_ocean:  { name:'أعماق المحيط',     minTier:0, p:{ l:'#dff6ff', m:'#3fb6e0', d:'#0d4d6e', g1:'#9fe8ff', g2:'#eafcff', glow:'#3fb6e0' } },
+  s_blood:  { name:'قمر الدم',        minTier:0, p:{ l:'#ffd9d9', m:'#e0303f', d:'#4a0a10', g1:'#ff8a90', g2:'#ffe6e6', glow:'#e0303f' } },
+  s_galaxy: { name:'المجرة',          minTier:0, p:{ l:'#e6e0ff', m:'#7a5cff', d:'#241a52', g1:'#c9aef7', g2:'#f0eaff', glow:'#7a5cff' } },
+  s_gold2:  { name:'التنين الذهبي',    minTier:0, p:{ l:'#fff2c2', m:'#e0a020', d:'#5c3a05', g1:'#ffe6a8', g2:'#fffbe6', glow:'#e0a020' } },
+  s_silver: { name:'العنقاء الفضية',   minTier:0, p:{ l:'#f5f7fa', m:'#a8b0bd', d:'#3a3f4a', g1:'#e8ecf2', g2:'#ffffff', glow:'#c8d0dc' } },
+  s_neon:   { name:'سايبر نيون',       minTier:0, p:{ l:'#d9fff8', m:'#20e0c0', d:'#0a3d33', g1:'#7dffe8', g2:'#e6fffb', glow:'#20e0c0' } },
+  s_rainbow:{ name:'قوس قزح',         minTier:0, p:{ l:'#ffe6f5', m:'#ff6fb0', d:'#6b1042', g1:'#ffd36b', g2:'#c9aef7', glow:'#ff6fb0' } },
+  s_obsidian:{ name:'السبج الأسود',    minTier:0, p:{ l:'#4a4a55', m:'#232329', d:'#050506', g1:'#8a8a98', g2:'#c9c9d8', glow:'#8a8a98' } },
+  s_angel:  { name:'الملاك الأبيض',    minTier:0, p:{ l:'#ffffff', m:'#eaf6ff', d:'#9fc7e8', g1:'#ffffff', g2:'#eafcff', glow:'#cfeaff' } },
+  s_amber:  { name:'العنبر القديم',    minTier:0, p:{ l:'#ffe3b8', m:'#c9793e', d:'#4a260c', g1:'#ffcf8a', g2:'#fff0d9', glow:'#c9793e' } },
+  s_violet2:{ name:'البنفسج الملكي',   minTier:0, p:{ l:'#f3e8ff', m:'#9b5cff', d:'#341a5c', g1:'#d8b8ff', g2:'#f8f0ff', glow:'#9b5cff' } },
+  s_lime:   { name:'الأخضر الكهربائي', minTier:0, p:{ l:'#ecffd0', m:'#8ee000', d:'#3c5c00', g1:'#c6ff6b', g2:'#f5ffe0', glow:'#8ee000' } },
+  s_rose2:  { name:'الوردة السوداء',   minTier:0, p:{ l:'#3a1420', m:'#c9204f', d:'#160208', g1:'#ff6f96', g2:'#ffc2d4', glow:'#c9204f' } }
+});
+
+/* ---------------- الدخوليات الفخمة (بانرات متحركة عند الدخول لروم أو مباراة) ---------------- */
+const BUILTIN_ENTRANCES = {
+  t1:{ name:'دخولية VIP1', free:true, minTier:1, grad:'linear-gradient(90deg,#8b5a2b,#cd7f32,#e8a87c)', icon:'fa-star' },
+  t2:{ name:'دخولية VIP2', free:true, minTier:2, grad:'linear-gradient(90deg,#0aff99,#39ff14,#adff2f)', icon:'fa-bolt' },
+  t3:{ name:'دخولية VIP3', free:true, minTier:3, grad:'linear-gradient(90deg,#8ec9ff,#ffffff,#b8c6db)', icon:'fa-shield-halved' },
+  t4:{ name:'دخولية VIP4', free:true, minTier:4, grad:'linear-gradient(90deg,#c97a3f,#f0b06c,#ffe6a8)', icon:'fa-gem' },
+  t5:{ name:'دخولية VIP5', free:true, minTier:5, grad:'linear-gradient(90deg,#a493ff,#c9aef7,#f0b06c)', icon:'fa-crown' },
+  t6:{ name:'دخولية VIP6', free:true, minTier:6, grad:'linear-gradient(90deg,#dd2476,#ff512f,#ffe259)', icon:'fa-fire' },
+  t7:{ name:'دخولية VIP7', free:true, minTier:7, grad:'linear-gradient(90deg,#7df9ff,#ffffff,#c9aef7,#ff9ad5)', icon:'fa-sparkles' },
+  s_comet:   { name:'دخولية المذنّب',   minTier:0, grad:'linear-gradient(90deg,#241a52,#7a5cff,#c9aef7)', icon:'fa-meteor' },
+  s_phoenix: { name:'دخولية العنقاء',   minTier:0, grad:'linear-gradient(90deg,#a83e12,#ff9a3d,#ffd36b)', icon:'fa-fire-flame-curved' },
+  s_frost:   { name:'دخولية الصقيع',    minTier:0, grad:'linear-gradient(90deg,#0d4d6e,#3fb6e0,#eafcff)', icon:'fa-snowflake' },
+  s_storm:   { name:'دخولية العاصفة',   minTier:0, grad:'linear-gradient(90deg,#232329,#6b6b78,#c9c9d8)', icon:'fa-cloud-bolt' },
+  s_bloom:   { name:'دخولية الإزهار',   minTier:0, grad:'linear-gradient(90deg,#6b1042,#ff6fb0,#ffe6f5)', icon:'fa-spa' },
+  s_royal2:  { name:'دخولية الوسام الملكي', minTier:0, grad:'linear-gradient(90deg,#341a5c,#9b5cff,#f3e8ff)', icon:'fa-award' },
+  s_venom:   { name:'دخولية السم الأخضر',  minTier:0, grad:'linear-gradient(90deg,#3c5c00,#8ee000,#ecffd0)', icon:'fa-flask' },
+  s_solar:   { name:'دخولية الشمس',     minTier:0, grad:'linear-gradient(90deg,#5c3a05,#e0a020,#fff2c2)', icon:'fa-sun' },
+  s_abyss:   { name:'دخولية الهاوية',   minTier:0, grad:'linear-gradient(90deg,#050506,#4a4a55,#8a8a98)', icon:'fa-moon' },
+  s_wings:   { name:'دخولية الأجنحة الذهبية', minTier:0, grad:'linear-gradient(90deg,#a83e12,#ffd36b,#fff6cf)', icon:'fa-feather' }
+};
+const DEFAULT_ENTRANCE_BY_TIER = { 1:'t1',2:'t2',3:'t3',4:'t4',5:'t5',6:'t6',7:'t7' };
+
+function getCustomVisual(kind, id){
+  const store = kind === 'frame' ? frameCache : entranceCache;
+  const loading = kind === 'frame' ? frameLoading : entranceLoading;
+  const path = kind === 'frame' ? 'customFrames/' : 'customEntrances/';
+  const c = store[id];
+  if (c !== undefined) return c;
+  if (!loading.has(id)){
+    loading.add(id);
+    db.ref(path+id).once('value').then(s=>{
+      const v = s.val();
+      store[id] = v || false;
+      loading.delete(id);
+      refreshFrameConsumers();
+    }).catch(()=>{ loading.delete(id); store[id] = false; });
+  }
+  return null;
+}
+let entranceCache = {};
+let entranceLoading = new Set();
+
+function resolveEntrance(u){
+  if (!u) return null;
+  const tier = u.vipTier || 0;
+  const eq = u.equippedEntrance;
+  if (eq === 'none') return null;
+  if (eq && BUILTIN_ENTRANCES[eq]){
+    const ent = BUILTIN_ENTRANCES[eq];
+    const owned = u.ownedEntrances && u.ownedEntrances[eq];
+    if ((ent.free && tier >= ent.minTier) || ownedActive(owned)) return { kind:'builtin', key:eq, ...ent };
+  }
+  if (eq && String(eq).indexOf('ce:') === 0){
+    const id = String(eq).slice(3);
+    if (u.ownedEntrances && ownedActive(u.ownedEntrances[id])){
+      const d = getCustomVisual('entrance', id);
+      if (d) return { kind:'custom', src:d.src, name:d.name };
+    }
+    return null;
+  }
+  const def = DEFAULT_ENTRANCE_BY_TIER[tier];
+  return def ? { kind:'builtin', key:def, ...BUILTIN_ENTRANCES[def] } : null;
+}
+
+/* ---------------- عرض بانر الدخولية ---------------- */
+const entranceQueue = [];
+let entranceShowing = false;
+function queueEntrance(u){
+  if (!u) return;
+  const ent = resolveEntrance(u);
+  if (!ent) return;
+  entranceQueue.push({ u, ent });
+  showNextEntrance();
+}
+function showNextEntrance(){
+  if (entranceShowing || !entranceQueue.length) return;
+  const { u, ent } = entranceQueue.shift();
+  entranceShowing = true;
+  const stage = document.getElementById('entrance-stage');
+  const el = document.createElement('div');
+  el.className = 'entrance-banner';
+  if (ent.kind === 'custom'){
+    el.style.background = 'linear-gradient(90deg, rgba(20,16,30,.92), rgba(40,30,55,.92))';
+    el.innerHTML = `<img src="${escapeHtml(ent.src)}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.55;">`;
+  } else {
+    el.style.background = ent.grad;
+  }
+  el.innerHTML += `
+    <span class="eb-shine"></span>
+    <span class="eb-av">${vipAvatarInner(u)}</span>
+    <span class="eb-ic"><i class="fas ${ent.icon||'fa-star'}"></i></span>
+    <span>
+      <div class="eb-txt">${escapeHtml((u && u.name) || 'مستخدم')}</div>
+      <div class="eb-sub">${escapeHtml(ent.name||'دخول فخم')}</div>
+    </span>
+  `;
+  stage.appendChild(el);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('show')));
+  setTimeout(()=>{
+    el.style.transform = 'translateY(-120px)';
+    el.style.opacity = '0';
+    setTimeout(()=>{ el.remove(); entranceShowing = false; showNextEntrance(); }, 500);
+  }, 2600);
+}
+
+/* ---------------- ربط الدخوليات بالغرف والمباريات ---------------- */
+let vrMembersFirstLoad = false;
+let vrEntranceRef = null;
+function vrBindEntrances(rid){
+  vrMembersFirstLoad = false;
+  if (vrEntranceRef) vrEntranceRef.off();
+  vrEntranceRef = db.ref('vipRooms/'+rid+'/members');
+  vrEntranceRef.once('value', ()=>{ setTimeout(()=>{ vrMembersFirstLoad = true; }, 400); });
+  vrEntranceRef.on('child_added', snap=>{
+    if (!vrMembersFirstLoad) return;
+    const uid = snap.key;
+    if (uid === currentUserId) return;
+    const u = usersCache[uid];
+    if (u === undefined){
+      if (!usersLoading.has(uid)) loadUserProfile(uid);
+      const wait = setInterval(()=>{
+        if (usersCache[uid] !== undefined){ clearInterval(wait); queueEntrance(usersCache[uid]); }
+      }, 400);
+      setTimeout(()=>clearInterval(wait), 6000);
+    } else queueEntrance(u);
+  });
+}
+function vrUnbindEntrances(){
+  if (vrEntranceRef){ vrEntranceRef.off(); vrEntranceRef = null; }
+  vrMembersFirstLoad = false;
+}
+const entranceShownForGame = new Set();
+function maybeShowMatchEntrance(gid, opponentUid){
+  if (!gid || entranceShownForGame.has(gid)) return;
+  entranceShownForGame.add(gid);
+  const u = usersCache[opponentUid];
+  if (u) queueEntrance(u);
+  else if (!usersLoading.has(opponentUid)) loadUserProfile(opponentUid);
+}
+
+/* ---------------- شحن الماسات (آسيا سيل / أثير) ---------------- */
+const TOPUP_PACKAGES = [
+  { diamonds:250,  price:5,  best:false },
+  { diamonds:750,  price:10, best:true  },
+  { diamonds:2500, price:25, best:false },
+  { diamonds:7500, price:50, best:false }
+];
+function openTopup(){
+  closeMyProfile();
+  const box = document.getElementById('topup-grid');
+  box.innerHTML = TOPUP_PACKAGES.map((p,i)=>`
+    <div class="topup-card ${p.best?'best':''}" onclick="chooseTopup(${i})">
+      <div class="tc-diamond"><i class="fas fa-gem"></i></div>
+      <div class="tc-amount">${fmtNum(p.diamonds)} ماسة</div>
+      <div class="tc-price">${fmtNum(p.price)} آسيا / أثير</div>
+    </div>`).join('');
+  document.getElementById('topup-overlay').classList.add('show');
+}
+function closeTopup(){ document.getElementById('topup-overlay').classList.remove('show'); }
+async function chooseTopup(i){
+  const p = TOPUP_PACKAGES[i];
+  closeTopup();
+  try{
+    await db.ref('topupRequests').push({
+      uid: currentUserId, publicId: getPublicId(currentUserId), name: myProfile.name||'',
+      diamonds: p.diamonds, price: p.price, ts: Date.now(), handled:false
+    });
+  }catch(e){}
+  openChatModal();
+  setTimeout(()=>{
+    const inp = document.getElementById('chat-input');
+    if (inp){
+      inp.value = `أرغب بشحن ${p.diamonds} ماسة مقابل ${p.price} آسيا/أثير. الـID الخاص بي: ${getPublicId(currentUserId)}`;
+      inp.focus();
+    }
+  }, 200);
+}
+
+/* ---------------- شراء VIP ---------------- */
+function openVipBuy(){
+  closeMyProfile();
+  renderVipBuyList();
+  document.getElementById('vipbuy-overlay').classList.add('show');
+}
+function closeVipBuy(){ document.getElementById('vipbuy-overlay').classList.remove('show'); }
+function renderVipBuyList(){
+  const box = document.getElementById('vipbuy-list');
+  const tier = myTier();
+  box.innerHTML = Object.keys(VIP_TIER_LABELS).map(k=>{
+    const t = Number(k);
+    const price = shopConfig.vipPrices[t] || 0;
+    const mine = tier === t;
+    return `<div class="vip-buy-card">
+      <div class="vb-ic vip-pill-${t}" style="background:rgba(255,255,255,.08);"><i class="fas fa-crown"></i></div>
+      <div class="vb-info">
+        <div class="vb-name">${VIP_TIER_LABELS[t]}</div>
+        <div class="vb-price"><i class="fas fa-gem"></i> ${fmtNum(price)} ماسة</div>
+      </div>
+      ${mine ? '<span class="badge">مستواك الحالي</span>' : `<button onclick="requestVip(${t},${price})">طلب</button>`}
+    </div>`;
+  }).join('');
+}
+async function requestVip(tier, price){
+  closeVipBuy();
+  try{
+    await db.ref('vipRequests').push({
+      uid: currentUserId, publicId: getPublicId(currentUserId), name: myProfile.name||'',
+      tier, price, ts: Date.now(), handled:false
+    });
+  }catch(e){}
+  openChatModal();
+  setTimeout(()=>{
+    const inp = document.getElementById('chat-input');
+    if (inp){
+      inp.value = `أرغب بشراء ${VIP_TIER_LABELS[tier]} مقابل ${price} ماسة. الـID الخاص بي: ${getPublicId(currentUserId)}`;
+      inp.focus();
+    }
+  }, 200);
+}
+
+/* ---------------- المتجر: الإطارات والدخوليات ---------------- */
+let shopTab = 'frames';
+function openShop(){
+  closeMyProfile();
+  document.getElementById('shop-my-diamonds').textContent = fmtNum(myDiamonds());
+  document.getElementById('shop-my-coins').textContent = fmtNum(myCoins());
+  switchShopTab('frames');
+  document.getElementById('shop-overlay').classList.add('show');
+}
+function closeShop(){ document.getElementById('shop-overlay').classList.remove('show'); }
+function switchShopTab(tab){
+  shopTab = tab;
+  document.getElementById('shop-tab-frames').classList.toggle('active', tab==='frames');
+  document.getElementById('shop-tab-entrances').classList.toggle('active', tab==='entrances');
+  renderShopGrid();
+}
+function shopItemPrice(cfg){
+  const base = Number(cfg.price)||0;
+  const disc = Math.max(0, Math.min(90, Number(cfg.discount)||0));
+  return Math.max(0, Math.round(base * (1 - disc/100)));
+}
+function renderShopGrid(){
+  const box = document.getElementById('shop-grid');
+  const av = myProfile.avatarUrl ? `<img src="${escapeHtml(myProfile.avatarUrl)}">` : '<i class="fas fa-user" style="color:var(--ink-muted);"></i>';
+  if (shopTab === 'frames'){
+    const items = Object.entries(BUILTIN_FRAMES).filter(([,f])=>!f.free);
+    box.innerHTML = items.map(([key,f])=>{
+      const cfg = shopConfig.frames[key] || { price:200, currency:'coins', discount:0, permanent:true, days:7 };
+      const price = shopItemPrice(cfg);
+      const owned = ownedActive((myProfile.ownedFrames||{})[key]);
+      const currIcon = cfg.currency === 'diamonds' ? 'fa-gem' : 'fa-coins';
+      return `<div class="shop-item">
+        ${cfg.discount ? `<span class="si-badge">خصم ${cfg.discount}%</span>` : ''}
+        <div class="si-prev"><span class="si-prev-c">${av}</span>${frameOverlayHtml(frameObj(key))}</div>
+        <div class="si-name">${escapeHtml(f.name)}</div>
+        ${!cfg.permanent ? `<div class="si-tmp"><i class="fas fa-hourglass-half"></i> مؤقت ${cfg.days||7} يوم</div>` : ''}
+        <div class="si-price">${cfg.discount?`<span class="old">${fmtNum(cfg.price)}</span>`:''}<i class="fas ${currIcon}"></i> ${fmtNum(price)}</div>
+        <button class="${owned?'owned':''}" ${owned?'disabled':''} onclick="purchaseShopItem('frame','${key}')">${owned?'<i class=\"fas fa-check\"></i> مملوك':'شراء'}</button>
+      </div>`;
+    }).join('');
+  } else {
+    const items = Object.entries(BUILTIN_ENTRANCES).filter(([,e])=>!e.free);
+    box.innerHTML = items.map(([key,e])=>{
+      const cfg = shopConfig.entrances[key] || { price:150, currency:'coins', discount:0, permanent:true, days:7 };
+      const price = shopItemPrice(cfg);
+      const owned = ownedActive((myProfile.ownedEntrances||{})[key]);
+      const currIcon = cfg.currency === 'diamonds' ? 'fa-gem' : 'fa-coins';
+      return `<div class="shop-item">
+        ${cfg.discount ? `<span class="si-badge">خصم ${cfg.discount}%</span>` : ''}
+        <div class="si-ent-prev" style="background:${e.grad};"><i class="fas ${e.icon}"></i></div>
+        <div class="si-name">${escapeHtml(e.name)}</div>
+        ${!cfg.permanent ? `<div class="si-tmp"><i class="fas fa-hourglass-half"></i> مؤقت ${cfg.days||7} يوم</div>` : ''}
+        <div class="si-price">${cfg.discount?`<span class="old">${fmtNum(cfg.price)}</span>`:''}<i class="fas ${currIcon}"></i> ${fmtNum(price)}</div>
+        <button class="${owned?'owned':''}" ${owned?'disabled':''} onclick="purchaseShopItem('entrance','${key}')">${owned?'<i class=\"fas fa-check\"></i> مملوك':'شراء'}</button>
+      </div>`;
+    }).join('');
+  }
+}
+async function purchaseShopItem(kind, key){
+  const cfgSrc = kind === 'frame' ? shopConfig.frames : shopConfig.entrances;
+  const cfg = cfgSrc[key] || { price: kind==='frame'?200:150, currency:'coins', discount:0, permanent:true, days:7 };
+  const price = shopItemPrice(cfg);
+  const field = cfg.currency === 'diamonds' ? 'diamonds' : 'coins';
+  const ok = await showGameConfirm(`شراء "${(kind==='frame'?BUILTIN_FRAMES[key]:BUILTIN_ENTRANCES[key]).name}" مقابل ${fmtNum(price)} ${field==='diamonds'?'ماسة':'عملة'}؟`);
+  if (!ok) return;
+  try{
+    const res = await db.ref('users/'+currentUserId+'/'+field).transaction(cur=>{
+      cur = Number(cur)||0;
+      if (cur < price) return;
+      return cur - price;
+    });
+    if (!res.committed){ showToast('رصيدك غير كافٍ', 'error'); return; }
+    const ownedField = kind === 'frame' ? 'ownedFrames' : 'ownedEntrances';
+    const val = cfg.permanent === false ? { until: Date.now() + (Number(cfg.days)||7)*86400000 } : true;
+    await db.ref('users/'+currentUserId+'/'+ownedField+'/'+key).set(val);
+    showToast('تم الشراء بنجاح!', 'success');
+    renderShopGrid();
+  }catch(e){ showToast('تعذّرت عملية الشراء', 'error'); }
+}
+
+/* ---------------- الروليت اليومي ---------------- */
+const ROULETTE_R = 92, ROULETTE_CX = 100, ROULETTE_CY = 100;
+function polar(cx,cy,r,angleDeg){ const a=(angleDeg-90)*Math.PI/180; return [cx+r*Math.cos(a), cy+r*Math.sin(a)]; }
+function buildWheelSvg(){
+  const prizes = shopConfig.roulette;
+  const n = prizes.length;
+  const slice = 360/n;
+  let html = '';
+  prizes.forEach((p,i)=>{
+    const start = i*slice, end = start+slice;
+    const [x1,y1] = polar(ROULETTE_CX,ROULETTE_CY,ROULETTE_R,start);
+    const [x2,y2] = polar(ROULETTE_CX,ROULETTE_CY,ROULETTE_R,end);
+    const large = slice > 180 ? 1 : 0;
+    html += `<path d="M${ROULETTE_CX},${ROULETTE_CY} L${x1.toFixed(1)},${y1.toFixed(1)} A${ROULETTE_R},${ROULETTE_R} 0 ${large} 1 ${x2.toFixed(1)},${y2.toFixed(1)}Z" fill="${p.color||'#c9793e'}" stroke="#1a1220" stroke-width="1.5"/>`;
+    const mid = start + slice/2;
+    const [tx,ty] = polar(ROULETTE_CX,ROULETTE_CY,ROULETTE_R*0.62,mid);
+    html += `<text x="${tx.toFixed(1)}" y="${ty.toFixed(1)}" font-size="9" font-weight="900" fill="#1c1420" text-anchor="middle" dominant-baseline="middle" transform="rotate(${mid},${tx.toFixed(1)},${ty.toFixed(1)})">${escapeHtml(p.label||'')}</text>`;
+  });
+  return html;
+}
+function openRoulette(){
+  closeMyProfile();
+  document.getElementById('wheel-svg').innerHTML = buildWheelSvg();
+  document.getElementById('wheel-svg').style.transform = 'rotate(0deg)';
+  document.getElementById('roulette-result-box').innerHTML = '';
+  refreshRouletteAvailability();
+  document.getElementById('roulette-overlay').classList.add('show');
+}
+function closeRoulette(){ document.getElementById('roulette-overlay').classList.remove('show'); }
+function refreshRouletteAvailability(){
+  const last = Number(myProfile.lastRoulette)||0;
+  const left = 86400000 - (Date.now()-last);
+  const btn = document.getElementById('roulette-spin-btn');
+  const cd = document.getElementById('roulette-cooldown-box');
+  if (left > 0){
+    btn.disabled = true;
+    const h = Math.floor(left/3600000), m = Math.floor(left%3600000/60000);
+    cd.innerHTML = `<div class="roulette-cooldown"><i class="fas fa-hourglass-half"></i> عد غداً — الوقت المتبقي: ${h}س ${m}د</div>`;
+  } else {
+    btn.disabled = false;
+    cd.innerHTML = '';
+  }
+}
+async function spinRoulette(){
+  const btn = document.getElementById('roulette-spin-btn');
+  btn.disabled = true;
+  let allowed = false;
+  try{
+    const res = await db.ref('users/'+currentUserId+'/lastRoulette').transaction(cur=>{
+      if (cur && Date.now()-cur < 86400000) return;
+      return Date.now();
+    });
+    allowed = res.committed;
+  }catch(e){}
+  if (!allowed){ showToast('لقد استخدمت محاولتك اليوم', 'error'); refreshRouletteAvailability(); return; }
+  const prizes = shopConfig.roulette;
+  const totalW = prizes.reduce((s,p)=>s+(Number(p.weight)||1),0);
+  let r = Math.random()*totalW, idx = 0;
+  for (let i=0;i<prizes.length;i++){ r -= (Number(prizes[i].weight)||1); if (r<=0){ idx=i; break; } }
+  const slice = 360/prizes.length;
+  const targetMid = idx*slice + slice/2;
+  const spins = 5;
+  const finalAngle = spins*360 + (360 - targetMid);
+  const wheel = document.getElementById('wheel-svg');
+  wheel.style.transform = 'rotate('+finalAngle+'deg)';
+  setTimeout(()=>awardRoulettePrize(prizes[idx]), 4300);
+}
+async function awardRoulettePrize(prize){
+  try{
+    if (prize.type === 'coins') await db.ref('users/'+currentUserId+'/coins').transaction(c=>(Number(c)||0)+prize.amount);
+    else if (prize.type === 'diamonds') await db.ref('users/'+currentUserId+'/diamonds').transaction(c=>(Number(c)||0)+prize.amount);
+    else if (prize.type === 'frame') await db.ref('users/'+currentUserId+'/ownedFrames/'+prize.itemId).set(true);
+    else if (prize.type === 'entrance') await db.ref('users/'+currentUserId+'/ownedEntrances/'+prize.itemId).set(true);
+  }catch(e){}
+  const box = document.getElementById('roulette-result-box');
+  box.innerHTML = `<div class="roulette-result"><div class="rr-icon" style="color:${prize.color||'var(--glow)'}"><i class="fas ${prize.icon||'fa-gift'}"></i></div><div style="font-weight:900;font-size:15px;">مبروك! ربحت ${escapeHtml(prize.label||'جائزة')}</div></div>`;
+  showToast('مبروك الفوز!', 'success');
+  refreshRouletteAvailability();
+}
+
+/* ---------------- طلب صداقة مدفوع ---------------- */
+let frlTargetUid = null;
+let frlRelation = 'صديق';
+const _origSendFriendRequestTo = sendFriendRequestTo;
+sendFriendRequestTo = function(uid){
+  frlTargetUid = uid;
+  frlRelation = 'صديق';
+  document.querySelectorAll('.rel-opt').forEach(el=>el.classList.toggle('sel', el.dataset.rel==='صديق'));
+  document.getElementById('frl-price').textContent = fmtNum(shopConfig.friendPrice);
+  document.getElementById('friendrel-overlay').classList.add('show');
+};
+function closeFriendRel(){ document.getElementById('friendrel-overlay').classList.remove('show'); frlTargetUid = null; }
+function frlSelect(el){
+  document.querySelectorAll('.rel-opt').forEach(x=>x.classList.remove('sel'));
+  el.classList.add('sel');
+  frlRelation = el.dataset.rel;
+}
+async function confirmSendFriendRequest(){
+  if (!frlTargetUid) return;
+  const uid = frlTargetUid, relation = frlRelation;
+  const price = Number(shopConfig.friendPrice)||0;
+  closeFriendRel();
+  if (price > 0){
+    try{
+      const res = await db.ref('users/'+currentUserId+'/diamonds').transaction(cur=>{
+        cur = Number(cur)||0;
+        if (cur < price) return;
+        return cur - price;
+      });
+      if (!res.committed){ showToast('رصيد الماسات غير كافٍ لإرسال طلب صداقة', 'error'); return; }
+    }catch(e){ showToast('تعذّرت العملية', 'error'); return; }
+  }
+  try{
+    if (blocksCache[uid]){ showToast('لقد قمت بحظر هذا المستخدم','error'); return; }
+    const theyBlockedMe = (await db.ref('blocks/'+uid+'/'+currentUserId).once('value')).val();
+    if (theyBlockedMe){ showToast('لا يمكنك إرسال طلب لهذا المستخدم','error'); return; }
+    await db.ref('friendRequests/'+uid+'/'+currentUserId).set({ status:'pending', timestamp:Date.now(), relation });
+    showToast('تم إرسال طلب الصداقة','success');
+  }catch(e){ showToast('تعذّر إرسال الطلب','error'); }
 }
 
 </script>
@@ -4315,6 +4969,88 @@ function vrTeardownVoice(cur){
   <div class="ban-c" id="ban-countdown">--:--:--</div>
   <div class="ban-r" id="ban-reason"></div>
 </div>
+
+
+<!-- ================= الاقتصاد: الشحن / شراء VIP / المتجر / الروليت / طلب صداقة مدفوع ================= -->
+<div class="overlay" id="topup-overlay">
+  <div class="sheet" style="max-width:460px;">
+    <div class="sheet-head">
+      <h3><i class="fas fa-gem" style="color:#7fd8ff;"></i> شحن الماسات</h3>
+      <button class="icon-btn" onclick="closeTopup()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="sheet-body">
+      <div style="font-size:12px;color:var(--ink-muted);line-height:1.9;margin-bottom:12px;">اختر الباقة، ثم أرسل السعر عبر آسيا سيل أو أثير إلى وكيل الشحن (المطوّر) من خلال المحادثة التي ستُفتح لك تلقائياً. بعد تأكيد الوصول سيتم إضافة الماسات لحسابك فوراً.</div>
+      <div class="topup-grid" id="topup-grid"></div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="vipbuy-overlay">
+  <div class="sheet" style="max-width:460px;">
+    <div class="sheet-head">
+      <h3><i class="fas fa-crown" style="color:var(--glow);"></i> احصل على VIP</h3>
+      <button class="icon-btn" onclick="closeVipBuy()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="sheet-body" id="vipbuy-list"></div>
+  </div>
+</div>
+
+<div class="overlay" id="shop-overlay">
+  <div class="sheet" style="max-width:480px;">
+    <div class="sheet-head">
+      <h3><i class="fas fa-store" style="color:var(--glow);"></i> متجر الإطارات والدخوليات</h3>
+      <button class="icon-btn" onclick="closeShop()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="sheet-body">
+      <div class="currency-row" style="margin-top:0;">
+        <span class="currency-chip diamond"><i class="fas fa-gem"></i> <span id="shop-my-diamonds">0</span></span>
+        <span class="currency-chip coin"><i class="fas fa-coins"></i> <span id="shop-my-coins">0</span></span>
+      </div>
+      <div class="shop-tabs">
+        <div class="shop-tab active" id="shop-tab-frames" onclick="switchShopTab('frames')"><i class="fas fa-crown"></i> الإطارات</div>
+        <div class="shop-tab" id="shop-tab-entrances" onclick="switchShopTab('entrances')"><i class="fas fa-bolt"></i> الدخوليات</div>
+      </div>
+      <div class="shop-grid" id="shop-grid"></div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="roulette-overlay">
+  <div class="sheet" style="max-width:420px;">
+    <div class="sheet-head">
+      <h3><i class="fas fa-dharmachakra" style="color:var(--glow);"></i> روليت الحظ اليومي</h3>
+      <button class="icon-btn" onclick="closeRoulette()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="sheet-body" style="text-align:center;">
+      <div class="wheel-wrap">
+        <div class="wheel-pointer"><i class="fas fa-caret-down"></i></div>
+        <svg id="wheel-svg" viewBox="0 0 200 200"></svg>
+        <div class="wheel-hub"><i class="fas fa-gift"></i></div>
+      </div>
+      <div id="roulette-cooldown-box"></div>
+      <button class="roulette-spin-btn" id="roulette-spin-btn" onclick="spinRoulette()"><i class="fas fa-dharmachakra"></i> استدر الآن</button>
+      <div id="roulette-result-box"></div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="friendrel-overlay">
+  <div class="sheet" style="max-width:420px;">
+    <div class="sheet-head">
+      <h3><i class="fas fa-user-plus" style="color:var(--glow);"></i> إضافة صديق</h3>
+      <button class="icon-btn" onclick="closeFriendRel()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="sheet-body">
+      <div style="font-size:12px;color:var(--ink-muted);margin-bottom:10px;">اختر نوع العلاقة، وسيتم خصم <b id="frl-price">0</b> ماسة من رصيدك عند إرسال الطلب.</div>
+      <div class="rel-opt sel" data-rel="صديق" onclick="frlSelect(this)"><i class="fas fa-user-group"></i> صديق</div>
+      <div class="rel-opt" data-rel="عشيق" onclick="frlSelect(this)"><i class="fas fa-heart"></i> عشيق</div>
+      <button class="btn btn-glow" style="width:100%;margin-top:6px;" onclick="confirmSendFriendRequest()"><i class="fas fa-paper-plane"></i> إرسال الطلب</button>
+    </div>
+  </div>
+</div>
+
+<!-- مسرح ظهور بانرات الدخول -->
+<div id="entrance-stage"></div>
 
 </body>
 </html>

@@ -1038,15 +1038,20 @@ textarea.vip-field{resize:none;}
   background:#ff512f;color:#fff;font-size:9px;font-weight:900;padding:2px 30px;}
 
 /* ---- شراء VIP ---- */
-.vip-buy-card{display:flex;align-items:center;gap:12px;border-radius:16px;padding:12px 14px;margin-bottom:10px;
-  background:var(--surface-2);border:1px solid var(--border);}
-.vip-buy-card .vb-ic{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-  font-size:18px;flex-shrink:0;}
-.vip-buy-card .vb-info{flex:1;min-width:0;}
-.vip-buy-card .vb-name{font-weight:900;font-size:13.5px;}
-.vip-buy-card .vb-price{font-size:11.5px;color:#7fd8ff;font-weight:800;margin-top:2px;}
-.vip-buy-card button{border:none;background:linear-gradient(135deg,var(--glow),var(--glow-2));color:#241304;
-  font-weight:900;border-radius:12px;padding:8px 14px;font-size:12px;cursor:pointer;white-space:nowrap;}
+.vip-buy-card{position:relative;overflow:hidden;display:flex;align-items:center;gap:14px;border-radius:18px;padding:14px 16px;margin-bottom:12px;
+  background:linear-gradient(135deg,rgba(255,255,255,.06),rgba(255,255,255,0)),var(--surface-2);
+  border:1px solid var(--border);box-shadow:0 6px 18px rgba(0,0,0,.25);}
+.vip-buy-card::after{content:'';position:absolute;inset:0;background:linear-gradient(100deg,transparent 40%,rgba(255,255,255,.08) 50%,transparent 60%);
+  transform:translateX(-100%);animation:ebShine 3.6s ease-in-out infinite;pointer-events:none;}
+.vip-buy-card .vb-ic{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:22px;flex-shrink:0;box-shadow:0 0 16px rgba(0,0,0,.35),inset 0 0 0 2px rgba(255,255,255,.35);position:relative;z-index:1;}
+.vip-buy-card .vb-info{flex:1;min-width:0;position:relative;z-index:1;}
+.vip-buy-card .vb-name{font-weight:900;font-size:14.5px;letter-spacing:.2px;}
+.vip-buy-card .vb-price{font-size:11.5px;color:#7fd8ff;font-weight:800;margin-top:3px;}
+.vip-buy-card .vb-price .vb-dur{color:var(--ink-muted);font-weight:700;}
+.vip-buy-card button{position:relative;z-index:1;border:none;background:linear-gradient(135deg,var(--glow),var(--glow-2));color:#241304;
+  font-weight:900;border-radius:12px;padding:9px 18px;font-size:12.5px;cursor:pointer;white-space:nowrap;box-shadow:0 4px 10px rgba(240,176,108,.35);}
+.vip-buy-card .badge{position:relative;z-index:1;}
 
 /* ---- المتجر: الإطارات/الدخوليات ---- */
 .shop-tabs{display:flex;gap:8px;margin-bottom:12px;}
@@ -1057,7 +1062,8 @@ textarea.vip-field{resize:none;}
 .shop-item{position:relative;border-radius:16px;padding:14px 8px 10px;text-align:center;background:var(--surface-2);
   border:1px solid var(--border);}
 .shop-item .si-prev{width:64px;height:64px;position:relative;margin:0 auto 8px;}
-.shop-item .si-prev-c{width:100%;height:100%;border-radius:50%;background:var(--surface-3);display:flex;align-items:center;justify-content:center;}
+.shop-item .si-prev-c{width:100%;height:100%;border-radius:50%;overflow:hidden;background:var(--surface-3);display:flex;align-items:center;justify-content:center;}
+.shop-item .si-prev-c img{width:100%;height:100%;object-fit:cover;}
 .shop-item .si-prev img.cf-overlay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none;object-fit:contain;}
 .shop-item .si-name{font-size:12px;font-weight:800;min-height:30px;display:flex;align-items:center;justify-content:center;}
 .shop-item .si-price{font-size:11.5px;font-weight:800;margin:6px 0;}
@@ -2244,6 +2250,9 @@ db.ref('users/'+currentUserId).on('value', snap=>{
   myProfile = snap.val() || { name:'مستخدم '+myPublicId, avatarUrl:null };
   usersCache[currentUserId] = myProfile;
   refreshMyProfileUI();
+  if (myProfile.vipTier && myProfile.vipExpiry && Number(myProfile.vipExpiry) < Date.now()){
+    db.ref('users/'+currentUserId).update({ vipTier: null, vipExpiry: null }).catch(()=>{});
+  }
 });
 
 const VIP_TIER_LABELS = {1:'VIP 1',2:'VIP 2',3:'VIP 3',4:'VIP 4',5:'VIP 5',6:'VIP 6',7:'VIP 7'};
@@ -2256,17 +2265,24 @@ function getUserTitlesArray(u){
   if (Array.isArray(u.titles)) return u.titles;
   return u.title ? [u.title] : [];
 }
+function effVip(u){
+  if (!u) return 0;
+  const t = Number(u.vipTier) || 0;
+  if (!t) return 0;
+  if (u.vipExpiry && Number(u.vipExpiry) < Date.now()) return 0;
+  return t;
+}
 function getUserFrameClass(u){
-  const tier = (u && u.vipTier) || 0;
+  const tier = effVip(u);
   return tier ? ('frame-vip'+tier) : 'frame-none';
 }
 function renderUserNameHtml(u){
-  const tier = (u && u.vipTier) || 0;
+  const tier = effVip(u);
   const cls = tier ? ('vn vn-'+tier) : 'vip-name-plain';
   return `<span class="${cls}">${escapeHtml((u && u.name) || 'مستخدم')}</span>`;
 }
 function renderUserVipBadgesHtml(u){
-  const tier = (u && u.vipTier) || 0;
+  const tier = effVip(u);
   if (!tier) return '';
   let html = `<span class="vip-inline-badges">`;
   if (VIP_VERIFY_COLORS[tier]) html += `<span class="vip-verified-badge" style="--vip-glow:${VIP_VERIFY_COLORS[tier]}" title="حساب موثّق">${vipVerifiedBadgeSvg(VIP_VERIFY_COLORS[tier])}</span>`;
@@ -3520,7 +3536,7 @@ async function sendGameChatMessage(){
    نظام VIP المتكامل: أسماء متموّجة، إطارات، زوّار، أغاني، غرف صوتية،
    رسائل تعميم، شكاوى، طلب لعبة، حظر مؤقت
    ===================================================================== */
-function myTier(){ return (myProfile && myProfile.vipTier) || 0; }
+function myTier(){ return effVip(myProfile); }
 function needTier(t){
   if (myTier() >= t) return true;
   showToast('لا تملك صلاحيات VIP — هذه الميزة تبدأ من VIP '+t, 'error');
@@ -3543,7 +3559,7 @@ function vipPillHtml(tier){
 }
 function setIdBadge(el, u){
   if (!el) return;
-  const tier = (u && u.vipTier) || 0;
+  const tier = effVip(u);
   el.classList.toggle('owner', !!(tier || (u && u.customId)));
   if (tier) el.setAttribute('data-tier', tier); else el.removeAttribute('data-tier');
 }
@@ -3615,16 +3631,25 @@ function getFrameData(id){
 }
 function resolveFrame(u){
   if (!u) return null;
-  const tier = u.vipTier || 0;
+  const tier = effVip(u);
   const eq = u.equippedFrame;
   if (eq === 'none') return null;
-  if (eq && BUILTIN_FRAMES[eq] && tier >= BUILTIN_FRAMES[eq].minTier) return frameObj(eq);
+  if (eq && BUILTIN_FRAMES[eq]){
+    const b = BUILTIN_FRAMES[eq];
+    const owned = u.ownedFrames && u.ownedFrames[eq];
+    if ((b.free && tier >= b.minTier) || ownedActive(owned)) return frameObj(eq);
+  }
   if (eq && String(eq).indexOf('c:') === 0){
     const id = String(eq).slice(2);
-    if (u.ownedFrames && u.ownedFrames[id]){
+    if (u.ownedFrames && ownedActive(u.ownedFrames[id])){
       const d = getFrameData(id);
       return d ? { src:d.src, scale:d.scale } : null;
     }
+  }
+  const customDefId = vipTierFrameMap[tier];
+  if (customDefId){
+    const d = getFrameData(customDefId);
+    return d ? { src:d.src, scale:d.scale } : null;
   }
   const def = DEFAULT_FRAME_BY_TIER[tier];
   return def ? frameObj(def) : null;
@@ -3702,6 +3727,7 @@ function refreshFrameConsumers(){
   } }catch(e){}
   try{ if (document.getElementById('owner-profile-overlay').classList.contains('show')) updateOwnerProfileHeader(); }catch(e){}
   try{ if (document.getElementById('frames-overlay').classList.contains('show')) renderFramesPicker(); }catch(e){}
+  try{ if (document.getElementById('shop-overlay').classList.contains('show') && shopTab==='frames') renderShopGrid(); }catch(e){}
 }
 /* يُستدعى عند وصول ملف مستخدم جديد من الشبكة */
 function vipOnUserLoaded(uid){
@@ -3735,13 +3761,23 @@ function renderFramesPicker(){
   let html = opt('none','بدون إطار','إخفاء الإطار من ملفك',null);
   Object.keys(BUILTIN_FRAMES).forEach(k=>{
     const b = BUILTIN_FRAMES[k];
-    if (tier >= b.minTier) html += opt(k, b.name, 'إطار VIP '+b.minTier, frameObj(k));
+    if (b.free && tier >= b.minTier) html += opt(k, b.name, 'إطار VIP '+b.minTier, frameObj(k));
   });
-  Object.keys(myProfile.ownedFrames || {}).forEach(id=>{
-    const d = getFrameData(id);
-    html += d ? opt('c:'+id, d.name, 'إطار خاص منحك إياه المطور', d)
-              : `<div class="frame-opt"><div class="fo-nm">جاري تحميل الإطار...</div></div>`;
-  });
+  const owned = myProfile.ownedFrames || {};
+  const ownedKeys = Object.keys(owned).filter(id => ownedActive(owned[id]) && !(BUILTIN_FRAMES[id] && BUILTIN_FRAMES[id].free));
+  if (ownedKeys.length){
+    html += `<div style="font-size:11.5px;color:var(--ink-muted);margin:12px 2px 6px;">إطاراتي الإضافية (من المتجر أو هدية)</div>`;
+    ownedKeys.forEach(id=>{
+      const tmp = owned[id] && owned[id].until ? ' · مؤقت' : '';
+      if (BUILTIN_FRAMES[id]){
+        html += opt(id, BUILTIN_FRAMES[id].name, (BUILTIN_FRAMES[id].free?'إطار VIP':'من المتجر')+tmp, frameObj(id));
+      } else {
+        const d = getFrameData(id);
+        html += d ? opt('c:'+id, d.name, 'هدية من المطور'+tmp, d)
+                  : `<div class="frame-opt"><div class="fo-nm">جاري تحميل الإطار...</div></div>`;
+      }
+    });
+  }
   box.innerHTML = html;
 }
 async function equipFrame(key){
@@ -3779,7 +3815,7 @@ function renderVisitors(){
   if (!visitorsList.length){ box.innerHTML = '<div class="empty-note">لم يزر ملفك أحد بعد</div>'; return; }
   box.innerHTML = visitorsList.map(v=>{
     const u = usersCache[v.uid] || {};
-    const nm = u.name ? u : { name: 'مستخدم '+getPublicId(v.uid), vipTier: u.vipTier };
+    const nm = u.name ? u : { name: 'مستخدم '+getPublicId(v.uid), vipTier: effVip(u) };
     return `<div class="visitor-row" onclick="closeVisitors();openViewUser('${v.uid}')">
       <span class="vr-av">${vipAvatarInner(u)}</span>
       <div style="flex:1;min-width:0;font-size:13px;">${renderUserNameHtml(nm)} ${renderUserVipBadgesHtml(u)}</div>
@@ -3793,7 +3829,7 @@ function closeVisitors(){ document.getElementById('visitors-overlay').classList.
 function renderSongButton(containerId, uid, u){
   const box = document.getElementById(containerId);
   if (!box) return;
-  if (u && u.hasSong && (u.vipTier||0) >= 7){
+  if (u && u.hasSong && effVip(u) >= 7){
     const playing = songPlayingUid === uid;
     box.innerHTML = `<button class="song-btn ${playing?'playing':''}" onclick="toggleProfileSong('${uid}')"><i class="fas ${playing?'fa-pause':'fa-play'}"></i> ${escapeHtml(u.songName||'أغنية الملف')}</button>`;
   } else box.innerHTML = '';
@@ -3982,7 +4018,7 @@ function bcNext(){
   }
   bcQueue.shift();
   const u = usersCache[v.uid];
-  if (!u || (u.vipTier||0) < 7){ bcNext(); return; }
+  if (!u || effVip(u) < 7){ bcNext(); return; }
   bcShowing = true;
   const f = resolveFrame(u);
   const av = document.getElementById('bc-av');
@@ -4069,7 +4105,7 @@ function vrRenderList(){
       <span class="vr-av"><span class="vr-av-c">${vipAvatarInner(u)}</span>${rf ? frameOverlayHtml(rf) : ''}</span>
       <div class="vr-info">
         <div class="vr-title">${escapeHtml(r.title || 'غرفة VIP')}</div>
-        <div class="vr-sub">${renderUserNameHtml(u)} ${vipPillHtml(u.vipTier)} · <i class="fas fa-users"></i> ${cnt}/${VR_MAX}</div>
+        <div class="vr-sub">${renderUserNameHtml(u)} ${vipPillHtml(effVip(u))} · <i class="fas fa-users"></i> ${cnt}/${VR_MAX}</div>
       </div>
       <button class="btn btn-glow btn-small" onclick="vrJoin('${r.id}')">دخول</button>
     </div>`;
@@ -4160,11 +4196,11 @@ function vrRenderMembers(){
     if (usersCache[uid] === undefined && !usersLoading.has(uid)) loadUserProfile(uid);
     const u = usersCache[uid] || {};
     const m = vrMembersCache[uid] || {};
-    const nm = u.name ? u : { name: 'مستخدم '+getPublicId(uid), vipTier: u.vipTier };
+    const nm = u.name ? u : { name: 'مستخدم '+getPublicId(uid), vipTier: effVip(u) };
     const mf = resolveFrame(u);
     return `<div class="vr-member">
       <span class="vr-av"><span class="vr-av-c">${vipAvatarInner(u)}</span>${mf ? frameOverlayHtml(mf) : ''}</span>
-      <div class="vr-nm">${renderUserNameHtml(nm)} ${vipPillHtml(u.vipTier)} ${uid===vrCurrent.id?'<i class="fas fa-crown" style="color:var(--glow);font-size:11px;"></i>':''}</div>
+      <div class="vr-nm">${renderUserNameHtml(nm)} ${vipPillHtml(effVip(u))} ${uid===vrCurrent.id?'<i class="fas fa-crown" style="color:var(--glow);font-size:11px;"></i>':''}</div>
       <i class="fas ${m.mic?'fa-microphone on':'fa-microphone-slash'} vr-ic ${m.mic?'on':''}"></i>
       ${uid===currentUserId ? '' : `<button onclick="closeVrForProfile('${uid}')" title="الملف"><i class="fas fa-user"></i></button><button onclick="vrChallenge('${uid}')" title="تحدّي"><i class="fas fa-gamepad"></i></button>`}
     </div>`;
@@ -4194,7 +4230,7 @@ function vrRenderChat(){
     const mine = m.uid === currentUserId;
     if (usersCache[m.uid] === undefined && !usersLoading.has(m.uid)) loadUserProfile(m.uid);
     const u = usersCache[m.uid] || {};
-    const nm = u.name ? u : { name: 'مستخدم '+getPublicId(m.uid), vipTier: u.vipTier };
+    const nm = u.name ? u : { name: 'مستخدم '+getPublicId(m.uid), vipTier: effVip(u) };
     return `<div class="vr-msg ${mine?'me':''}"><span class="vr-msg-name">${renderUserNameHtml(nm)}</span><div class="chat-bubble ${mine?'me':'owner'}">${escapeHtml(m.text||'')}</div></div>`;
   }).join('');
   box.scrollTop = box.scrollHeight;
@@ -4403,23 +4439,10 @@ BUILTIN_FRAMES.b_flame.free = true;
 BUILTIN_FRAMES.b_royal.free = true;
 BUILTIN_FRAMES.b_ice.free = true;
 BUILTIN_FRAMES.b_rose.free = true;
-Object.assign(BUILTIN_FRAMES, {
-  s_emerald:{ name:'تاج الزمرد',       minTier:0, p:{ l:'#e3fff0', m:'#3fe09a', d:'#0c6b45', g1:'#a8ffd9', g2:'#e9fff5', glow:'#3fe09a' } },
-  s_sunset: { name:'غروب الصحراء',     minTier:0, p:{ l:'#ffe7c2', m:'#ff9a3d', d:'#a83e12', g1:'#ffd36b', g2:'#fff2cf', glow:'#ff9a3d' } },
-  s_ocean:  { name:'أعماق المحيط',     minTier:0, p:{ l:'#dff6ff', m:'#3fb6e0', d:'#0d4d6e', g1:'#9fe8ff', g2:'#eafcff', glow:'#3fb6e0' } },
-  s_blood:  { name:'قمر الدم',        minTier:0, p:{ l:'#ffd9d9', m:'#e0303f', d:'#4a0a10', g1:'#ff8a90', g2:'#ffe6e6', glow:'#e0303f' } },
-  s_galaxy: { name:'المجرة',          minTier:0, p:{ l:'#e6e0ff', m:'#7a5cff', d:'#241a52', g1:'#c9aef7', g2:'#f0eaff', glow:'#7a5cff' } },
-  s_gold2:  { name:'التنين الذهبي',    minTier:0, p:{ l:'#fff2c2', m:'#e0a020', d:'#5c3a05', g1:'#ffe6a8', g2:'#fffbe6', glow:'#e0a020' } },
-  s_silver: { name:'العنقاء الفضية',   minTier:0, p:{ l:'#f5f7fa', m:'#a8b0bd', d:'#3a3f4a', g1:'#e8ecf2', g2:'#ffffff', glow:'#c8d0dc' } },
-  s_neon:   { name:'سايبر نيون',       minTier:0, p:{ l:'#d9fff8', m:'#20e0c0', d:'#0a3d33', g1:'#7dffe8', g2:'#e6fffb', glow:'#20e0c0' } },
-  s_rainbow:{ name:'قوس قزح',         minTier:0, p:{ l:'#ffe6f5', m:'#ff6fb0', d:'#6b1042', g1:'#ffd36b', g2:'#c9aef7', glow:'#ff6fb0' } },
-  s_obsidian:{ name:'السبج الأسود',    minTier:0, p:{ l:'#4a4a55', m:'#232329', d:'#050506', g1:'#8a8a98', g2:'#c9c9d8', glow:'#8a8a98' } },
-  s_angel:  { name:'الملاك الأبيض',    minTier:0, p:{ l:'#ffffff', m:'#eaf6ff', d:'#9fc7e8', g1:'#ffffff', g2:'#eafcff', glow:'#cfeaff' } },
-  s_amber:  { name:'العنبر القديم',    minTier:0, p:{ l:'#ffe3b8', m:'#c9793e', d:'#4a260c', g1:'#ffcf8a', g2:'#fff0d9', glow:'#c9793e' } },
-  s_violet2:{ name:'البنفسج الملكي',   minTier:0, p:{ l:'#f3e8ff', m:'#9b5cff', d:'#341a5c', g1:'#d8b8ff', g2:'#f8f0ff', glow:'#9b5cff' } },
-  s_lime:   { name:'الأخضر الكهربائي', minTier:0, p:{ l:'#ecffd0', m:'#8ee000', d:'#3c5c00', g1:'#c6ff6b', g2:'#f5ffe0', glow:'#8ee000' } },
-  s_rose2:  { name:'الوردة السوداء',   minTier:0, p:{ l:'#3a1420', m:'#c9204f', d:'#160208', g1:'#ff6f96', g2:'#ffc2d4', glow:'#c9204f' } }
-});
+/* إطارات المتجر الآن كلها صور يرفعها المطوّر بنفسه من لوحة التحكم (customFrames)
+   بدل الإطارات المولَّدة تلقائياً، لتفادي التكرار والفوضى البصرية */
+let vipTierFrameMap = {};
+db.ref('settings/vipTierFrames').on('value', s=>{ vipTierFrameMap = s.val() || {}; refreshFrameConsumers(); });
 
 /* ---------------- الدخوليات الفخمة (بانرات متحركة عند الدخول لروم أو مباراة) ---------------- */
 const BUILTIN_ENTRANCES = {
@@ -4465,7 +4488,7 @@ let entranceLoading = new Set();
 
 function resolveEntrance(u){
   if (!u) return null;
-  const tier = u.vipTier || 0;
+  const tier = effVip(u);
   const eq = u.equippedEntrance;
   if (eq === 'none') return null;
   if (eq && BUILTIN_ENTRANCES[eq]){
@@ -4606,39 +4629,49 @@ function openVipBuy(){
   document.getElementById('vipbuy-overlay').classList.add('show');
 }
 function closeVipBuy(){ document.getElementById('vipbuy-overlay').classList.remove('show'); }
+const VIP_BUY_STYLE = {
+  1:{grad:'linear-gradient(135deg,#e8a87c,#cd7f32)', ic:'#2b1704', bd:'#cd7f32'},
+  2:{grad:'linear-gradient(135deg,#adff2f,#0aff99)', ic:'#04210f', bd:'#39ff14'},
+  3:{grad:'linear-gradient(135deg,#ffffff,#b8c6db)', ic:'#2a2a2a', bd:'#b8c6db'},
+  4:{grad:'linear-gradient(135deg,#ffe6a8,#c97a3f)', ic:'#3a2405', bd:'#c97a3f'},
+  5:{grad:'linear-gradient(135deg,#f0b06c,#a493ff)', ic:'#1c0f33', bd:'#a493ff'},
+  6:{grad:'linear-gradient(135deg,#ff8a3d,#dd2476)', ic:'#fff', bd:'#ff512f'},
+  7:{grad:'linear-gradient(135deg,#e0f7ff,#c9aef7)', ic:'#0c0c14', bd:'#c9aef7'}
+};
 function renderVipBuyList(){
   const box = document.getElementById('vipbuy-list');
   const tier = myTier();
-  box.innerHTML = Object.keys(VIP_TIER_LABELS).map(k=>{
+  const myExp = myProfile.vipExpiry;
+  box.innerHTML = `<div class="currency-row" style="margin-top:0;"><span class="currency-chip diamond"><i class="fas fa-gem"></i> ${fmtNum(myDiamonds())}</span></div>` +
+  Object.keys(VIP_TIER_LABELS).map(k=>{
     const t = Number(k);
     const price = shopConfig.vipPrices[t] || 0;
     const mine = tier === t;
-    return `<div class="vip-buy-card">
-      <div class="vb-ic vip-pill-${t}" style="background:rgba(255,255,255,.08);"><i class="fas fa-crown"></i></div>
+    const st = VIP_BUY_STYLE[t];
+    return `<div class="vip-buy-card" style="box-shadow:0 6px 18px rgba(0,0,0,.25),0 0 0 1px ${st.bd}55 inset;">
+      <div class="vb-ic" style="background:${st.grad};color:${st.ic};box-shadow:0 0 16px ${st.bd}99,inset 0 0 0 2px rgba(255,255,255,.35);"><i class="fas fa-crown"></i></div>
       <div class="vb-info">
         <div class="vb-name">${VIP_TIER_LABELS[t]}</div>
-        <div class="vb-price"><i class="fas fa-gem"></i> ${fmtNum(price)} ماسة</div>
+        <div class="vb-price"><i class="fas fa-gem"></i> ${fmtNum(price)} ماسة <span class="vb-dur">/ شهر واحد</span></div>
       </div>
-      ${mine ? '<span class="badge">مستواك الحالي</span>' : `<button onclick="requestVip(${t},${price})">طلب</button>`}
+      ${mine ? `<span class="badge">مفعّل${myExp?(' حتى '+new Date(myExp).toLocaleDateString('ar-EG')):''}</span>` : `<button onclick="buyVipNow(${t},${price})">شراء</button>`}
     </div>`;
   }).join('');
 }
-async function requestVip(tier, price){
-  closeVipBuy();
+async function buyVipNow(tier, price){
+  const ok = await showGameConfirm(`شراء ${VIP_TIER_LABELS[tier]} لمدة شهر واحد مقابل ${fmtNum(price)} ماسة؟`);
+  if (!ok) return;
   try{
-    await db.ref('vipRequests').push({
-      uid: currentUserId, publicId: getPublicId(currentUserId), name: myProfile.name||'',
-      tier, price, ts: Date.now(), handled:false
+    const res = await db.ref('users/'+currentUserId+'/diamonds').transaction(cur=>{
+      cur = Number(cur)||0;
+      if (cur < price) return;
+      return cur - price;
     });
-  }catch(e){}
-  openChatModal();
-  setTimeout(()=>{
-    const inp = document.getElementById('chat-input');
-    if (inp){
-      inp.value = `أرغب بشراء ${VIP_TIER_LABELS[tier]} مقابل ${price} ماسة. الـID الخاص بي: ${getPublicId(currentUserId)}`;
-      inp.focus();
-    }
-  }, 200);
+    if (!res.committed){ showToast('رصيد الماسات غير كافٍ', 'error'); return; }
+    await db.ref('users/'+currentUserId).update({ vipTier: tier, vipExpiry: Date.now() + 30*86400000 });
+    showToast('مبروك! تم تفعيل '+VIP_TIER_LABELS[tier], 'success');
+    closeVipBuy();
+  }catch(e){ showToast('تعذّرت عملية الشراء', 'error'); }
 }
 
 /* ---------------- المتجر: الإطارات والدخوليات ---------------- */
@@ -4666,19 +4699,21 @@ function renderShopGrid(){
   const box = document.getElementById('shop-grid');
   const av = myProfile.avatarUrl ? `<img src="${escapeHtml(myProfile.avatarUrl)}">` : '<i class="fas fa-user" style="color:var(--ink-muted);"></i>';
   if (shopTab === 'frames'){
-    const items = Object.entries(BUILTIN_FRAMES).filter(([,f])=>!f.free);
-    box.innerHTML = items.map(([key,f])=>{
-      const cfg = shopConfig.frames[key] || { price:200, currency:'coins', discount:0, permanent:true, days:7 };
+    const items = Object.entries(shopConfig.frames||{});
+    if (!items.length){ box.innerHTML = '<div style="grid-column:1/-1;color:var(--ink-muted);font-size:12.5px;padding:14px 2px;text-align:center;">لا توجد إطارات في المتجر حالياً.</div>'; return; }
+    box.innerHTML = items.map(([id,cfg])=>{
+      const d = getFrameData(id);
       const price = shopItemPrice(cfg);
-      const owned = ownedActive((myProfile.ownedFrames||{})[key]);
+      const owned = ownedActive((myProfile.ownedFrames||{})[id]);
       const currIcon = cfg.currency === 'diamonds' ? 'fa-gem' : 'fa-coins';
+      const overlay = d ? frameOverlayHtml({src:d.src, scale:d.scale}) : '';
       return `<div class="shop-item">
         ${cfg.discount ? `<span class="si-badge">خصم ${cfg.discount}%</span>` : ''}
-        <div class="si-prev"><span class="si-prev-c">${av}</span>${frameOverlayHtml(frameObj(key))}</div>
-        <div class="si-name">${escapeHtml(f.name)}</div>
+        <div class="si-prev"><span class="si-prev-c">${av}</span>${overlay}</div>
+        <div class="si-name">${escapeHtml(cfg.name || (d && d.name) || 'إطار')}</div>
         ${!cfg.permanent ? `<div class="si-tmp"><i class="fas fa-hourglass-half"></i> مؤقت ${cfg.days||7} يوم</div>` : ''}
         <div class="si-price">${cfg.discount?`<span class="old">${fmtNum(cfg.price)}</span>`:''}<i class="fas ${currIcon}"></i> ${fmtNum(price)}</div>
-        <button class="${owned?'owned':''}" ${owned?'disabled':''} onclick="purchaseShopItem('frame','${key}')">${owned?'<i class=\"fas fa-check\"></i> مملوك':'شراء'}</button>
+        <button class="${owned?'owned':''}" ${owned?'disabled':''} onclick="purchaseShopItem('frame','${id}')">${owned?'<i class=\"fas fa-check\"></i> مملوك':'شراء'}</button>
       </div>`;
     }).join('');
   } else {
@@ -4704,7 +4739,10 @@ async function purchaseShopItem(kind, key){
   const cfg = cfgSrc[key] || { price: kind==='frame'?200:150, currency:'coins', discount:0, permanent:true, days:7 };
   const price = shopItemPrice(cfg);
   const field = cfg.currency === 'diamonds' ? 'diamonds' : 'coins';
-  const ok = await showGameConfirm(`شراء "${(kind==='frame'?BUILTIN_FRAMES[key]:BUILTIN_ENTRANCES[key]).name}" مقابل ${fmtNum(price)} ${field==='diamonds'?'ماسة':'عملة'}؟`);
+  const itemName = kind === 'frame'
+    ? (cfg.name || (getFrameData(key)||{}).name || 'إطار')
+    : BUILTIN_ENTRANCES[key].name;
+  const ok = await showGameConfirm(`شراء "${itemName}" مقابل ${fmtNum(price)} ${field==='diamonds'?'ماسة':'عملة'}؟`);
   if (!ok) return;
   try{
     const res = await db.ref('users/'+currentUserId+'/'+field).transaction(cur=>{

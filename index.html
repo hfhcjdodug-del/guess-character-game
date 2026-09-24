@@ -403,6 +403,8 @@ textarea,input,select{font-family:inherit;}
 .category-tile-cover{width:100%;aspect-ratio:1/1;border-radius:14px;background-size:cover;background-position:center;background-color:var(--surface-2);border:1px solid var(--border);overflow:hidden;}
 .category-tile-cover img,.category-tile-cover video{width:100%;height:100%;object-fit:cover;display:block;}
 .category-tile span{font-size:11.5px;font-weight:700;}
+.cat-price-badge{position:absolute;top:6px;left:6px;background:rgba(10,8,16,.75);color:#7fd8ff;font-size:10px;font-weight:900;
+  border-radius:10px;padding:3px 8px;display:inline-flex;align-items:center;gap:4px;backdrop-filter:blur(2px);}
 
 .category-chip{
   flex-shrink:0;border:1px solid var(--border);background:var(--surface);
@@ -666,7 +668,7 @@ textarea,input,select{font-family:inherit;}
 .vip-inline-badges{display:inline-flex;align-items:center;gap:4px;vertical-align:middle;}
 .vip-verified-badge{
   position:relative;display:inline-flex;align-items:center;justify-content:center;
-  width:16px;height:16px;flex-shrink:0;
+  width:16px;height:16px;flex-shrink:0;cursor:pointer;
 }
 .vip-verified-badge svg{width:100%;height:100%;display:block;animation:vipBadgePulse 1.8s ease-in-out infinite;}
 @keyframes vipBadgePulse{
@@ -674,7 +676,7 @@ textarea,input,select{font-family:inherit;}
   50%{filter:drop-shadow(0 0 3px var(--vip-glow,#fff)) drop-shadow(0 0 7px var(--vip-glow,#fff)) brightness(1.3);}
 }
 .vip-pill{
-  position:relative;overflow:hidden;display:inline-flex;align-items:center;gap:4px;
+  position:relative;overflow:hidden;display:inline-flex;align-items:center;gap:4px;cursor:pointer;
   font-size:10px;font-weight:900;letter-spacing:.4px;padding:2px 8px;border-radius:9px;
   box-shadow:0 3px 10px rgba(0,0,0,0.25);
 }
@@ -692,10 +694,10 @@ textarea,input,select{font-family:inherit;}
 .vip-pill-7{color:#0c0c14;background:linear-gradient(135deg,#e0f7ff,#8ec9ff,#c9aef7,#ffffff);}
 .vip-title-pill{
   background:linear-gradient(135deg,var(--glow),var(--glow-2));color:#241304;
-  font-size:10.5px;font-weight:800;padding:3px 11px;border-radius:13px;
+  font-size:10.5px;font-weight:800;padding:3px 11px;border-radius:13px;white-space:nowrap;flex-shrink:0;
   display:inline-flex;align-items:center;gap:4px;box-shadow:0 3px 10px rgba(224,146,90,0.3);
 }
-.vip-titles-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:4px;}
+.vip-titles-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:4px;max-width:100%;}
 .vip-name-plain{font-weight:800;}
 
 /* إطارات الصورة الرمزية حسب مستوى VIP (تُستخدم مع .avatar-frame الموجودة) */
@@ -1117,6 +1119,27 @@ textarea.vip-field{resize:none;}
   background:var(--surface-2);margin-bottom:8px;cursor:pointer;}
 .rel-opt.sel{border-color:var(--glow);box-shadow:0 0 0 1px var(--glow) inset;}
 .rel-opt i{color:var(--glow);font-size:16px;}
+
+/* ---- محادثة VIP / هدية اليوم / دعم بين المستخدمين ---- */
+.vh-dot{position:absolute;top:2px;left:6px;width:8px;height:8px;background:#ff3b3b;border-radius:50%;box-shadow:0 0 5px #ff3b3b;}
+.vip-msg-card{background:var(--surface-2);border:1px solid var(--border);border-radius:14px;padding:12px 14px;margin-bottom:10px;}
+.vip-msg-title{font-weight:900;font-size:13.5px;margin-bottom:6px;}
+.vip-msg-body{font-size:12.5px;line-height:1.9;color:var(--ink-soft);white-space:pre-line;}
+.vip-msg-time{font-size:10.5px;color:var(--ink-muted);margin-top:8px;}
+.vb-perks{list-style:none;margin:8px 0 0;padding:0;font-size:11px;color:var(--ink-muted);line-height:1.8;}
+.vb-perks li{position:relative;padding-right:14px;}
+.vb-perks li::before{content:'✦';position:absolute;right:0;color:var(--glow);font-size:9px;top:3px;}
+.vb-bonus{margin-top:8px;font-size:11px;font-weight:800;color:#7fd8ff;background:rgba(127,216,255,.1);border-radius:10px;padding:5px 10px;display:inline-block;}
+.dg-slots{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:14px 0;}
+.dg-slot{position:relative;border-radius:14px;padding:10px 4px;text-align:center;background:var(--surface-2);border:1px solid var(--border);}
+.dg-slot.dg-today{border-color:var(--glow);box-shadow:0 0 0 1px var(--glow) inset,0 0 14px rgba(240,176,108,.35);}
+.dg-slot.dg-done{opacity:.55;}
+.dg-slot.dg-future{opacity:.45;}
+.dg-day{font-size:9.5px;color:var(--ink-muted);margin-bottom:6px;}
+.dg-ic{font-size:18px;color:var(--glow);margin-bottom:4px;}
+.dg-label{font-size:9.5px;font-weight:800;}
+.dg-check{position:absolute;top:4px;left:4px;color:var(--ok);font-size:11px;}
+.support-field-row{display:flex;gap:8px;}
 
 </style>
 </head>
@@ -2285,8 +2308,8 @@ function renderUserVipBadgesHtml(u){
   const tier = effVip(u);
   if (!tier) return '';
   let html = `<span class="vip-inline-badges">`;
-  if (VIP_VERIFY_COLORS[tier]) html += `<span class="vip-verified-badge" style="--vip-glow:${VIP_VERIFY_COLORS[tier]}" title="حساب موثّق">${vipVerifiedBadgeSvg(VIP_VERIFY_COLORS[tier])}</span>`;
-  html += `<span class="vip-pill vip-pill-${tier}"><i class="fas fa-crown"></i> ${VIP_TIER_LABELS[tier]}</span>`;
+  if (VIP_VERIFY_COLORS[tier]) html += `<span class="vip-verified-badge" style="--vip-glow:${VIP_VERIFY_COLORS[tier]}" title="حساب موثّق" onclick="event.stopPropagation();vipBadgeClick(${tier})">${vipVerifiedBadgeSvg(VIP_VERIFY_COLORS[tier])}</span>`;
+  html += `<span class="vip-pill vip-pill-${tier}" onclick="event.stopPropagation();vipPillClick()"><i class="fas fa-crown"></i> ${VIP_TIER_LABELS[tier]}</span>`;
   html += `</span>`;
   return html;
 }
@@ -2536,6 +2559,7 @@ function renderViewUser(){
     }
     html += `<button class="btn btn-secondary" onclick="blockUser('${viewedUserId}');closeViewUser();"><i class="fas fa-user-slash"></i> حظر هذا المستخدم</button>`;
     html += `<button class="btn btn-secondary" onclick="openComplaint(getPublicId('${viewedUserId}'))"><i class="fas fa-flag"></i> شكوى على هذا المستخدم</button>`;
+    html += `<button class="btn btn-secondary" onclick="openSupportSheet('${viewedUserId}')"><i class="fas fa-hand-holding-heart"></i> إرسال دعم</button>`;
   }
   actions.innerHTML = html;
 }
@@ -2762,6 +2786,24 @@ function closeCategoryPicker(){
 }
 function chooseCategoryPicker(catKey){
   const cb = categoryPickerCallback;
+  const cat = gameCategoriesCache[catKey];
+  const price = (cat && Number(cat.price)) || 0;
+  const unlocked = !price || catKey === 'general' || (myProfile.unlockedCategories && myProfile.unlockedCategories[catKey]);
+  if (!unlocked){
+    (async ()=>{
+      const ok = await showGameConfirm(`فئة "${cat.name||catKey}" مدفوعة — فتحها الآن مقابل ${fmtNum(price)} ماسة؟`);
+      if (!ok) return;
+      try{
+        const res = await db.ref('users/'+currentUserId+'/diamonds').transaction(cur=>{ cur = Number(cur)||0; if (cur < price) return; return cur - price; });
+        if (!res.committed){ showToast('رصيد الماسات غير كافٍ لفتح هذه الفئة', 'error'); return; }
+        await db.ref('users/'+currentUserId+'/unlockedCategories/'+catKey).set(true);
+        showToast('تم فتح الفئة!', 'success');
+        closeCategoryPicker();
+        if (cb) cb(catKey);
+      }catch(e){ showToast('تعذّرت العملية', 'error'); }
+    })();
+    return;
+  }
   closeCategoryPicker();
   if (cb) cb(catKey);
 }
@@ -2784,12 +2826,16 @@ function renderCategoryPickerOptions(){
       </div>
       <span>منوّع</span>
     </button>
-    ${cats.map(c=>`
-      <button class="category-tile" onclick="chooseCategoryPicker('${c.key}')">
+    ${cats.map(c=>{
+      const price = Number(c.price)||0;
+      const unlocked = !price || (myProfile.unlockedCategories && myProfile.unlockedCategories[c.key]);
+      return `
+      <button class="category-tile" onclick="chooseCategoryPicker('${c.key}')" style="position:relative;">
         <div class="category-tile-cover" style="${c.coverUrl && !c.coverUrl.startsWith('data:video') ? `background-image:url('${c.coverUrl}');` : ''}">${c.coverUrl && c.coverUrl.startsWith('data:video') ? renderCover(c.coverUrl) : ''}</div>
         <span>${escapeHtml(c.name||'')}</span>
+        ${!unlocked ? `<span class="cat-price-badge"><i class="fas fa-gem"></i> ${fmtNum(price)}</span>` : ''}
       </button>
-    `).join('')}
+    `;}).join('')}
   `;
 }
 
@@ -3555,7 +3601,7 @@ function vipAvatarInner(u){
 }
 function vipPillHtml(tier){
   if (!tier) return '';
-  return `<span class="vip-pill vip-pill-${tier}"><i class="fas fa-crown"></i> ${VIP_TIER_LABELS[tier]||('VIP '+tier)}</span>`;
+  return `<span class="vip-pill vip-pill-${tier}" onclick="event.stopPropagation();vipPillClick()"><i class="fas fa-crown"></i> ${VIP_TIER_LABELS[tier]||('VIP '+tier)}</span>`;
 }
 function setIdBadge(el, u){
   if (!el) return;
@@ -4067,6 +4113,8 @@ function renderEconomyHub(){
     <button class="vip-hub-btn" onclick="openShop()"><i class="fas fa-store"></i> متجر الإطارات والدخوليات</button>
     <button class="vip-hub-btn" onclick="openRoulette()"><i class="fas fa-dharmachakra"></i> روليت الحظ اليومي</button>
     <button class="vip-hub-btn" onclick="openTopup()"><i class="fas fa-gem"></i> شحن الماسات</button>
+    <button class="vip-hub-btn" onclick="openDailyGift()"><i class="fas fa-box-open"></i> هدية اليوم</button>
+    <button class="vip-hub-btn" onclick="openVipInbox()" style="position:relative;"><i class="fas fa-envelope"></i> محادثة VIP${vipInboxUnread?'<span class=\\"vh-dot\\"></span>':''}</button>
   `;
 }
 function vipPickAnimAvatar(){
@@ -4623,6 +4671,30 @@ async function chooseTopup(i){
 }
 
 /* ---------------- شراء VIP ---------------- */
+const VIP_PERKS = {
+  1:['اسم متموّج بلون خاص يظهر للجميع أثناء اللعب وفي ملفك'],
+  2:['كل مزايا VIP1','فتح غرفة صوتية خاصة بك تظهر في "غرف VIP"'],
+  3:['كل مزايا VIP2','مراسلة المطوّر مباشرة في أي وقت','إمكانية تقديم شكوى على من يضايقك'],
+  4:['كل مزايا VIP3','إضافة صورة شخصية متحركة (GIF)','معرفة زوّار ملفك الشخصي'],
+  5:['كل مزايا VIP4','فتح مكتبة الإطارات الفاخرة وتفعيلها لملفك'],
+  6:['كل مزايا VIP5','إمكانية طلب لعبة جديدة من المطوّر','حساب صلاحياته أقوى'],
+  7:['كل مزايا VIP6','إضافة أغنية خاصة بملفك الشخصي','إرسال رسالة تعميم فخمة تصل لكل من يلعب الآن']
+};
+function vipPerksHtml(tier){
+  return `<ul class="vb-perks">${(VIP_PERKS[tier]||[]).map(p=>`<li>${escapeHtml(p)}</li>`).join('')}</ul>`;
+}
+let vipBonusCache = {};
+db.ref('settings/shop/vipBonuses').on('value', s=>{ vipBonusCache = s.val() || {}; try{ if (document.getElementById('vipbuy-overlay').classList.contains('show')) renderVipBuyList(); }catch(e){} });
+function vipBonusHtml(tier){
+  const b = vipBonusCache[tier];
+  if (!b) return '';
+  const parts = [];
+  if (b.diamonds) parts.push(`<i class="fas fa-gem"></i> ${fmtNum(b.diamonds)} ماسة هدية`);
+  if (b.coins) parts.push(`<i class="fas fa-coins"></i> ${fmtNum(b.coins)} عملة هدية`);
+  if (b.frameId) parts.push(`<i class="fas fa-crown"></i> إطار هدية`);
+  if (!parts.length) return '';
+  return `<div class="vb-bonus"><i class="fas fa-gift"></i> يشمل: ${parts.join(' + ')}</div>`;
+}
 function openVipBuy(){
   closeMyProfile();
   renderVipBuyList();
@@ -4648,11 +4720,13 @@ function renderVipBuyList(){
     const price = shopConfig.vipPrices[t] || 0;
     const mine = tier === t;
     const st = VIP_BUY_STYLE[t];
-    return `<div class="vip-buy-card" style="box-shadow:0 6px 18px rgba(0,0,0,.25),0 0 0 1px ${st.bd}55 inset;">
+    return `<div class="vip-buy-card" style="align-items:flex-start;box-shadow:0 6px 18px rgba(0,0,0,.25),0 0 0 1px ${st.bd}55 inset;">
       <div class="vb-ic" style="background:${st.grad};color:${st.ic};box-shadow:0 0 16px ${st.bd}99,inset 0 0 0 2px rgba(255,255,255,.35);"><i class="fas fa-crown"></i></div>
       <div class="vb-info">
         <div class="vb-name">${VIP_TIER_LABELS[t]}</div>
         <div class="vb-price"><i class="fas fa-gem"></i> ${fmtNum(price)} ماسة <span class="vb-dur">/ شهر واحد</span></div>
+        ${vipPerksHtml(t)}
+        ${vipBonusHtml(t)}
       </div>
       ${mine ? `<span class="badge">مفعّل${myExp?(' حتى '+new Date(myExp).toLocaleDateString('ar-EG')):''}</span>` : `<button onclick="buyVipNow(${t},${price})">شراء</button>`}
     </div>`;
@@ -4669,9 +4743,28 @@ async function buyVipNow(tier, price){
     });
     if (!res.committed){ showToast('رصيد الماسات غير كافٍ', 'error'); return; }
     await db.ref('users/'+currentUserId).update({ vipTier: tier, vipExpiry: Date.now() + 30*86400000 });
+    const bonus = vipBonusCache[tier];
+    if (bonus){
+      if (bonus.diamonds) await db.ref('users/'+currentUserId+'/diamonds').transaction(c=>(Number(c)||0)+Number(bonus.diamonds));
+      if (bonus.coins) await db.ref('users/'+currentUserId+'/coins').transaction(c=>(Number(c)||0)+Number(bonus.coins));
+      if (bonus.frameId) await db.ref('users/'+currentUserId+'/ownedFrames/'+bonus.frameId).set(true);
+    }
+    sendVipWelcomeMessage(tier);
     showToast('مبروك! تم تفعيل '+VIP_TIER_LABELS[tier], 'success');
     closeVipBuy();
   }catch(e){ showToast('تعذّرت عملية الشراء', 'error'); }
+}
+let vipWelcomeTemplates = {};
+db.ref('settings/vipWelcomeMessages').on('value', s=>{ vipWelcomeTemplates = s.val() || {}; });
+async function sendVipWelcomeMessage(tier){
+  const custom = vipWelcomeTemplates[tier];
+  const body = custom || ('صلاحياتك الجديدة:\\n' + (VIP_PERKS[tier]||[]).map(p=>'• '+p).join('\\n'));
+  try{
+    await db.ref('vipInbox/'+currentUserId+'/messages').push({
+      title: '🎉 مبروك، أصبحت الآن تملك صلاحيات '+VIP_TIER_LABELS[tier],
+      body, ts: Date.now(), from:'system'
+    });
+  }catch(e){}
 }
 
 /* ---------------- المتجر: الإطارات والدخوليات ---------------- */
@@ -4880,6 +4973,137 @@ async function confirmSendFriendRequest(){
   }catch(e){ showToast('تعذّر إرسال الطلب','error'); }
 }
 
+
+/* =====================================================================
+   محادثة VIP (رسائل ترحيب/تعميم من المطور) + هدية اليوم (تقويم 5 أيام)
+   + إرسال دعم بين المستخدمين + توثيق قابل للنقر + شارة VIP قابلة للنقر
+   ===================================================================== */
+
+/* ---------------- محادثة VIP ---------------- */
+let vipInboxCache = {};
+let vipInboxUnread = false;
+let vipInboxSeenCount = Number(localStorage.getItem('vipInboxSeen_'+currentUserId)) || 0;
+db.ref('vipInbox/'+currentUserId+'/messages').on('value', s=>{
+  vipInboxCache = s.val() || {};
+  vipInboxUnread = Object.keys(vipInboxCache).length > vipInboxSeenCount;
+  try{ renderEconomyHub(); }catch(e){}
+  try{ if (document.getElementById('vipinbox-overlay').classList.contains('show')) renderVipInbox(); }catch(e){}
+});
+function openVipInbox(){
+  closeMyProfile();
+  renderVipInbox();
+  document.getElementById('vipinbox-overlay').classList.add('show');
+  vipInboxSeenCount = Object.keys(vipInboxCache).length;
+  localStorage.setItem('vipInboxSeen_'+currentUserId, String(vipInboxSeenCount));
+  vipInboxUnread = false;
+  renderEconomyHub();
+}
+function closeVipInbox(){ document.getElementById('vipinbox-overlay').classList.remove('show'); }
+function renderVipInbox(){
+  const box = document.getElementById('vipinbox-list');
+  const msgs = Object.values(vipInboxCache).sort((a,b)=>(b.ts||0)-(a.ts||0));
+  if (!msgs.length){ box.innerHTML = '<div class="empty-note">لا توجد رسائل بعد.</div>'; return; }
+  box.innerHTML = msgs.map(m=>`
+    <div class="vip-msg-card">
+      <div class="vip-msg-title">${escapeHtml(m.title||'')}</div>
+      <div class="vip-msg-body">${escapeHtml(m.body||'').replace(/\\n/g,'<br>')}</div>
+      <div class="vip-msg-time">${vipTimeAgo(m.ts)}</div>
+    </div>`).join('');
+}
+
+/* ---------------- هدية اليوم (تقويم 5 أيام يديره المطوّر) ---------------- */
+let dailyGiftsConfig = [];
+db.ref('settings/dailyGifts').on('value', s=>{ dailyGiftsConfig = Array.isArray(s.val()) ? s.val() : []; try{ if (document.getElementById('dailygift-overlay').classList.contains('show')) renderDailyGift(); }catch(e){} });
+function openDailyGift(){
+  closeMyProfile();
+  renderDailyGift();
+  document.getElementById('dailygift-overlay').classList.add('show');
+}
+function closeDailyGift(){ document.getElementById('dailygift-overlay').classList.remove('show'); }
+function renderDailyGift(){
+  const box = document.getElementById('dailygift-slots');
+  if (!dailyGiftsConfig.length){ box.innerHTML = '<div class="empty-note">لم يضِف المطوّر هدايا يومية بعد.</div>'; document.getElementById('dailygift-claim-btn').style.display='none'; return; }
+  const day = (Number(myProfile.dailyGiftDay)||0) % dailyGiftsConfig.length;
+  const last = Number(myProfile.lastDailyGift)||0;
+  const canClaim = (Date.now() - last) >= 86400000;
+  box.innerHTML = dailyGiftsConfig.map((g,i)=>{
+    const icon = g.type==='diamonds' ? 'fa-gem' : (g.type==='coins' ? 'fa-coins' : 'fa-crown');
+    const label = g.type==='diamonds' ? (fmtNum(g.amount)+' ماسة') : (g.type==='coins' ? (fmtNum(g.amount)+' عملة') : 'إطار هدية');
+    const state = i < day ? 'done' : (i === day ? (canClaim?'today':'wait') : 'future');
+    return `<div class="dg-slot dg-${state}">
+      <div class="dg-day">اليوم ${i+1}</div>
+      <div class="dg-ic"><i class="fas ${icon}"></i></div>
+      <div class="dg-label">${escapeHtml(label)}</div>
+      ${state==='done'?'<i class="fas fa-check dg-check"></i>':''}
+    </div>`;
+  }).join('');
+  const btn = document.getElementById('dailygift-claim-btn');
+  btn.style.display = 'block';
+  btn.disabled = !canClaim;
+  btn.innerHTML = canClaim ? '<i class="fas fa-gift"></i> استلام هدية اليوم '+(day+1) : '<i class="fas fa-hourglass-half"></i> عد غداً لاستلام هديتك';
+}
+async function claimDailyGift(){
+  if (!dailyGiftsConfig.length) return;
+  let allowed = false, dayClaimed = 0;
+  try{
+    const res = await db.ref('users/'+currentUserId+'/lastDailyGift').transaction(cur=>{
+      if (cur && Date.now()-cur < 86400000) return;
+      return Date.now();
+    });
+    allowed = res.committed;
+  }catch(e){}
+  if (!allowed){ showToast('لقد استلمت هدية اليوم بالفعل', 'error'); return; }
+  const day = (Number(myProfile.dailyGiftDay)||0) % dailyGiftsConfig.length;
+  const g = dailyGiftsConfig[day];
+  try{
+    if (g.type === 'coins') await db.ref('users/'+currentUserId+'/coins').transaction(c=>(Number(c)||0)+Number(g.amount||0));
+    else if (g.type === 'diamonds') await db.ref('users/'+currentUserId+'/diamonds').transaction(c=>(Number(c)||0)+Number(g.amount||0));
+    else if (g.type === 'frame' && g.frameId){
+      const val = g.permanent === false ? { until: Date.now()+(Number(g.days)||7)*86400000 } : true;
+      await db.ref('users/'+currentUserId+'/ownedFrames/'+g.frameId).set(val);
+    }
+    await db.ref('users/'+currentUserId+'/dailyGiftDay').set((day+1)%dailyGiftsConfig.length);
+    showToast('استلمت هدية اليوم!', 'success');
+  }catch(e){ showToast('تعذّر الاستلام', 'error'); }
+  renderDailyGift();
+}
+
+/* ---------------- إرسال دعم (ماسات/عملات) لأي مستخدم ---------------- */
+let supportTargetUid = null;
+function openSupportSheet(uid){
+  supportTargetUid = uid;
+  document.getElementById('support-amount').value = '';
+  document.getElementById('support-overlay').classList.add('show');
+}
+function closeSupportSheet(){ document.getElementById('support-overlay').classList.remove('show'); supportTargetUid = null; }
+async function sendSupportGift(){
+  const uid = supportTargetUid;
+  if (!uid) return;
+  const amount = Math.max(0, Math.floor(Number(document.getElementById('support-amount').value)||0));
+  const currency = document.getElementById('support-currency').value;
+  if (!amount){ showToast('اكتب كمية صحيحة', 'error'); return; }
+  const field = currency === 'diamonds' ? 'diamonds' : 'coins';
+  try{
+    const res = await db.ref('users/'+currentUserId+'/'+field).transaction(cur=>{
+      cur = Number(cur)||0;
+      if (cur < amount) return;
+      return cur - amount;
+    });
+    if (!res.committed){ showToast('رصيدك غير كافٍ', 'error'); return; }
+    await db.ref('users/'+uid+'/'+field).transaction(c=>(Number(c)||0)+amount);
+    showToast('تم إرسال الدعم بنجاح!', 'success');
+    closeSupportSheet();
+  }catch(e){ showToast('تعذّرت العملية', 'error'); }
+}
+
+/* ---------------- توثيق قابل للنقر + شارة VIP قابلة للنقر (تفتح الشراء) ---------------- */
+function vipBadgeClick(tier){
+  showToast('حساب موثّق — توثيق من الدرجة '+(tier-1), 'success');
+}
+function vipPillClick(){
+  openVipBuy();
+}
+
 </script>
 
 <!-- ================= نوافذ نظام VIP ================= -->
@@ -5083,6 +5307,51 @@ async function confirmSendFriendRequest(){
       <div class="rel-opt sel" data-rel="صديق" onclick="frlSelect(this)"><i class="fas fa-user-group"></i> صديق</div>
       <div class="rel-opt" data-rel="عشيق" onclick="frlSelect(this)"><i class="fas fa-heart"></i> عشيق</div>
       <button class="btn btn-glow" style="width:100%;margin-top:6px;" onclick="confirmSendFriendRequest()"><i class="fas fa-paper-plane"></i> إرسال الطلب</button>
+    </div>
+  </div>
+</div>
+
+<!-- محادثة VIP -->
+<div class="overlay" id="vipinbox-overlay">
+  <div class="sheet" style="max-width:460px;">
+    <div class="sheet-head">
+      <h3><i class="fas fa-envelope" style="color:var(--glow);"></i> محادثة VIP</h3>
+      <button class="icon-btn" onclick="closeVipInbox()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="sheet-body" id="vipinbox-list"></div>
+  </div>
+</div>
+
+<!-- هدية اليوم -->
+<div class="overlay" id="dailygift-overlay">
+  <div class="sheet" style="max-width:460px;">
+    <div class="sheet-head">
+      <h3><i class="fas fa-box-open" style="color:var(--glow);"></i> هدية اليوم</h3>
+      <button class="icon-btn" onclick="closeDailyGift()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="sheet-body">
+      <div class="dg-slots" id="dailygift-slots"></div>
+      <button class="roulette-spin-btn" id="dailygift-claim-btn" onclick="claimDailyGift()"></button>
+    </div>
+  </div>
+</div>
+
+<!-- إرسال دعم -->
+<div class="overlay" id="support-overlay">
+  <div class="sheet" style="max-width:420px;">
+    <div class="sheet-head">
+      <h3><i class="fas fa-hand-holding-heart" style="color:var(--glow);"></i> إرسال دعم</h3>
+      <button class="icon-btn" onclick="closeSupportSheet()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="sheet-body">
+      <div class="support-field-row">
+        <input class="vip-field" id="support-amount" type="number" min="1" placeholder="الكمية" style="flex:1;">
+        <select class="vip-field" id="support-currency" style="flex:1;">
+          <option value="diamonds">ماسات</option>
+          <option value="coins">عملات</option>
+        </select>
+      </div>
+      <button class="btn btn-glow" style="width:100%;" onclick="sendSupportGift()"><i class="fas fa-paper-plane"></i> إرسال</button>
     </div>
   </div>
 </div>

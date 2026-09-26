@@ -1138,9 +1138,10 @@ textarea.vip-field{resize:none;}
 .vb-perks li::before{content:'✦';position:absolute;right:0;color:var(--glow);font-size:9px;top:3px;}
 .vb-bonus{margin-top:8px;font-size:11px;font-weight:800;color:#7fd8ff;background:rgba(127,216,255,.1);border-radius:10px;padding:5px 10px;display:inline-block;}
 .vr-title{font-size:16px;font-weight:900;text-align:center;margin-bottom:16px;line-height:1.6;}
-.vr-rewards-list{display:flex;flex-direction:column;gap:10px;}
-.vr-reward-row{display:flex;align-items:center;gap:10px;background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:10px 14px;font-size:13px;font-weight:700;}
-.vr-frame-prev{width:36px;height:36px;position:relative;flex-shrink:0;}
+.vr-reward-row{display:flex;align-items:center;gap:10px;background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:10px 14px;font-size:13px;font-weight:700;overflow:visible;}
+.vr-rewards-list{display:flex;flex-direction:column;gap:18px;}
+.vr-frame-prev{width:36px;height:36px;position:relative;flex-shrink:0;margin:15px;}
+.vr-frame-prev img.cf-overlay{max-width:130%;max-height:130%;}
 .vr-frame-c{width:100%;height:100%;border-radius:50%;overflow:hidden;background:var(--surface-3);display:flex;align-items:center;justify-content:center;}
 .dg-slots{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:14px 0;}
 .dg-slot{position:relative;border-radius:14px;padding:10px 4px;text-align:center;background:var(--surface-2);border:1px solid var(--border);}
@@ -1149,7 +1150,8 @@ textarea.vip-field{resize:none;}
 .dg-slot.dg-future{opacity:.45;}
 .dg-day{font-size:9.5px;color:var(--ink-muted);margin-bottom:6px;}
 .dg-ic{font-size:18px;color:var(--glow);margin-bottom:4px;}
-.dg-frame-prev{width:34px;height:34px;position:relative;margin:0 auto 4px;}
+.dg-frame-prev{width:34px;height:34px;position:relative;margin:16px auto 20px;}
+.dg-frame-prev img.cf-overlay{max-width:130%;max-height:130%;}
 .dg-frame-c{width:100%;height:100%;border-radius:50%;overflow:hidden;background:var(--surface-3);display:flex;align-items:center;justify-content:center;}
 .dg-label{font-size:9.5px;font-weight:800;}
 .dg-check{position:absolute;top:4px;left:4px;color:var(--ok);font-size:11px;}
@@ -3800,6 +3802,8 @@ function refreshFrameConsumers(){
   try{ if (document.getElementById('owner-profile-overlay').classList.contains('show')) updateOwnerProfileHeader(); }catch(e){}
   try{ if (document.getElementById('frames-overlay').classList.contains('show')) renderFramesPicker(); }catch(e){}
   try{ if (document.getElementById('shop-overlay').classList.contains('show') && shopTab==='frames') renderShopGrid(); }catch(e){}
+  try{ if (_lastVipResultArgs) showVipPurchaseResult(..._lastVipResultArgs); }catch(e){}
+  try{ if (document.getElementById('dailygift-overlay').classList.contains('show')) renderDailyGift(); }catch(e){}
 }
 /* يُستدعى عند وصول ملف مستخدم جديد من الشبكة */
 function vipOnUserLoaded(uid){
@@ -4723,7 +4727,7 @@ function vipBonusHtml(tier){
   if (b.diamonds) parts.push(`<i class="fas fa-gem"></i> ${fmtNum(b.diamonds)} ماسة هدية`);
   if (b.coins) parts.push(`<i class="fas fa-coins"></i> ${fmtNum(b.coins)} عملة هدية`);
   if (b.frameId) parts.push(`<i class="fas fa-crown"></i> إطار هدية`);
-  if (b.customId) parts.push(`<i class="fas fa-id-badge"></i> ID مميز (${escapeHtml(b.customId)})`);
+  if (b.grantPremiumId) parts.push(`<i class="fas fa-id-badge"></i> معرّف مميز (إن توفر)`);
   if (!parts.length) return '';
   return `<div class="vb-bonus"><i class="fas fa-gift"></i> يشمل: ${parts.join(' + ')}</div>`;
 }
@@ -4778,33 +4782,26 @@ async function buyVipNow(tier, price){
     /* يحصل على جوائز كل المستويات من 1 حتى المستوى المشترى تراكمياً */
     let totalDiamonds = 0, totalCoins = 0;
     const frameIds = [];
-    let grantedCustomId = null;
+    let wantsPremiumId = false;
     for (let t = 1; t <= tier; t++){
       const bonus = vipBonusCache[t];
       if (!bonus) continue;
       if (bonus.diamonds) totalDiamonds += Number(bonus.diamonds);
       if (bonus.coins) totalCoins += Number(bonus.coins);
       if (bonus.frameId){ await db.ref('users/'+currentUserId+'/ownedFrames/'+bonus.frameId).set(true); frameIds.push(bonus.frameId); }
-      if (bonus.customId){
-        try{
-          const idxSnap = await db.ref('publicIdIndex/'+bonus.customId).once('value');
-          if (!idxSnap.exists()){
-            await db.ref('publicIdIndex/'+bonus.customId).set(currentUserId);
-            await db.ref('users/'+currentUserId+'/customId').set(bonus.customId);
-            await db.ref('settings/shop/vipBonuses/'+t+'/customId').remove();
-            grantedCustomId = bonus.customId;
-          }
-        }catch(e){}
-      }
+      if (bonus.grantPremiumId) wantsPremiumId = true;
     }
     if (totalDiamonds) await db.ref('users/'+currentUserId+'/diamonds').transaction(c=>(Number(c)||0)+totalDiamonds);
     if (totalCoins) await db.ref('users/'+currentUserId+'/coins').transaction(c=>(Number(c)||0)+totalCoins);
+    let grantedCustomId = wantsPremiumId ? await grantPremiumIdFromPool() : null;
     sendVipWelcomeMessage(tier);
     closeVipBuy();
     showVipPurchaseResult(tier, totalDiamonds, totalCoins, frameIds, grantedCustomId);
   }catch(e){ showToast('تعذّرت عملية الشراء', 'error'); }
 }
+let _lastVipResultArgs = null;
 function showVipPurchaseResult(tier, diamonds, coins, frameIds, customId){
+  _lastVipResultArgs = [tier, diamonds, coins, frameIds, customId];
   const box = document.getElementById('vipresult-body');
   const av = myProfile.avatarUrl ? `<img src="${escapeHtml(myProfile.avatarUrl)}">` : '<i class="fas fa-user" style="color:var(--ink-muted);"></i>';
   let rewardsHtml = '';
@@ -4813,7 +4810,7 @@ function showVipPurchaseResult(tier, diamonds, coins, frameIds, customId){
   if (customId) rewardsHtml += `<div class="vr-reward-row"><i class="fas fa-id-badge" style="color:#f0b06c;"></i> معرّف مميز: ${escapeHtml(customId)}</div>`;
   frameIds.forEach(id=>{
     const d = getFrameData(id);
-    rewardsHtml += `<div class="vr-reward-row"><span class="vr-frame-prev"><span class="vr-frame-c">${av}</span>${d?frameOverlayHtml({src:d.src,scale:d.scale}):''}</span> إطار: ${escapeHtml((d&&d.name)||'إطار هدية')}</div>`;
+    rewardsHtml += `<div class="vr-reward-row"><span class="vr-frame-prev"><span class="vr-frame-c">${av}</span>${d?frameOverlayHtml({src:d.src,scale:Math.min(d.scale,150)}):''}</span> إطار: ${d===null?'<i class="fas fa-spinner fa-spin"></i> جارٍ التحميل...':escapeHtml((d&&d.name)||'إطار هدية')}</div>`;
   });
   box.innerHTML = `
     <div class="vr-title">🎉 مبروك، أصبحت الآن تملك ${VIP_TIER_LABELS[tier]}</div>
@@ -4821,7 +4818,27 @@ function showVipPurchaseResult(tier, diamonds, coins, frameIds, customId){
   `;
   document.getElementById('vipresult-overlay').classList.add('show');
 }
-function closeVipResult(){ document.getElementById('vipresult-overlay').classList.remove('show'); }
+function closeVipResult(){ document.getElementById('vipresult-overlay').classList.remove('show'); _lastVipResultArgs = null; }
+/* يمنح أول معرّف مميز متاح (غير مستخدم) من المخزون الذي يضيفه المطوّر، ثم يزيله من المخزون فوراً حتى لا يتكرر لشخص آخر */
+async function grantPremiumIdFromPool(){
+  try{
+    const poolSnap = await db.ref('premiumIdPool').once('value');
+    const pool = poolSnap.val() || {};
+    for (const pushId of Object.keys(pool)){
+      const idVal = String(pool[pushId]).trim();
+      if (!idVal) continue;
+      const idxSnap = await db.ref('publicIdIndex/'+idVal).once('value');
+      if (idxSnap.exists()) continue;
+      const updates = {};
+      updates['publicIdIndex/'+idVal] = currentUserId;
+      updates['users/'+currentUserId+'/customId'] = idVal;
+      updates['premiumIdPool/'+pushId] = null;
+      await db.ref().update(updates);
+      return idVal;
+    }
+  }catch(e){}
+  return null;
+}
 let vipWelcomeTemplates = {};
 db.ref('settings/vipWelcomeMessages').on('value', s=>{ vipWelcomeTemplates = s.val() || {}; });
 async function sendVipWelcomeMessage(tier){
